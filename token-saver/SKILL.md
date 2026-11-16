@@ -1,7 +1,7 @@
 ---
 name: token-saver
 description: "Invoke at the start of EVERY coding task the user requests (feature, bug fix, refactor, tests, migration, review), before reading code or writing a plan. Keeps token cost down by making the main model an orchestrator: plan once in a file, route each piece of work to the cheapest model that can do it, keep tool output out of the main context, and verify with commands instead of re-reading code."
-version: 1.0.0
+version: 1.1.0
 ---
 
 # Token Saver Skill
@@ -27,7 +27,9 @@ Size the process to the task first:
 2. **Plan once, in a file.** Have the strongest model write one plan file in the repo (e.g.
    `docs/plans/<date>-<topic>.md`): the decisions (names, columns, endpoints, keys, no "TBD"), then
    numbered tasks in dependency order. Each task names the exact files it creates or changes, its
-   tests, and the commands that must pass. Mark which tasks can run in parallel.
+   tests, and the commands that must pass. A task that adds or changes a UI or a user-visible
+   feature also names the browser spec file it adds or updates (in the app's `e2e/` folder) and
+   lists `test:e2e` among its commands. Mark which tasks can run in parallel.
 3. **Route each task to the cheapest model that can do it** (table below), one task per agent.
 4. **Verify with commands, commit, start the next group.** The orchestrator does not write the code.
 
@@ -80,14 +82,33 @@ The brief is the only context the agent has. Keep it short by pointing, not past
 
 ## Verify cheaply
 
-- Trust commands over reading: typecheck, lint, unit and end-to-end tests, a build, a browser check.
+- Trust commands over reading: typecheck, lint, unit and integration tests, a build, the app's
+  `test:e2e` script (the browser tests).
 - Review a delegated task by its reported deviations and `git diff --stat`; open only the hunks that
   touch risky logic (money, permissions, migrations, data deletion).
 - A failed check goes back to the same agent with only the failing output.
 
+Browser verification:
+
+- "Browser-verify" means: run `test:e2e` and see it pass. Do not open a browser, click through pages
+  or read screenshots to verify. Driving a browser is one of the most expensive ways to verify; one
+  command with filtered output is the cheapest.
+- Whenever a task tests a new UI or feature, the same task updates the browser test scripts. The
+  agent that built the feature writes or updates the spec in the app's `e2e/` folder; the
+  orchestrator only runs the command.
+- The only exception is a new UI with no test script yet: look at it in the browser once, then add
+  its script before the work is done.
+- If the app has a web UI and no `test:e2e` script at all, set one up first by following section 8
+  of the `project-initiation` skill (Playwright, `e2e/smoke.spec.ts`, the `e2e` CI job), then carry
+  on.
+- Run `test:e2e` with its output filtered to the failures. A failing spec is a failed check: it goes
+  back to the same agent with only the failing output.
+
 ## Report to the user
 
 - Say which tasks are done, which are verified and by which command, and which are not verified yet.
+- When a UI change is reported as verified, name `test:e2e` as the command and say which spec covers
+  it. If the exception was used, say the UI was looked at by hand and which spec was added.
 - List every decision an agent made that the user did not approve, so they can object early.
 
 ## Pitfalls
@@ -96,3 +117,5 @@ The brief is the only context the agent has. Keep it short by pointing, not past
 - A vague plan: every agent then re-explores the codebase at full cost. Spend the tokens on the plan.
 - Uncapped agent replies and unfiltered test output: the two largest avoidable costs.
 - Fanning out many agents without asking: tell the user the rough scale first when it is large.
+- An agent clicking through the app in a browser to verify, when a `test:e2e` script exists or could
+  be added.
