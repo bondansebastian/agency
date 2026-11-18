@@ -1,0 +1,29 @@
+# Language Preference
+
+Reference for what language to write a guide in, checked at the **start** of every guide-writing task — before drafting any content.
+
+## Core Rule: Check Memory First, Ask Only If Needed
+
+**If a profile fixes the language (see the `context-management` skill), use it and skip the steps below** — do not ask, and do not save it to `MEMORY.md`.
+
+1. **If the user's request already states a language** (e.g. "write this guide in Spanish"), use it — no need to ask or check `MEMORY.md`. Still offer to save it as the default per step 5 below if no default is currently saved.
+2. **Otherwise, check `MEMORY.md`** at `<project-root>/.agents/contexts/agency/docs-user-documentation/MEMORY.md` (see the storage section in `SKILL.md`) for a remembered language preference.
+3. **If a remembered preference exists**, write the guide in that language — don't ask again.
+4. **If no preference is saved yet**, stop and ask the user what language the guide should be written in before drafting any content.
+5. **After the user answers**, save it to `MEMORY.md` at that path as the default for future guides — no separate confirmation needed, since this isn't sensitive information (unlike credentials).
+
+## MEMORY.md Entry Format
+
+```markdown
+- **Language** — <language, e.g. "English">
+```
+
+## Quick Reference
+
+| Situation | Action |
+|---|---|
+| A profile fixes the language | Use it; do not ask or save |
+| User's request already names a language | Use it; save as default if none is saved yet |
+| `MEMORY.md` has a saved language preference | Use it, don't ask |
+| `MEMORY.md` has no language preference yet | Ask the user before drafting, then save the answer |
+| User changes their mind mid-project | Update the `MEMORY.md` entry to the new language |
