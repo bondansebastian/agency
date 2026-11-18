@@ -1,7 +1,7 @@
 ---
 name: sales-quotation
-description: "Use when computing a client-facing price/quotation from an AI Estimate, writing the actual client-facing quotation text or document, maintaining this project's pricing-variable ledger (buffer multiplier, man-day hours, base man-day rate, and currency), or creating/updating an estimate in Zoho Books. Covers the fully-variablized pricing formula — never assume $ or any other value, always read the saved ledger in .agents/contexts/writing-quotations/MEMORY.md or ask — writing the quotation in plain business bullet points with a clear Deliverables section and a unique index on every section and sub-section, never rendering a section or sub-section that has no meaningful content (e.g. an empty Perlu Konfirmasi), following this skill's fixed 4-section structure (Lingkup Pekerjaan, Deliverables, Catatan, Estimasi Waktu & Investasi) traceable back to the estimate document's Breakdown items via back-references, in Indonesian by default unless the user explicitly asks for another language (remembered per project in that same context file), always asking the client name and project name fresh for every quotation rather than reusing a remembered one, always saving it as a dated Markdown file under docs/quotations/ (the same naming convention as the estimate-project skill), always including a datetime-stamped Version in the quotation's meta that is refreshed on every update, only producing a polished .docx version when the user explicitly asks for one — never regenerating or auto-refreshing an existing docx off a later edit without a fresh explicit request each time — and, when a docx is generated, always writing it as a new file with the quotation's canonical `Versi` timestamp appended to the filename rather than overwriting any previously generated docx, the rule to only touch the sections the user asked about when editing a Zoho Books estimate, and always using service-type Zoho Books line items without exposing man-hour breakdowns unless explicitly requested. Always trigger when the user asks to price, quote, or create a client-facing quotation, or to create/update a Zoho Books estimate — even if they don't mention docs/quotations/ or Zoho Books by name. For sizing up the underlying work and writing the AI Estimate itself, see the estimate-project skill instead."
-version: 1.13.0
+description: "Use when computing a client-facing price/quotation from an AI Estimate, writing the actual client-facing quotation text or document, maintaining this project's pricing-variable ledger (buffer multiplier, man-day hours, base man-day rate, and currency), or creating/updating an estimate in Zoho Books. Covers the fully-variablized pricing formula — never assume $ or any other value, always read the saved ledger in .agents/contexts/sales-quotation/MEMORY.md or ask — writing the quotation in plain business bullet points with a clear Deliverables section and a unique index on every section and sub-section, never rendering a section or sub-section that has no meaningful content (e.g. an empty Perlu Konfirmasi), following this skill's fixed 4-section structure (Lingkup Pekerjaan, Deliverables, Catatan, Estimasi Waktu & Investasi) traceable back to the estimate document's Breakdown items via back-references, in Indonesian by default unless the user explicitly asks for another language (remembered per project in that same context file), always asking the client name and project name fresh for every quotation rather than reusing a remembered one, always saving it as a dated Markdown file under docs/quotations/ (the same naming convention as the estimate-project skill), always including a datetime-stamped Version in the quotation's meta that is refreshed on every update, only producing a polished .docx version when the user explicitly asks for one — never regenerating or auto-refreshing an existing docx off a later edit without a fresh explicit request each time — and, when a docx is generated, always writing it as a new file with the quotation's canonical `Versi` timestamp appended to the filename rather than overwriting any previously generated docx, the rule to only touch the sections the user asked about when editing a Zoho Books estimate, and always using service-type Zoho Books line items without exposing man-hour breakdowns unless explicitly requested. Always trigger when the user asks to price, quote, or create a client-facing quotation, or to create/update a Zoho Books estimate — even if they don't mention docs/quotations/ or Zoho Books by name. For sizing up the underlying work and writing the AI Estimate itself, see the estimate-project skill instead."
+version: 1.13.1
 ---
 
 # Writing Quotations Skill
@@ -26,10 +26,21 @@ This skill assumes an `AI Estimate` already exists for the work being priced. If
 This skill remembers non-sensitive, project-specific context across invocations instead of re-asking every time. Store and read it at:
 
 ```
-<project-root>/.agents/contexts/writing-quotations/MEMORY.md
+<project-root>/.agents/contexts/sales-quotation/MEMORY.md
 ```
 
 Take `<project-root>` as the root of the project you're currently working in — never the skill's own folder, so this works the same whether the skill is installed locally or globally. Create the folder and file if they don't exist yet; don't wait for one to already be there. Re-derive `<project-root>` whenever the active project changes within a session.
+
+**Legacy location (migrate on encounter).** Before this skill was renamed, it stored the same data under an older folder name:
+
+- `<project-root>/.agents/contexts/writing-quotations/` → `<project-root>/.agents/contexts/sales-quotation/`
+
+Check for the legacy folder every time you resolve the path above:
+
+- **Only the legacy folder exists** — move it to the new path (use `git mv` when the file is tracked, otherwise a plain move), then read and write the new path from then on. Tell the user in one line that you migrated it.
+- **Both exist** — the new path wins. Copy across any entries that only the legacy file has, then delete the legacy file.
+- **Migration isn't possible** (read-only filesystem, the user declines, or another tool still depends on the legacy path) — keep reading **and writing** the legacy path for now, and say so. Retry the migration the next time the skill runs.
+- **Never create a fresh file at the new path while an unmigrated legacy file exists** — that would hide the saved values and make you re-ask for them.
 
 Store:
 
@@ -222,7 +233,7 @@ Creating or updating an estimate in Zoho Books (e.g. via `create_estimate` or `u
 |---|---|
 | Computing a client price | `Quoted time = buffer multiplier × AI Estimate`; `Price = (Quoted time / man-day hours) × base man-day rate`, in `currency`; get all four variables from this skill's `MEMORY.md`, or ask the user |
 | Writing the client-facing quotation text | See `references/writing-quotations.md` — bullet points, plain business language, outputs only (no internal derivation or jargon), always including a Deliverables list |
-| Choosing the language | Check `.agents/contexts/writing-quotations/MEMORY.md` for a saved preference; otherwise Indonesian by default, another language only if the user explicitly asks |
+| Choosing the language | Check `.agents/contexts/sales-quotation/MEMORY.md` for a saved preference; otherwise Indonesian by default, another language only if the user explicitly asks |
 | Asking the client name and project name | Always ask fresh for every quotation — never read from or write to `MEMORY.md` |
 | Saving the quotation document | Ask for the client name and the project name, then write `docs/quotations/YYYY-MM-DD-<client>-<project-slug>.md` as `.md` by default |
 | No answer on client/project name | Derive it from the quotation's own content (scope, prior correspondence, or source estimate) — don't block or leave a placeholder |
@@ -234,7 +245,7 @@ Creating or updating an estimate in Zoho Books (e.g. via `create_estimate` or `u
 | Changing an existing quotation | Present the changes in a table (index, section, change, before, after, incl. price) and get confirmation before editing |
 | Updating a Zoho Books estimate | See `references/zoho-books.md` — `get_estimate` first, then `update_estimate` with only the fields the user asked to change |
 | Creating/adding a Zoho Books line item | See `references/zoho-books.md` — use `service` item type; describe the deliverable, not man-hours, unless explicitly requested |
-| Recording a pricing variable | Save it to `.agents/contexts/writing-quotations/MEMORY.md` once confirmed by the user |
+| Recording a pricing variable | Save it to `.agents/contexts/sales-quotation/MEMORY.md` once confirmed by the user |
 
 ## Common Mistakes
 
@@ -251,7 +262,7 @@ Creating or updating an estimate in Zoho Books (e.g. via `create_estimate` or `u
 - Overwriting a previously generated `.docx` instead of writing each generation as its own new file named with the quotation's current `Versi` timestamp.
 - Leaving the estimate back-references (e.g. `estimasi dari 3.1 pada dokumen estimasi`) in the client-facing `.docx` — they must be removed from the docx (but kept in the `.md`); see `references/docx.md`.
 - Blocking on, or repeatedly re-asking for, the client name or project name instead of falling back to a content-based value when the user doesn't answer.
-- Re-asking for a pricing variable every time instead of checking `.agents/contexts/writing-quotations/MEMORY.md` first.
+- Re-asking for a pricing variable every time instead of checking `.agents/contexts/sales-quotation/MEMORY.md` first.
 - Silently reusing a non-Indonesian language for a new quotation in the same project without it having been saved to `MEMORY.md` as this project's preference.
 - Giving a section a lone sub-item (`1.1` with no `1.2`) instead of making it the section description, or adding a second item without restructuring the section.
 - Leaving any quotation section or sub-section unindexed, duplicating an index, or renumbering existing items.

@@ -1,6 +1,6 @@
 # Writing Client Quotations
 
-A **quotation** is the client-facing pricing communication itself — the text a client actually reads (the Pricing section of an estimate document, a Zoho Books estimate, or a standalone quote message). This is distinct from this skill's internal pricing-variable context (`.agents/contexts/writing-quotations/MEMORY.md`: `buffer multiplier`, `man-day hours`, `base man-day rate`, `currency`), which is never sent to a client.
+A **quotation** is the client-facing pricing communication itself — the text a client actually reads (the Pricing section of an estimate document, a Zoho Books estimate, or a standalone quote message). This is distinct from this skill's internal pricing-variable context (`.agents/contexts/sales-quotation/MEMORY.md`: `buffer multiplier`, `man-day hours`, `base man-day rate`, `currency`), which is never sent to a client.
 
 ## Language
 
@@ -80,4 +80,4 @@ Versi: 2026.09.21.14.35  (selalu ada; diperbarui setiap quotation diubah)
 - Omitting the `Versi` datetime stamp from the meta, or not refreshing it when the quotation is updated.
 - Omitting the Deliverables section, or listing internal tasks/hours instead of outcomes the client will actually receive.
 - Defaulting to English (or any other language) instead of Indonesian without the user having explicitly asked for it.
-- Confusing this quotation-writing guidance with the internal pricing-variable context in `.agents/contexts/writing-quotations/MEMORY.md`, which only tracks internal pricing variables and is never client-facing.
+- Confusing this quotation-writing guidance with the internal pricing-variable context in `.agents/contexts/sales-quotation/MEMORY.md`, which only tracks internal pricing variables and is never client-facing.

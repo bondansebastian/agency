@@ -1,7 +1,7 @@
 ---
 name: docs-user-guide
 description: "Use whenever the user asks to write, create, draft, or update a guide, documentation, user manual, help center article, how-to article, or any end-user-facing documentation for an application or feature — covers writing in plain, non-technical business language for a non-technical end-user audience, and never referencing ticket numbers, JIRA IDs, feature flags, internal service/class/table names, or other internal identifiers in the guide."
-version: 1.13.0
+version: 1.13.1
 ---
 
 # Writing User Guide Skill
@@ -33,16 +33,29 @@ This skill checks and saves data in two **separate** fixed locations inside the 
 
 - **Contexts** (non-sensitive: language preference, Notion targets/structure) — `MEMORY.md` in:
   ```
-  <project-root>/.agents/contexts/writing-user-guide/MEMORY.md
+  <project-root>/.agents/contexts/docs-user-guide/MEMORY.md
   ```
 - **Credentials** (sensitive: saved login credentials) — in:
   ```
-  <project-root>/.agents/credentials/writing-user-guide/
+  <project-root>/.agents/credentials/docs-user-guide/
   ```
 
 Take `<project-root>` as the root of the project you're currently working in. Create either directory (and the file inside it) if it doesn't exist yet — don't wait for one to already be there.
 
-**Keep these strictly separate.** Never write login credentials into the contexts `MEMORY.md`, and never write language/Notion preferences into the credentials folder — see `references/handling-authentication.md` for the credentials file's format. The credentials folder holds secrets and must never be committed to git: before writing to it for the first time in a project, check that the project's `.gitignore` excludes `.agents/credentials/` (or at least `.agents/credentials/writing-user-guide/`), and add an entry if it's missing.
+**Keep these strictly separate.** Never write login credentials into the contexts `MEMORY.md`, and never write language/Notion preferences into the credentials folder — see `references/handling-authentication.md` for the credentials file's format. The credentials folder holds secrets and must never be committed to git: before writing to it for the first time in a project, check that the project's `.gitignore` excludes `.agents/credentials/` (or at least `.agents/credentials/docs-user-guide/`), and add an entry if it's missing.
+
+**Legacy location (migrate on encounter).** Before this skill was renamed, it stored the same data under an older folder name:
+
+- `<project-root>/.agents/contexts/writing-user-guide/` → `<project-root>/.agents/contexts/docs-user-guide/`
+- `<project-root>/.agents/credentials/writing-user-guide/` → `<project-root>/.agents/credentials/docs-user-guide/`
+
+Check for the legacy folder every time you resolve the path above:
+
+- **Only the legacy folder exists** — move it to the new path (use `git mv` when the file is tracked, otherwise a plain move), then read and write the new path from then on. Tell the user in one line that you migrated it.
+- **Both exist** — the new path wins. Copy across any entries that only the legacy file has, then delete the legacy file.
+- **Migration isn't possible** (read-only filesystem, the user declines, or another tool still depends on the legacy path) — keep reading **and writing** the legacy path for now, and say so. Retry the migration the next time the skill runs.
+- **Never create a fresh file at the new path while an unmigrated legacy file exists** — that would hide the saved values and make you re-ask for them.
+- **Credentials:** the legacy credentials folder is normally git-ignored, so move it with a plain move, never `git mv` or `git add`. Before moving, make sure `.gitignore` covers the new path (`.agents/credentials/` or `.agents/credentials/docs-user-guide/`); if it only names the legacy folder, add the new entry first.
 
 **Checking order when this skill is invoked:** check the contexts `MEMORY.md` first (language preference, Notion target). Only check the credentials folder if authentication actually turns out to be necessary (e.g. a login page blocks screenshot capture) — don't check it proactively.
 
@@ -115,8 +128,8 @@ If the guide is being published or updated in Notion, never assume which page to
 
 | Situation | Action |
 |---|---|
-| Starting any guide-writing task | Resolve `<project-root>/.agents/contexts/writing-user-guide/MEMORY.md` (see Memory Location section — same path regardless of install location), then check it for a remembered language preference before drafting; if none, ask the user and save their answer |
-| `.agents/contexts/writing-user-guide/` doesn't exist yet in this project | Create the folder and `MEMORY.md` inside it — don't wait for one to already be there |
+| Starting any guide-writing task | Resolve `<project-root>/.agents/contexts/docs-user-guide/MEMORY.md` (see Memory Location section — same path regardless of install location), then check it for a remembered language preference before drafting; if none, ask the user and save their answer |
+| `.agents/contexts/docs-user-guide/` doesn't exist yet in this project | Create the folder and `MEMORY.md` inside it — don't wait for one to already be there |
 | Writing steps for a feature | Describe screens, buttons, and outcomes the user sees — not the backend flow, as a numbered step-by-step sequence with a screenshot per step where possible |
 | No access to the app/assets to capture a real screenshot | Write the step in text and note a screenshot should be added — never fabricate one |
 | `playwright-cli` or its dependencies not detected | Offer to install per https://github.com/microsoft/playwright-cli |

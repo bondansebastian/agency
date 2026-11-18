@@ -17,7 +17,7 @@ Before writing anything to Notion:
 
 Before creating or updating any Notion page for a user guide:
 
-1. **Check `MEMORY.md`** at `<project-root>/.agents/contexts/writing-user-guide/MEMORY.md` (see Memory Location in `SKILL.md`) for a matching entry — one that names the guide, feature, or product area you're about to write about.
+1. **Check `MEMORY.md`** at `<project-root>/.agents/contexts/docs-user-guide/MEMORY.md` (see Memory Location in `SKILL.md`) for a matching entry — one that names the guide, feature, or product area you're about to write about.
 2. **If a matching entry exists**, use the page/URL it records as the write target. Confirm with the user only if the request is ambiguous about which guide this is.
 3. **If no matching entry exists**, do not guess a page, workspace, or parent based on naming similarity, recent activity, or search results. Stop and ask the user explicitly which Notion page (or parent page, for a new page) to write to.
 

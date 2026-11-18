@@ -16,7 +16,4 @@ description: "Workspace Copilot instructions for the agent-skills repository."
 
 - **Marketplace sync**: `.claude-plugin/marketplace.json` publishes all skills as one Claude Code plugin named `agency` (invoked as `/agency:<skill>`). When you add, remove, or rename a skill, update that plugin's `skills` path list and `description`. When you change any skill's content, also increment the `agency` plugin `version` so installed copies pick up the update. Then run `claude plugin validate .` and fix any errors.
 
-- **Skill naming**: Skill folders and `name` values are domain-first (`atlassian-*`, `dev-*`, `docs-*`, `sales-*`) so related skills sort together under `/agency:`. Do not add an `agency-` prefix to skill names; the plugin supplies it. Per-project state paths under `.agents/` (for example `.agents/contexts/writing-quotations/`) are stable storage keys and must not be renamed when a skill is renamed.
-
-- **Git workflow**: For this repository, always commit directly to `main` and push to `origin/main` — do not create feature branches or pull requests unless explicitly asked.
-
+- **Skill naming**: Skill folders and `name` values are domain-first (`atlassian-*`, `dev-*`, `docs-*`, `sales-*`) so related skills sort together under `/agency:`. Do not add an `agency-` prefix to skill names; the plugin supplies it. Per-project state lives at `.agents/contexts/<skill-name>/` (and `.agents/credentials/<skill-name>/`). When you rename a skill that stores state, move its state path to the new name and keep a **Legacy location** rule in its `SKILL.md`: migrate the legacy folder on encounter, and fall back to reading and writing the legacy path when migration isn't possible.
