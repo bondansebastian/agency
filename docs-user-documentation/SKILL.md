@@ -1,7 +1,7 @@
 ---
-name: docs-ignis-user-documentation
+name: docs-user-documentation
 description: Create IgnisLabs-branded Indonesian user documentation for a web app feature - a captioned screen-recording video (cover "by IgnisLabs", muted watermark, Indonesian captions, cursor, title cards) and the matching Notion User Manual page. Use when asked for a user manual video, tutorial video, walkthrough video, panduan pengguna or manual page of a feature, or to re-record an existing manual video after the app changed.
-version: 1.0.0
+version: 1.0.1
 ---
 
 # IgnisLabs user documentation

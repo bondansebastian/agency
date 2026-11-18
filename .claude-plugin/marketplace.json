@@ -14,7 +14,7 @@
       "name": "agency",
       "source": "./",
       "description": "All agency skills in one plugin, invoked as /agency:<skill>: Atlassian (Jira, Confluence, Rovo MCP setup), sales (estimates, quotations), docs (user guides, IgnisLabs manual videos, agent instructions), dev (project initiation, React, UI/UX), DevOps (Coolify, OCI), and token-saver.",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "category": "productivity",
       "strict": false,
       "skills": [
@@ -26,7 +26,7 @@
         "./dev-ui-ux",
         "./devops",
         "./docs-agent-instructions",
-        "./docs-ignis-user-documentation",
+        "./docs-user-documentation",
         "./docs-user-guide",
         "./sales-estimate",
         "./sales-quotation",
