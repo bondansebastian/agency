@@ -9,4 +9,4 @@
 - **The app server does not start:** pass `--serve` with the exact command and `--url` with the address it prints. The runner waits up to 2 minutes and stops the server afterwards.
 - **After the app changed:** re-run the same scenario. Edit it only where a label, a button or the flow changed; update the sample data first if the preview must show new behaviour.
 - **`--music` fails or the video is silent:** music needs ffmpeg and ffprobe on the PATH and an audio file, from the profile's `music` field or `--music`. Without either the video is silent by design. A video longer than the bed loops it, with a small seam.
-- **The credit, cover look or music is missing:** the profile was not passed. Add `--profile <pack>/docs-user-documentation/profile.json`. If the pack folder is empty, fetch it first (`profile.md`).
+- **The credit, cover look or music is missing:** the profile was not passed. Add `--profile <pack>/docs-user-documentation/profile.json`. If the pack folder is empty, fetch it first (see the `context-management` skill).

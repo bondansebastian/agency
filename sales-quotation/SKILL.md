@@ -1,7 +1,7 @@
 ---
 name: sales-quotation
 description: "Use when computing a client-facing price/quotation from an AI Estimate, writing the actual client-facing quotation text or document, maintaining this project's pricing-variable ledger (buffer multiplier, man-day hours, base man-day rate, and currency), or creating/updating an estimate in Zoho Books. Covers the fully-variablized pricing formula — never assume $ or any other value, always read the saved ledger in .agents/contexts/agency/sales-quotation/MEMORY.md or ask — writing the quotation in plain business bullet points with a clear Deliverables section and a unique index on every section and sub-section, never rendering a section or sub-section that has no meaningful content (e.g. an empty Perlu Konfirmasi), following this skill's fixed 4-section structure (Lingkup Pekerjaan, Deliverables, Catatan, Estimasi Waktu & Investasi) traceable back to the estimate document's Breakdown items via back-references, in Indonesian by default unless the user explicitly asks for another language (remembered per project in that same context file), always asking the client name and project name fresh for every quotation rather than reusing a remembered one, always saving it as a dated Markdown file under docs/quotations/ (the same naming convention as the estimate-project skill), always including a datetime-stamped Version in the quotation's meta that is refreshed on every update, only producing a polished .docx version when the user explicitly asks for one — never regenerating or auto-refreshing an existing docx off a later edit without a fresh explicit request each time — and, when a docx is generated, always writing it as a new file with the quotation's canonical `Versi` timestamp appended to the filename rather than overwriting any previously generated docx, the rule to only touch the sections the user asked about when editing a Zoho Books estimate, and always using service-type Zoho Books line items without exposing man-hour breakdowns unless explicitly requested. Always trigger when the user asks to price, quote, or create a client-facing quotation, or to create/update a Zoho Books estimate — even if they don't mention docs/quotations/ or Zoho Books by name. For sizing up the underlying work and writing the AI Estimate itself, see the estimate-project skill instead."
-version: 1.13.2
+version: 1.13.3
 ---
 
 # Writing Quotations Skill
@@ -23,24 +23,13 @@ This skill assumes an `AI Estimate` already exists for the work being priced. If
 
 ## Where This Skill Stores Context
 
-This skill remembers non-sensitive, project-specific context across invocations instead of re-asking every time. Store and read it at:
+**Follow the `context-management` skill (`/agency:context-management`) for where and how**: resolving `<project-root>`, the lookup order (user's instruction → profile → memory → default), the entry format, migrating a legacy folder, and what must never be stored. If that skill is not available: use the paths below inside the current project (never the skill's own folder), read a profile before memory, and move the legacy folder to the current path the first time you find it, or keep using it if it cannot be moved.
 
-```
-<project-root>/.agents/contexts/agency/sales-quotation/MEMORY.md
-```
-
-Take `<project-root>` as the root of the project you're currently working in — never the skill's own folder, so this works the same whether the skill is installed locally or globally. Create the folder and file if they don't exist yet; don't wait for one to already be there. Re-derive `<project-root>` whenever the active project changes within a session.
-
-**Legacy location (migrate on encounter).** Before this skill was renamed, it stored the same data under an older folder name:
-
-- `<project-root>/.agents/contexts/writing-quotations/` → `<project-root>/.agents/contexts/agency/sales-quotation/`
-
-Check for the legacy folder every time you resolve the path above:
-
-- **Only the legacy folder exists** — move it to the new path (use `git mv` when the file is tracked, otherwise a plain move), then read and write the new path from then on. Tell the user in one line that you migrated it.
-- **Both exist** — the new path wins. Copy across any entries that only the legacy file has, then delete the legacy file.
-- **Migration isn't possible** (read-only filesystem, the user declines, or another tool still depends on the legacy path) — keep reading **and writing** the legacy path for now, and say so. Retry the migration the next time the skill runs.
-- **Never create a fresh file at the new path while an unmigrated legacy file exists** — that would hide the saved values and make you re-ask for them.
+| Kind | Path | Used for |
+|---|---|---|
+| Memory | `<project-root>/.agents/contexts/agency/sales-quotation/MEMORY.md` | The values below |
+| Profile | `<project-root>/.agents/contexts/profiles/<pack>/sales-quotation/PROFILE.md` | Optional team rules (for example a fixed quotation language or house pricing variables); they win over memory |
+| Legacy memory folder | `<project-root>/.agents/contexts/writing-quotations/` | Migrate on encounter |
 
 Store:
 

@@ -8,7 +8,7 @@ Every Notion operation in one task — reading an existing page, creating a new 
 
 Pick the integration in this order, before writing anything:
 
-1. **The one the profile names** (see `profile.md`), when there is a profile and it names one.
+1. **The one the profile names** (see the `context-management` skill), when there is a profile and it names one.
 2. **`notion-cli`** (the `ntn` command), when it runs and is signed in (it uses `NOTION_API_TOKEN` if set, otherwise `ntn login`).
 3. **A connected Notion connector** (its `notion-*` tools), when one is available in the session.
 4. **None available** — offer to install `notion-cli` with `curl -fsSL https://ntn.dev | bash` (and its skill with `npx skills add https://github.com/makenotion/skills.git --skill notion-cli`). If the user declines, stop and ask how they'd like the guide published instead.
@@ -19,7 +19,7 @@ Say which integration you used in the report.
 
 Before creating or updating any Notion page for a user guide:
 
-1. **Check `MEMORY.md`** at `<project-root>/.agents/contexts/agency/docs-user-documentation/MEMORY.md` (see Memory Location in `SKILL.md`) for a matching entry — one that names the guide, feature, or product area you're about to write about.
+1. **Check `MEMORY.md`** at `<project-root>/.agents/contexts/agency/docs-user-documentation/MEMORY.md` (see the storage section in `SKILL.md`) for a matching entry — one that names the guide, feature, or product area you're about to write about.
 2. **If a matching entry exists**, use the page/URL it records as the write target. Confirm with the user only if the request is ambiguous about which guide this is.
 3. **If no matching entry exists**, do not guess a page, workspace, or parent based on naming similarity, recent activity, or search results. Stop and ask the user explicitly which Notion page (or parent page, for a new page) to write to.
 

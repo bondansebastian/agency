@@ -1,7 +1,7 @@
 ---
 name: docs-user-documentation
 description: "Use whenever the user asks to write, create, draft, or update a guide, documentation, user manual, help center article, how-to article, or any end-user-facing documentation for an application or feature, or asks for a user manual video, tutorial video, walkthrough video, or to re-record one after the app changed — covers plain, non-technical business language for a non-technical end-user audience, step-by-step screenshots, captioned screen-recording videos, publishing to Notion, and applying a brand profile (credit, look, language, music) when the project provides one. Never references ticket numbers, JIRA IDs, feature flags, internal service/class/table names, or other internal identifiers. Not for API or developer docs."
-version: 2.0.0
+version: 2.1.0
 ---
 
 # User Documentation Skill
@@ -34,13 +34,13 @@ Explain what the reader can **do** and **see** (buttons, screens, fields, outcom
 
 This skill holds the method. Everything that belongs to one team or brand (credit and watermark, cover look, fixed language, labels, music, where to publish) comes from a **profile**, never from this skill.
 
-**Before anything else, look for a profile** as described in `references/profile.md`:
+**Before anything else, look for a profile**, following the `context-management` skill:
 
-1. `<project-root>/.agents/profiles/<pack>/docs-user-documentation/PROFILE.md` — a profile pack mounted in the project (often a git submodule).
-2. `~/.agents/profiles/<pack>/docs-user-documentation/PROFILE.md` — a profile for every project on this machine.
+1. `<project-root>/.agents/contexts/profiles/<pack>/docs-user-documentation/PROFILE.md` — a profile pack mounted in the project (often a git submodule).
+2. `~/.agents/contexts/profiles/<pack>/docs-user-documentation/PROFILE.md` — a profile for every project on this machine.
 3. None found — work without one: no credit, no watermark, no music, the default look, and the language rule below.
 
-When a profile exists, read its `PROFILE.md` first and follow it. A profile's fixed rules win over this skill's defaults and over `MEMORY.md`; only an explicit instruction from the user in this conversation wins over the profile. If the project declares a pack but its folder is empty (a submodule that was not fetched), do not fall back to "no profile" — see `references/profile.md`.
+When a profile exists, read its `PROFILE.md` first and follow it. A profile's fixed rules win over this skill's defaults and over `MEMORY.md`; only an explicit instruction from the user in this conversation wins over the profile. If the project declares a pack but its folder is empty (a submodule that was not fetched), fetch it; if that fails, stop and tell the user — never fall back to "no profile" silently. What this skill reads from a profile is in `references/profile.md`.
 
 ---
 
@@ -57,43 +57,26 @@ The reader, language, core rules and internal-context rules below apply to both 
 
 ## Where This Skill Stores Data: Contexts vs. Credentials, Always Per-Project
 
-This skill checks and saves data in two **separate** fixed locations inside the **current project** — never inside the skill's own folder, so it doesn't matter whether this skill is installed locally inside the project or globally in a shared/home-directory location shared across many projects:
+**Follow the `context-management` skill (`/agency:context-management`) for where and how**: resolving `<project-root>`, the lookup order (user's instruction → profile → memory → default), the entry format, migrating a legacy folder, and what must never be stored. If that skill is not available: use the paths below inside the current project (never the skill's own folder), read a profile before memory, and move the legacy folder to the current path the first time you find it, or keep using it if it cannot be moved.
 
-- **Contexts** (non-sensitive: language preference, Notion targets/structure) — `MEMORY.md` in:
-  ```
-  <project-root>/.agents/contexts/agency/docs-user-documentation/MEMORY.md
-  ```
-- **Credentials** (sensitive: saved login credentials) — in:
-  ```
-  <project-root>/.agents/credentials/agency/docs-user-documentation/
-  ```
+| Kind | Path | Used for |
+|---|---|---|
+| Memory | `<project-root>/.agents/contexts/agency/docs-user-documentation/MEMORY.md` | Language preference, Notion targets and structure, the chosen profile pack |
+| Profile | `<project-root>/.agents/contexts/profiles/<pack>/docs-user-documentation/PROFILE.md` | Brand, fixed language, labels, look, music, publishing (see `references/profile.md`) |
+| Credentials | `<project-root>/.agents/credentials/agency/docs-user-documentation/CREDENTIALS.md` | Saved logins for capturing screens (see `references/handling-authentication.md`) |
+| Legacy folders | `<project-root>/.agents/contexts/writing-user-guide/` and `<project-root>/.agents/credentials/writing-user-guide/` | Migrate on encounter |
 
-Take `<project-root>` as the root of the project you're currently working in. Create either directory (and the file inside it) if it doesn't exist yet — don't wait for one to already be there.
-
-**Keep these strictly separate.** Never write login credentials into the contexts `MEMORY.md`, and never write language/Notion preferences into the credentials folder — see `references/handling-authentication.md` for the credentials file's format. The credentials folder holds secrets and must never be committed to git: before writing to it for the first time in a project, check that the project's `.gitignore` excludes `.agents/credentials/` (or at least `.agents/credentials/agency/docs-user-documentation/`), and add an entry if it's missing.
-
-**Legacy location (migrate on encounter).** Before this skill was renamed, it stored the same data under an older folder name:
-
-- `<project-root>/.agents/contexts/writing-user-guide/` → `<project-root>/.agents/contexts/agency/docs-user-documentation/`
-- `<project-root>/.agents/credentials/writing-user-guide/` → `<project-root>/.agents/credentials/agency/docs-user-documentation/`
-
-Check for the legacy folder every time you resolve the path above:
-
-- **Only the legacy folder exists** — move it to the new path (use `git mv` when the file is tracked, otherwise a plain move), then read and write the new path from then on. Tell the user in one line that you migrated it.
-- **Both exist** — the new path wins. Copy across any entries that only the legacy file has, then delete the legacy file.
-- **Migration isn't possible** (read-only filesystem, the user declines, or another tool still depends on the legacy path) — keep reading **and writing** the legacy path for now, and say so. Retry the migration the next time the skill runs.
-- **Never create a fresh file at the new path while an unmigrated legacy file exists** — that would hide the saved values and make you re-ask for them.
-- **Credentials:** the legacy credentials folder is normally git-ignored, so move it with a plain move, never `git mv` or `git add`. Before moving, make sure `.gitignore` covers the new path (`.agents/credentials/` or `.agents/credentials/agency/docs-user-documentation/`); if it only names the legacy folder, add the new entry first.
+**Keep memory and credentials strictly separate.** Never write login credentials into `MEMORY.md`, and never write language or Notion preferences into the credentials folder. The credentials folder holds secrets and must never be committed to git: before writing to it for the first time in a project, check that the project's `.gitignore` excludes `.agents/credentials/`, and add an entry if it's missing.
 
 **Checking order when this skill is invoked:** check the contexts `MEMORY.md` first (language preference, Notion target). Only check the credentials folder if authentication actually turns out to be necessary (e.g. a login page blocks screenshot capture) — don't check it proactively.
 
-Every `MEMORY.md` reference in this document and in `references/language-preference.md` and `references/writing-to-notion.md` means the contexts path above. Every credentials reference in `references/handling-authentication.md` means the credentials path above. Re-derive `<project-root>` whenever the active project changes within a session — never reuse a previous project's files.
+Every `MEMORY.md` reference in this document and in `references/language-preference.md` and `references/publishing-to-notion.md` means the contexts path above. Every credentials reference in `references/handling-authentication.md` means the credentials path above. Re-derive `<project-root>` whenever the active project changes within a session — never reuse a previous project's files.
 
 ---
 
 ## Language
 
-Before drafting any content, determine what language the guide should be written in. **If a profile fixes the language, use it and skip the rest of this rule.** Otherwise see `references/language-preference.md` for the full rule: if the user hasn't already stated a language, check this skill's `MEMORY.md` (resolved per the Memory Location section above) for a remembered default first; if none is saved, ask the user, then save their answer to `MEMORY.md` so future guides use it automatically without asking again.
+Before drafting any content, determine what language the guide should be written in. **If a profile fixes the language, use it and skip the rest of this rule.** Otherwise see `references/language-preference.md` for the full rule: if the user hasn't already stated a language, check this skill's `MEMORY.md` (resolved per the storage section above) for a remembered default first; if none is saved, ask the user, then save their answer to `MEMORY.md` so future guides use it automatically without asking again.
 
 ---
 
@@ -156,7 +139,7 @@ For a video, follow `references/video.md` from start to finish: plan the story, 
 
 ## Publishing to Notion
 
-If the guide or manual page is being published or updated in Notion, never assume which page to write to. See `references/publishing-to-notion.md` for the full rule: check this skill's `MEMORY.md` (resolved per the Memory Location section above) for a known target page first, ask the user explicitly when none is found, and offer to save their answer to `MEMORY.md` for next time. Once the target is known, organize content using the default structure — project page → "User Manual" page → one sub-page per module — unless the profile, `MEMORY.md` or the user sets a different structure.
+If the guide or manual page is being published or updated in Notion, never assume which page to write to. See `references/publishing-to-notion.md` for the full rule: check this skill's `MEMORY.md` (resolved per the storage section above) for a known target page first, ask the user explicitly when none is found, and offer to save their answer to `MEMORY.md` for next time. Once the target is known, organize content using the default structure — project page → "User Manual" page → one sub-page per module — unless the profile, `MEMORY.md` or the user sets a different structure.
 
 **Use one Notion integration per task, never two.** Take the one the profile names; otherwise `notion-cli` (the `ntn` command) when it is installed and signed in; otherwise a connected Notion connector. Mixing integrations against the same pages risks conflicting page IDs, formatting, or auth scope. See `references/publishing-to-notion.md`.
 
@@ -166,7 +149,7 @@ If the guide or manual page is being published or updated in Notion, never assum
 
 | Situation | Action |
 |---|---|
-| Starting any guide-writing task | Resolve `<project-root>/.agents/contexts/agency/docs-user-documentation/MEMORY.md` (see Memory Location section — same path regardless of install location), then check it for a remembered language preference before drafting; if none, ask the user and save their answer |
+| Starting any guide-writing task | Resolve `<project-root>/.agents/contexts/agency/docs-user-documentation/MEMORY.md` (same path regardless of install location), then check it for a remembered language preference before drafting; if none, ask the user and save their answer |
 | `.agents/contexts/agency/docs-user-documentation/` doesn't exist yet in this project | Create the folder and `MEMORY.md` inside it — don't wait for one to already be there |
 | Writing steps for a feature | Describe screens, buttons, and outcomes the user sees — not the backend flow, as a numbered step-by-step sequence with a screenshot per step where possible |
 | No access to the app/assets to capture a real screenshot | Write the step in text and note a screenshot should be added — never fabricate one |
@@ -176,7 +159,8 @@ If the guide or manual page is being published or updated in Notion, never assum
 | Writing to the credentials folder for the first time in a project | Check the project's `.gitignore` excludes `.agents/credentials/`; add an entry if missing — this folder must never be committed |
 | Reading or writing anything in Notion | One integration per task: the profile's choice, else `notion-cli` (`ntn`) if installed and signed in, else a connected Notion connector |
 | No Notion integration available at all | Offer to install `notion-cli` per `curl -fsSL https://ntn.dev \| bash`; if the user declines, ask how they want the guide published |
-| Starting any task | Look for a profile (`references/profile.md`) and read its `PROFILE.md` before drafting |
+| Starting any task | Look for a profile (per the `context-management` skill) and read its `PROFILE.md` before drafting |
+| Reading or saving any remembered value, profile or credential | Follow the `context-management` skill; this skill only names its own keys and paths |
 | Project declares a profile pack but the folder is empty | Fetch it (`git submodule update --init <path>`); if that fails, stop and tell the user — never fall back to the neutral look silently |
 | Asked for a video, tutorial, walkthrough or re-recording | Follow `references/video.md`; pass the profile's `profile.json` as `--profile` |
 | A scenario for the feature already exists in `scripts/manual-video/scenarios/` | Re-run it and change only what changed in the UI |
