@@ -1,7 +1,7 @@
 // A scenario for one feature. Copy this file, rename it after the feature and fill it in.
-// Write every caption and card in the guide's language (the profile's, when there is one).
+// Write every caption and card in the guide's language (the brand's, when there is one).
 // Run: node record.mjs --scenario <this file> --url <app url> [--serve "<start command>"]
-//        [--profile <pack>/docs-user-documentation/profile.json]
+//        [--brand .agents/contexts/agency/@<name>/docs-user-documentation/brand.json]
 
 export const meta = {
   /** File name of the mp4 (and of the video in the manual). */
@@ -14,7 +14,7 @@ export const meta = {
 export default async function play(rec) {
   const { page, caption, click, type, move, sleep } = rec;
 
-  // 1. The cover. Always first. The profile's credit, when it has one, is added by rec.cover.
+  // 1. The cover. Always first. The brand's credit, when it has one, is added by rec.cover.
   await rec.cover(
     {
       eyebrow: "APP NAME · USER GUIDE",

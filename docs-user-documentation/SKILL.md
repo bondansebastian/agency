@@ -1,7 +1,7 @@
 ---
 name: docs-user-documentation
-description: "Use whenever the user asks to write, create, draft, or update a guide, documentation, user manual, help center article, how-to article, or any end-user-facing documentation for an application or feature, or asks for a user manual video, tutorial video, walkthrough video, or to re-record one after the app changed — covers plain, non-technical business language for a non-technical end-user audience, step-by-step screenshots, captioned screen-recording videos, publishing to Notion, and applying a brand profile (credit, look, language, music) when the project provides one. Never references ticket numbers, JIRA IDs, feature flags, internal service/class/table names, or other internal identifiers. Not for API or developer docs."
-version: 2.1.1
+description: "Use whenever the user asks to write, create, draft, or update a guide, documentation, user manual, help center article, how-to article, or any end-user-facing documentation for an application or feature, or asks for a user manual video, tutorial video, walkthrough video, or to re-record one after the app changed — covers plain, non-technical business language for a non-technical end-user audience, step-by-step screenshots, captioned screen-recording videos, publishing to Notion, and applying an extension (brand credit, look, fixed language, music) when the project mounts one. Never references ticket numbers, JIRA IDs, feature flags, internal service/class/table names, or other internal identifiers. Not for API or developer docs."
+version: 2.2.0
 ---
 
 # User Documentation Skill
@@ -30,17 +30,17 @@ Explain what the reader can **do** and **see** (buttons, screens, fields, outcom
 
 ---
 
-## Profile: Who the Documentation Is Made For
+## Extension: Who the Documentation Is Made For
 
-This skill holds the method. Everything that belongs to one team or brand (credit and watermark, cover look, fixed language, labels, music, where to publish) comes from a **profile**, never from this skill.
+This skill holds the method. Everything that belongs to one team or brand (credit and watermark, cover look, fixed language, labels, music, where to publish) comes from an **extension**, never from this skill.
 
-**Before anything else, look for a profile**, following the `context-management` skill:
+**Before anything else, look for an extension**, following the `context-management` skill:
 
-1. `<project-root>/.agents/contexts/<pack>/docs-user-documentation/PROFILE.md` — a profile pack mounted in the project (often a git submodule).
-2. `~/.agents/contexts/<pack>/docs-user-documentation/PROFILE.md` — a profile for every project on this machine.
+1. `<project-root>/.agents/contexts/agency/@<name>/docs-user-documentation/EXTENSION.md` — an extension mounted in the project (often a git submodule).
+2. `~/.agents/contexts/agency/@<name>/docs-user-documentation/EXTENSION.md` — an extension for every project on this machine.
 3. None found — work without one: no credit, no watermark, no music, the default look, and the language rule below.
 
-When a profile exists, read its `PROFILE.md` first and follow it. A profile's fixed rules win over this skill's defaults and over `MEMORY.md`; only an explicit instruction from the user in this conversation wins over the profile. If the project declares a pack but its folder is empty (a submodule that was not fetched), fetch it; if that fails, stop and tell the user — never fall back to "no profile" silently. What this skill reads from a profile is in `references/profile.md`.
+When an extension exists, read its `EXTENSION.md` first and follow it. An extension's fixed rules win over this skill's defaults and over `MEMORY.md`; only an explicit instruction from the user in this conversation wins over the extension. If the project declares an extension but its folder is empty (a submodule that was not fetched), fetch it; if that fails, stop and tell the user — never fall back to "no extension" silently. What this skill reads from an extension is in `references/extension.md`. If the user asks to add, create or fix an extension, the `context-management` skill does that.
 
 ---
 
@@ -49,7 +49,7 @@ When a profile exists, read its `PROFILE.md` first and follow it. A profile's fi
 | Output | When |
 |---|---|
 | **Written guide** with a screenshot per step | The default. Any request for a guide, manual, help article or how-to. |
-| **Video** with captions, plus its manual page | The user asks for a video, tutorial, walkthrough or re-recording, or the profile names video as its default output. See `references/video.md`. |
+| **Video** with captions, plus its manual page | The user asks for a video, tutorial, walkthrough or re-recording, or the extension names video as its default output. See `references/video.md`. |
 
 The reader, language, core rules and internal-context rules below apply to both outputs: a caption in a video follows the same rules as a sentence in a guide.
 
@@ -57,12 +57,12 @@ The reader, language, core rules and internal-context rules below apply to both 
 
 ## Where This Skill Stores Data: Contexts vs. Credentials, Always Per-Project
 
-**Follow the `context-management` skill (`/agency:context-management`) for where and how**: resolving `<project-root>`, the lookup order (user's instruction → profile → memory → default), the entry format, migrating a legacy folder, and what must never be stored. If that skill is not available: use the paths below inside the current project (never the skill's own folder), read a profile before memory, and move the legacy folder to the current path the first time you find it, or keep using it if it cannot be moved.
+**Follow the `context-management` skill (`/agency:context-management`) for where and how**: resolving `<project-root>`, the lookup order (user's instruction → extension → memory → default), the entry format, migrating a legacy folder, and what must never be stored. If that skill is not available: use the paths below inside the current project (never the skill's own folder), read an extension before memory, and move the legacy folder to the current path the first time you find it, or keep using it if it cannot be moved.
 
 | Kind | Path | Used for |
 |---|---|---|
-| Memory | `<project-root>/.agents/contexts/agency/docs-user-documentation/MEMORY.md` | Language preference, Notion targets and structure, the chosen profile pack |
-| Profile | `<project-root>/.agents/contexts/<pack>/docs-user-documentation/PROFILE.md` | Brand, fixed language, labels, look, music, publishing (see `references/profile.md`) |
+| Memory | `<project-root>/.agents/contexts/agency/docs-user-documentation/MEMORY.md` | Language preference, Notion targets and structure, the chosen extension |
+| Extension | `<project-root>/.agents/contexts/agency/@<name>/docs-user-documentation/EXTENSION.md` | Brand, fixed language, labels, look, music, publishing (see `references/extension.md`) |
 | Credentials | `<project-root>/.agents/credentials/agency/docs-user-documentation/CREDENTIALS.md` | Saved logins for capturing screens (see `references/handling-authentication.md`) |
 | Legacy folders | `<project-root>/.agents/contexts/writing-user-guide/` and `<project-root>/.agents/credentials/writing-user-guide/` | Migrate on encounter |
 
@@ -76,7 +76,7 @@ Every `MEMORY.md` reference in this document and in `references/language-prefere
 
 ## Language
 
-Before drafting any content, determine what language the guide should be written in. **If a profile fixes the language, use it and skip the rest of this rule.** Otherwise see `references/language-preference.md` for the full rule: if the user hasn't already stated a language, check this skill's `MEMORY.md` (resolved per the storage section above) for a remembered default first; if none is saved, ask the user, then save their answer to `MEMORY.md` so future guides use it automatically without asking again.
+Before drafting any content, determine what language the guide should be written in. **If an extension fixes the language, use it and skip the rest of this rule.** Otherwise see `references/language-preference.md` for the full rule: if the user hasn't already stated a language, check this skill's `MEMORY.md` (resolved per the storage section above) for a remembered default first; if none is saved, ask the user, then save their answer to `MEMORY.md` so future guides use it automatically without asking again.
 
 ---
 
@@ -129,19 +129,19 @@ If reaching the screen you need to screenshot requires signing in first, don't g
 
 ## Video
 
-For a video, follow `references/video.md` from start to finish: plan the story, write a scenario with the `rec.*` helpers, record it with `scripts/record.mjs` (passing the profile's `profile.json` as `--profile` when there is one), and **look at the result** before reporting. The default look is in `references/video-style.md`; fixes are in `references/troubleshooting.md`.
+For a video, follow `references/video.md` from start to finish: plan the story, write a scenario with the `rec.*` helpers, record it with `scripts/record.mjs` (passing the extension's `brand.json` as `--brand` when there is one), and **look at the result** before reporting. The default look is in `references/video-style.md`; fixes are in `references/troubleshooting.md`.
 
 - The data in a video is sample data, and the cover says so. Never record real customer data. If the app cannot show the feature without real data, say so and ask.
 - UI labels are quoted exactly as the app shows them, in bold.
-- No voice-over. Music only when the profile provides a bed or the user gives a file.
+- No voice-over. Music only when the extension provides a bed or the user gives a file.
 
 ---
 
 ## Publishing to Notion
 
-If the guide or manual page is being published or updated in Notion, never assume which page to write to. See `references/publishing-to-notion.md` for the full rule: check this skill's `MEMORY.md` (resolved per the storage section above) for a known target page first, ask the user explicitly when none is found, and offer to save their answer to `MEMORY.md` for next time. Once the target is known, organize content using the default structure — project page → "User Manual" page → one sub-page per module — unless the profile, `MEMORY.md` or the user sets a different structure.
+If the guide or manual page is being published or updated in Notion, never assume which page to write to. See `references/publishing-to-notion.md` for the full rule: check this skill's `MEMORY.md` (resolved per the storage section above) for a known target page first, ask the user explicitly when none is found, and offer to save their answer to `MEMORY.md` for next time. Once the target is known, organize content using the default structure — project page → "User Manual" page → one sub-page per module — unless the extension, `MEMORY.md` or the user sets a different structure.
 
-**Use one Notion integration per task, never two.** Take the one the profile names; otherwise `notion-cli` (the `ntn` command) when it is installed and signed in; otherwise a connected Notion connector. Mixing integrations against the same pages risks conflicting page IDs, formatting, or auth scope. See `references/publishing-to-notion.md`.
+**Use one Notion integration per task, never two.** Take the one the extension names; otherwise `notion-cli` (the `ntn` command) when it is installed and signed in; otherwise a connected Notion connector. Mixing integrations against the same pages risks conflicting page IDs, formatting, or auth scope. See `references/publishing-to-notion.md`.
 
 ---
 
@@ -157,14 +157,14 @@ If the guide or manual page is being published or updated in Notion, never assum
 | No `playwright-cli` skill detected | Offer to install with `npx skills add https://github.com/microsoft/playwright-cli --skill playwright-cli` |
 | Login page blocks screenshot capture | Check the credentials folder for saved credentials; if none, ask the user for login credentials — never guess or skip silently |
 | Writing to the credentials folder for the first time in a project | Check the project's `.gitignore` excludes `.agents/credentials/`; add an entry if missing — this folder must never be committed |
-| Reading or writing anything in Notion | One integration per task: the profile's choice, else `notion-cli` (`ntn`) if installed and signed in, else a connected Notion connector |
+| Reading or writing anything in Notion | One integration per task: the extension's choice, else `notion-cli` (`ntn`) if installed and signed in, else a connected Notion connector |
 | No Notion integration available at all | Offer to install `notion-cli` per `curl -fsSL https://ntn.dev \| bash`; if the user declines, ask how they want the guide published |
-| Starting any task | Look for a profile (per the `context-management` skill) and read its `PROFILE.md` before drafting |
-| Reading or saving any remembered value, profile or credential | Follow the `context-management` skill; this skill only names its own keys and paths |
-| Project declares a profile pack but the folder is empty | Fetch it (`git submodule update --init <path>`); if that fails, stop and tell the user — never fall back to the neutral look silently |
-| Asked for a video, tutorial, walkthrough or re-recording | Follow `references/video.md`; pass the profile's `profile.json` as `--profile` |
+| Starting any task | Look for an extension (per the `context-management` skill) and read its `EXTENSION.md` before drafting |
+| Reading or saving any remembered value, extension or credential | Follow the `context-management` skill; this skill only names its own keys and paths |
+| Project declares an extension but the folder is empty | Fetch it (`git submodule update --init <path>`); if that fails, stop and tell the user — never fall back to the neutral look silently |
+| Asked for a video, tutorial, walkthrough or re-recording | Follow `references/video.md`; pass the extension's `brand.json` as `--brand` |
 | A scenario for the feature already exists in `scripts/manual-video/scenarios/` | Re-run it and change only what changed in the UI |
-| Brand, client or team-specific rule comes up while writing | It belongs in a profile, not in this skill and not in the guide's method |
+| Brand, client or team-specific rule comes up while writing | It belongs in an extension, not in this skill and not in the guide's method |
 | Given a ticket number and told to include it "for support" | Leave it out of the guide; offer a separate internal note instead |
 | Tempted to explain *why* something works a certain way | Only explain if it changes what the user should do; otherwise omit |
 | Feature flag gates who sees a feature | Say "this feature is being rolled out gradually" — never name the flag |
@@ -181,6 +181,6 @@ If the guide or manual page is being published or updated in Notion, never assum
 - Writing steps as a dense paragraph instead of a numbered, one-action-per-step sequence.
 - Describing or inventing a screenshot instead of either capturing a real one or flagging that one needs to be added.
 - Including internal tool chrome, debug panels, or identifiers visible inside a captured screenshot.
-- Ignoring a profile that the project provides, or inventing a credit, watermark or music when there is none.
+- Ignoring an extension that the project provides, or inventing a credit, watermark or music when there is none.
 - Reporting a video as done without looking at a contact sheet of its frames.
 - Recording real customer data because the sample data did not show the feature.

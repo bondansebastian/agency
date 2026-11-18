@@ -2,7 +2,7 @@
 // Shared pieces of the user documentation videos: the on-screen overlay (caption bar, cursor, click
 // ripple, title cards, cover and optional credit watermark) and the helpers a scenario uses to drive a
 // web page. A scenario only says what to click and what to say. Everything brand-specific (credit text,
-// cover look, locale, music) comes from a profile (see references/profile.md), never from this file.
+// cover look, locale, music) comes from an extension's brand.json (see references/extension.md), never from this file.
 import { spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, readdirSync, renameSync, rmSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -29,24 +29,24 @@ async function loadChromium() {
 
 export const WIDTH = 1280;
 export const HEIGHT = 720;
-/** Without a profile: no credit, no watermark, no music, the default look. */
-export const DEFAULT_PROFILE = { credit: "", locale: "en-US", css: "", music: null };
+/** Without brand settings: no credit, no watermark, no music, the default look. */
+export const DEFAULT_BRAND = { credit: "", locale: "en-US", css: "", music: null };
 
 /**
- * Reads a profile.json (see references/profile.md). Fields, all optional:
+ * Reads an extension's brand.json (see references/extension.md). Fields, all optional:
  *   credit   maker credit, shown as a pill on the cover and as a small watermark on every other frame
  *   locale   browser locale of the recording, for example "id-ID"
  *   cssFile  a CSS file appended to the overlay stylesheet (restyle the cover with `#demo-card.cover ...`)
  *   music    an audio file mixed quietly under the video
- * `cssFile` and `music` are resolved against the folder of the profile file.
+ * `cssFile` and `music` are resolved against the folder of the brand file.
  */
-export function loadProfile(file) {
-  if (!file) return { ...DEFAULT_PROFILE };
+export function loadBrand(file) {
+  if (!file) return { ...DEFAULT_BRAND };
   const path = resolve(file);
   const raw = JSON.parse(readFileSync(path, "utf8"));
   const here = dirname(path);
   return {
-    ...DEFAULT_PROFILE,
+    ...DEFAULT_BRAND,
     ...raw,
     css: raw.cssFile ? readFileSync(resolve(here, raw.cssFile), "utf8") : (raw.css ?? ""),
     music: raw.music ? resolve(here, raw.music) : null,
@@ -125,7 +125,7 @@ function installOverlay({ credit, css }) {
   );
 
   // Small muted watermark, bottom right (clear of the caption bar and of the dialog buttons).
-  // Only when the profile has a credit.
+  // Only when the brand has a credit.
   const wm = credit
     ? make(
         "demo-wm",
@@ -201,8 +201,8 @@ function installOverlay({ credit, css }) {
  * Opens the page in a recording browser context and returns the helpers a scenario uses.
  * `finish()` closes everything and returns the path of the recorded webm.
  */
-export async function startRecording({ url, outDir, readySelector = "body", profile = DEFAULT_PROFILE }) {
-  const { credit, css, locale } = { ...DEFAULT_PROFILE, ...profile };
+export async function startRecording({ url, outDir, readySelector = "body", brand = DEFAULT_BRAND }) {
+  const { credit, css, locale } = { ...DEFAULT_BRAND, ...brand };
   rmSync(outDir, { recursive: true, force: true });
   mkdirSync(outDir, { recursive: true });
   // DOCS_CHROMIUM: use this browser instead of Playwright's own (see references/troubleshooting.md).
@@ -260,7 +260,7 @@ export async function startRecording({ url, outDir, readySelector = "body", prof
       await demo("card", html, false);
     },
     /**
-     * The cover card, with the profile's credit when it has one. Every video starts with one.
+     * The cover card, with the brand's credit when it has one. Every video starts with one.
      * `eyebrow` is the small line on top, `note` the small line below (for example "data contoh").
      */
     async showCover({ eyebrow, title, subtitle, note = "" }) {
@@ -305,7 +305,7 @@ export async function startRecording({ url, outDir, readySelector = "body", prof
 
 /**
  * webm to a small H.264 mp4 (the first 0.8 s, a blank page while it loads, is cut).
- * With `music` (a music bed, normally from the profile) the music is mixed under the finished video.
+ * With `music` (a music bed, normally from the brand) the music is mixed under the finished video.
  */
 export function toMp4(webm, mp4, music) {
   const run = spawnSync(
