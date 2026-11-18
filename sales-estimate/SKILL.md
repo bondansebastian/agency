@@ -1,7 +1,7 @@
 ---
-name: estimate-project
-description: "Use when creating, naming, renaming, or filling in the metadata table of a project estimate document under docs/estimates/ — covers date-prefixed filenames keyed to the Date of assessment field, the required AI Estimate metadata row (never a separate Estimate or Human Estimate row), and the required Scope/Assumptions/Breakdown document structure with a unique index on every section and sub-section (traceable, but not mirrored index-for-index, from the client quotation's Deliverables groups via back-references). Always asks the client name fresh for every new estimate rather than remembering it. Always trigger when the user asks to estimate a project, size up a task, scope out how long something will take, or write/draft/create an estimate document — even if the request doesn't mention filenames, metadata, or docs/estimates/ directly. For turning the estimate into a client-facing price or quotation, tracking pricing variables, or Zoho Books estimates, see the writing-quotations skill instead."
-version: 1.5.0
+name: sales-estimate
+description: "Use when creating, naming, renaming, or filling in the metadata table of a project estimate document under docs/estimates/ — covers date-prefixed filenames keyed to the Date of assessment field, the required AI Estimate metadata row (never a separate Estimate or Human Estimate row), and the required Scope/Assumptions/Breakdown document structure with a unique index on every section and sub-section (traceable, but not mirrored index-for-index, from the client quotation's Deliverables groups via back-references). Always asks the client name fresh for every new estimate rather than remembering it. Always trigger when the user asks to estimate a project, size up a task, scope out how long something will take, or write/draft/create an estimate document — even if the request doesn't mention filenames, metadata, or docs/estimates/ directly. For turning the estimate into a client-facing price or quotation, tracking pricing variables, or Zoho Books estimates, see the sales-quotation skill instead."
+version: 1.6.0
 ---
 
 # Estimate Project Skill
@@ -16,9 +16,9 @@ Load this skill when you are:
 
 **This skill must always trigger whenever the user asks the agent to estimate, scope, or size up a project or task** — even if the request doesn't mention filenames, metadata, or `docs/estimates/` directly.
 
-Once the `AI Estimate` is written, turning it into a client-facing price or quotation, tracking pricing variables, or creating/updating a Zoho Books estimate is covered by the **writing-quotations** skill, not this one.
+Once the `AI Estimate` is written, turning it into a client-facing price or quotation, tracking pricing variables, or creating/updating a Zoho Books estimate is covered by the **sales-quotation** skill, not this one.
 
-This skill does not remember the client name (or any other context) across invocations — always ask for it fresh when starting a new estimate, since a project/repo can involve more than one client or project over time. See **writing-quotations**' own context rules if you need the pattern for what genuinely is safe to remember (pricing variables) versus what isn't (client/project identity).
+This skill does not remember the client name (or any other context) across invocations — always ask for it fresh when starting a new estimate, since a project/repo can involve more than one client or project over time. See **sales-quotation**'s own context rules if you need the pattern for what genuinely is safe to remember (pricing variables) versus what isn't (client/project identity).
 
 ---
 
@@ -44,7 +44,7 @@ Every estimate document must follow this structured format, in order. **Every se
 1. **Scope** — what work is being estimated, in plain terms.
 2. **Assumptions** — see [Assumptions](#assumptions) below. Required even if short.
 3. **Breakdown** — the tasks or phases that make up the estimate, each with its own time figure, summing to the top-level `AI Estimate`. Each task/phase is a sub-section (`3.1`, `3.2`, …), and its own parts are nested further (`3.1.1`, `3.1.2`, …).
-4. **Pricing** (only when a client-facing quote is requested) — handled by the **writing-quotations** skill, not this one. Load it before writing a price or quotation.
+4. **Pricing** (only when a client-facing quote is requested) — handled by the **sales-quotation** skill, not this one. Load it before writing a price or quotation.
 
 Don't skip or reorder sections. A document missing an Assumptions section is incomplete, even if the metadata table and breakdown are otherwise correct.
 
@@ -54,7 +54,7 @@ Don't skip or reorder sections. A document missing an Assumptions section is inc
 - **Every** section and sub-section gets an index — including each individual assumption (`2.1`, `2.2`, …) and each breakdown item — except under the single sub-item rule below. No duplicate indices.
 - **Single sub-item rule:** a section with only one sub-item gets no sub-index — the sub-item's text *is* the section's description (e.g. `## 2 Assumptions` followed by the one assumption as plain text, not `2.1`). Sub-indices exist only when a section has two or more sub-items. When a later change adds a second item, the agent **must restructure that section**: the existing description becomes `x.1`, the new item becomes `x.2`. The same applies in reverse when removal leaves one item — but only for sections whose remaining item has no index cited elsewhere; otherwise keep the sub-index to avoid breaking references.
 - Indices are **stable**: when adding an item, take the next free index at that level; when removing one, don't renumber the others or reuse its index (note it as `3.2 (removed)` only if needed). References from confirmations, quotations, and Zoho Books must stay valid.
-- **The client quotation does not mirror this structure index-for-index** (see the **writing-quotations** skill) — it has its own fixed structure (`1` Lingkup Pekerjaan, `2` Deliverables, `3` Catatan, `4` Estimasi Waktu & Investasi), including sections with no equivalent here at all (`3.1 Keputusan Teknis`, `3.2 Perlu Konfirmasi` — this is also where quotation-side assumptions live, since the quotation has no standalone Assumptions section). Traceability instead runs through the quotation's `2.x` Deliverables groups: each one carries a back-reference in parentheses to the specific Breakdown item(s) here that it summarizes (e.g. quotation `2.1` `— (estimasi dari 3.1, 3.2)`), and one `2.x` group may summarize several Breakdown items at once — it is a back-reference, not a shared index. When this document's Breakdown items change in a way that affects a `2.x` group's back-reference, flag that the quotation needs the matching change.
+- **The client quotation does not mirror this structure index-for-index** (see the **sales-quotation** skill) — it has its own fixed structure (`1` Lingkup Pekerjaan, `2` Deliverables, `3` Catatan, `4` Estimasi Waktu & Investasi), including sections with no equivalent here at all (`3.1 Keputusan Teknis`, `3.2 Perlu Konfirmasi` — this is also where quotation-side assumptions live, since the quotation has no standalone Assumptions section). Traceability instead runs through the quotation's `2.x` Deliverables groups: each one carries a back-reference in parentheses to the specific Breakdown item(s) here that it summarizes (e.g. quotation `2.1` `— (estimasi dari 3.1, 3.2)`), and one `2.x` group may summarize several Breakdown items at once — it is a back-reference, not a shared index. When this document's Breakdown items change in a way that affects a `2.x` group's back-reference, flag that the quotation needs the matching change.
 
 ---
 
@@ -122,7 +122,7 @@ Every estimate document's metadata table must report an **AI Estimate** in place
 | Writing the document body | Follow Metadata → 1 Scope → 2 Assumptions → 3 Breakdown → 4 Pricing (if quoted), in that order, with a unique index on every section and sub-section |
 | Adding/removing an item | Next free index when adding; never renumber or reuse indices; flag the quotation if the change affects a `2.x` group's back-reference to this item |
 | Stating assumptions | List falsifiable conditions the estimate depends on, or note none exist |
-| Pricing the estimate for a client, or a Zoho Books estimate | Load the **writing-quotations** skill |
+| Pricing the estimate for a client, or a Zoho Books estimate | Load the **sales-quotation** skill |
 
 ## Common Mistakes
 
@@ -133,7 +133,7 @@ Every estimate document's metadata table must report an **AI Estimate** in place
 - Including both an `Estimate` row and an `AI Estimate` row, or adding a `Human Estimate` row.
 - Omitting the Assumptions section, or burying assumptions inside the breakdown instead of stating them up front.
 - Writing assumptions as vague hedges instead of falsifiable statements.
-- Writing a client-facing price or quotation directly in this skill instead of loading **writing-quotations** for the pricing formula and quotation style.
+- Writing a client-facing price or quotation directly in this skill instead of loading **sales-quotation** for the pricing formula and quotation style.
 - Giving a section a lone sub-item (`2.1` with no `2.2`) instead of making it the section description, or adding a second item without restructuring the section.
 - Leaving any section, sub-section, assumption, or breakdown item without an index, duplicating an index, or renumbering existing items so old references break.
 - Omitting a `2.x` back-reference in the quotation when a Breakdown item it summarizes changes, or expecting the quotation's top-level sections to match this document's (they don't — see Section Indexing).

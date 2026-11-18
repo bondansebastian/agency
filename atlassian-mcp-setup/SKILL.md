@@ -1,7 +1,7 @@
 ---
-name: install-atlassian-rovo-mcp
+name: atlassian-mcp-setup
 description: Setup and install guide for Atlassian Rovo MCP in IDE and agent environments. ALWAYS use this skill when the user asks to install, configure, fix authentication for, or use Atlassian Rovo MCP. Start by asking setup questions (project-local vs multi-project, OS/runtime, client) and then provide the matching install path with exact commands.
-version: 1.0.0
+version: 1.1.0
 license: MIT
 ---
 

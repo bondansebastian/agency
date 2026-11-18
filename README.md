@@ -18,50 +18,40 @@ Each skill lives in its own folder and contains a `SKILL.md` file with:
 
 ## Install with Claude Code (Plugin Marketplace)
 
-This repository is a [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces) (`.claude-plugin/marketplace.json`). Every skill is published as its own plugin, so you install only what you need.
+This repository is a [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces) (`.claude-plugin/marketplace.json`). All skills ship in a single plugin named `agency`, so every skill is invoked as `/agency:<skill>` and typing `/agency` lists them all.
 
-Add the marketplace once, then install skills by name:
+Add the marketplace once, then install the plugin:
 
 ````text
 /plugin marketplace add bondansebastian/agent-skills
-/plugin install jira@bondansebastian-skills
+/plugin install agency@bondansebastian-skills
 ````
 
-Or install any skill in one step (Claude Code 2.1.275 or later):
+Or in one step (Claude Code 2.1.275 or later):
 
 ````text
-/plugin install agent-instructor --marketplace bondansebastian/agent-skills
-/plugin install confluence-knowledge-base --marketplace bondansebastian/agent-skills
-/plugin install devops --marketplace bondansebastian/agent-skills
-/plugin install estimate-project --marketplace bondansebastian/agent-skills
-/plugin install install-atlassian-rovo-mcp --marketplace bondansebastian/agent-skills
-/plugin install jira --marketplace bondansebastian/agent-skills
-/plugin install laravel8-guidelines --marketplace bondansebastian/agent-skills
-/plugin install react-best-practices --marketplace bondansebastian/agent-skills
-/plugin install token-saver --marketplace bondansebastian/agent-skills
-/plugin install ui-ux-best-practices --marketplace bondansebastian/agent-skills
-/plugin install writing-quotations --marketplace bondansebastian/agent-skills
-/plugin install writing-user-guide --marketplace bondansebastian/agent-skills
+/plugin install agency --marketplace bondansebastian/agent-skills
 ````
 
 Update later with `/plugin marketplace update bondansebastian-skills`. Other agents can keep using the `npx skills add` commands in the catalog below.
 
+**Upgrading from the per-skill plugins:** the individual plugins (`jira`, `devops`, `writing-quotations`, …) no longer exist. Uninstall them and install `agency` instead. Skills were renamed domain-first (see the catalog), and `laravel8-guidelines` was removed. Per-project state keeps its original location (`.agents/contexts/jira/`, `.agents/contexts/writing-quotations/`, `.agents/contexts/writing-user-guide/`, `.agents/credentials/writing-user-guide/`), so existing memory files keep working.
+
 ## Skill Catalog
 
-| Skill | Description | Path | Install |
-|---|---|---|---|
-| 📚 Confluence Knowledge Base | Build and maintain a product-focused Confluence knowledge base that is accessible to design, engineering, sales, and support. | [confluence-knowledge-base/SKILL.md](confluence-knowledge-base/SKILL.md) | `npx skills add https://github.com/bondansebastian/agent-skills --skill confluence-knowledge-base` |
-| 🔌 Install Atlassian Rovo MCP | Guide users through Atlassian Rovo MCP installation with setup discovery first, then project-local or multi-project instructions tailored to OS/runtime (Windows, WSL, macOS, Linux). | [install-atlassian-rovo-mcp/SKILL.md](install-atlassian-rovo-mcp/SKILL.md) | `npx skills add https://github.com/bondansebastian/agent-skills --skill install-atlassian-rovo-mcp` |
-| 🧭 Jira | Natural-language Jira assistant (v1.0.6) for viewing, creating, and updating issues, supporting CLI and MCP backends; always sets a time estimate on the native Original Estimate field (agent-generated AI Estimate + human review estimate, the latter being a fixed 1-hour review unit scaled by a project human review time remembered in `.agents/contexts/jira/MEMORY.md`, defaulting to `1`), never in the description. (Forked from https://github.com/davila7/claude-code-templates/cli-tool/components/skills/ai-research/jira) | [jira/SKILL.md](jira/SKILL.md) | `npx skills add https://github.com/bondansebastian/agent-skills --skill jira` |
-| 🐘 Laravel 8.x – Coding Guidelines & Best Practices | Coding guidelines and best practices for Laravel 8.x projects covering Eloquent, routing, validation, security, testing, and queues. | [laravel8-guidelines/SKILL.md](laravel8-guidelines/SKILL.md) | `npx skills add https://github.com/bondansebastian/agent-skills --skill laravel8-guidelines` |
-| 🎨 UI/UX Best Practices | Ensure every clickable element gives visual feedback on hover; prefer smoothly animated micro-interactions, accessible motion preferences, and practical examples. | [ui-ux-best-practices/SKILL.md](ui-ux-best-practices/SKILL.md) | `npx skills add https://github.com/bondansebastian/agent-skills --skill ui-ux-best-practices` |
-| ⚛️ React Best Practices | Opinionated React component architecture: SRP-driven splits, colocation, state isolation, explicit props, re-exported types, naming conventions, and practical file-size targets. | [react-best-practices/SKILL.md](react-best-practices/SKILL.md) | `npx skills add https://github.com/bondansebastian/agent-skills --skill react-best-practices` |
-| 🧠 Agent Instructor | Refine or create AI/LLM agent instruction files (AGENTS.md, CLAUDE.md, copilot-instructions.md, .github/instructions) with zero information loss, machine-parsable structure, and token efficiency. | [agent-instructor/SKILL.md](agent-instructor/SKILL.md) | `npx skills add https://github.com/bondansebastian/agent-skills --skill agent-instructor` |
-| 📄 Estimate Project | Create, name, and rename client estimate documents under docs/estimates/, dated by their Date of assessment metadata field, with a required AI Estimate row and a structured Scope/Assumptions/Breakdown format with a unique index on every section and sub-section (traceable, but not mirrored index-for-index, from the client quotation's Deliverables groups via back-references). Always re-reads the latest estimate (and matching quotation) from disk before estimating or writing, treating it as the source of truth (also on an explicit "refresh the data" request). Always asks the client name fresh per estimate rather than remembering it, and always shows proposed changes to an existing estimate in a table (with effort change and total AI Estimate delta) for confirmation before editing. Triggers whenever the user asks to estimate, scope, or size up a project or task. | [estimate-project/SKILL.md](estimate-project/SKILL.md) | `npx skills add https://github.com/bondansebastian/agent-skills --skill estimate-project` |
-| 💵 Writing Quotations | Turn an AI Estimate into a client-facing price using a fully-variablized pricing formula (buffer multiplier, man-day hours, base man-day rate, currency) remembered per project in .agents/contexts/writing-quotations/MEMORY.md, write plain-business-language client quotations in Indonesian by default (with a clear Deliverables section and a unique index on every section and sub-section, never rendering empty sections or sub-sections (e.g. an empty Perlu Konfirmasi), following the skill's fixed 4-section structure — Lingkup Pekerjaan, Deliverables, Catatan, Estimasi Waktu & Investasi — traceable back to the estimate document's Breakdown items via back-references) saved as dated Markdown files under docs/quotations/ (always asking the client name and project name fresh, never remembered, with content-based fallbacks), always re-reading the latest quotation and source estimate from disk before writing (latest version is the source of truth; also on an explicit "refresh the data" request), always keeping a datetime-stamped Version in the quotation meta that is refreshed on every update, only producing a polished .docx on an explicit request each time (never auto-regenerating one, always generated via the anthropic-skills:docx skill rather than pandoc or hand-authoring per its own references/docx.md guide, with all references to the estimate removed from the docx, and always as a new file named with the current Version timestamp instead of overwriting a prior docx), always showing proposed changes to a quotation or Zoho Books estimate in a table for confirmation before editing, and handle scoped, non-destructive Zoho Books estimates (service-type line items, no unrequested man-hour detail). Triggers whenever the user asks to price, quote, or update a Zoho Books estimate. | [writing-quotations/SKILL.md](writing-quotations/SKILL.md) | `npx skills add https://github.com/bondansebastian/agent-skills --skill writing-quotations` |
-| 📖 Writing User Guide | Write end-user guides, manuals, and help center articles in plain non-technical business language for the app's actual end-user, as numbered step-by-step instructions with a screenshot per step where possible (preferring the playwright-cli tool for browser interaction and screenshot capture, offering to install playwright-cli or its skill if not detected), never referencing ticket numbers, JIRA IDs, feature flags, or other internal identifiers; always checks a project-local MEMORY.md at `.agents/contexts/writing-user-guide/` (a fixed per-project path, regardless of whether the skill itself is installed locally or globally) at the start for a remembered guide language before drafting (asking and saving it if not yet known); when publishing to Notion, always uses the notion-cli (`ntn`) tool — never a Notion MCP server or other integration — offering to install it if not detected; checks MEMORY.md for a known target page and always asks the user explicitly before writing if none is found, then organizes content using the default structure (project page → "User Manual" page → one sub-page per module) unless MEMORY.md or the user specifies otherwise; if a login page blocks screenshot capture, checks a separate, git-ignored credentials folder at `.agents/credentials/writing-user-guide/` for saved credentials and otherwise asks the user, offering to remember them there for next time (kept apart from the regular MEMORY.md context so secrets never risk being committed). | [writing-user-guide/SKILL.md](writing-user-guide/SKILL.md) | `npx skills add https://github.com/bondansebastian/agent-skills --skill writing-user-guide` |
-| ⚙️ DevOps | Manage supported DevOps/hosting platforms by natural language — Coolify (self-hosted PaaS: apps, databases, services, deployments, logs, env vars — via the Coolify MCP server when connected, with the `coolify` CLI as the fallback, and MCP tool calls covered by the same write-confirmation and credential policies) and OCI (Oracle Cloud Infrastructure: `oci` CLI plus an opinionated bastion-tunnel workflow for SSH/SCP to private compute instances with no public IP) — via vendored, standalone copies of each platform's CLI docs; structured with one self-contained subdirectory per platform so Vercel and Cloudflare can be added later without touching existing platforms. | [devops/SKILL.md](devops/SKILL.md) | `npx skills add https://github.com/bondansebastian/agent-skills --skill devops` |
-| 🪙 Token Saver | Invoked at the start of every coding task (v1.1.1): makes the main model an orchestrator that plans once in a file, routes each task to the cheapest capable model, caps sub-agent replies, keeps tool output out of the main context, and verifies with commands (browser checks run the app's `test:e2e` script) instead of re-reading code or driving a browser. | [token-saver/SKILL.md](token-saver/SKILL.md) | `npx skills add https://github.com/bondansebastian/agent-skills --skill token-saver` |
+| Skill | Command | Description | Path | Install |
+|---|---|---|---|---|
+| 📚 Confluence Knowledge Base | `/agency:atlassian-confluence` | Build and maintain a product-focused Confluence knowledge base that is accessible to design, engineering, sales, and support. | [atlassian-confluence/SKILL.md](atlassian-confluence/SKILL.md) | `npx skills add https://github.com/bondansebastian/agent-skills --skill atlassian-confluence` |
+| 🧭 Jira | `/agency:atlassian-jira` | Natural-language Jira assistant (v1.1.0) for viewing, creating, and updating issues, supporting CLI and MCP backends; always sets a time estimate on the native Original Estimate field (agent-generated AI Estimate + human review estimate, the latter being a fixed 1-hour review unit scaled by a project human review time remembered in `.agents/contexts/jira/MEMORY.md`, defaulting to `1`), never in the description. (Forked from https://github.com/davila7/claude-code-templates/cli-tool/components/skills/ai-research/jira) | [atlassian-jira/SKILL.md](atlassian-jira/SKILL.md) | `npx skills add https://github.com/bondansebastian/agent-skills --skill atlassian-jira` |
+| 🔌 Install Atlassian Rovo MCP | `/agency:atlassian-mcp-setup` | Guide users through Atlassian Rovo MCP installation with setup discovery first, then project-local or multi-project instructions tailored to OS/runtime (Windows, WSL, macOS, Linux). | [atlassian-mcp-setup/SKILL.md](atlassian-mcp-setup/SKILL.md) | `npx skills add https://github.com/bondansebastian/agent-skills --skill atlassian-mcp-setup` |
+| ⚛️ React Best Practices | `/agency:dev-react` | Opinionated React component architecture: SRP-driven splits, colocation, state isolation, explicit props, re-exported types, naming conventions, and practical file-size targets. | [dev-react/SKILL.md](dev-react/SKILL.md) | `npx skills add https://github.com/bondansebastian/agent-skills --skill dev-react` |
+| 🎨 UI/UX Best Practices | `/agency:dev-ui-ux` | Ensure every clickable element gives visual feedback on hover; prefer smoothly animated micro-interactions, accessible motion preferences, and practical examples. | [dev-ui-ux/SKILL.md](dev-ui-ux/SKILL.md) | `npx skills add https://github.com/bondansebastian/agent-skills --skill dev-ui-ux` |
+| ⚙️ DevOps | `/agency:devops` | Manage supported DevOps/hosting platforms by natural language — Coolify (self-hosted PaaS: apps, databases, services, deployments, logs, env vars — via the Coolify MCP server when connected, with the `coolify` CLI as the fallback, and MCP tool calls covered by the same write-confirmation and credential policies) and OCI (Oracle Cloud Infrastructure: `oci` CLI plus an opinionated bastion-tunnel workflow for SSH/SCP to private compute instances with no public IP) — via vendored, standalone copies of each platform's CLI docs; structured with one self-contained subdirectory per platform so Vercel and Cloudflare can be added later without touching existing platforms. | [devops/SKILL.md](devops/SKILL.md) | `npx skills add https://github.com/bondansebastian/agent-skills --skill devops` |
+| 🧠 Agent Instructor | `/agency:docs-agent-instructions` | Refine or create AI/LLM agent instruction files (AGENTS.md, CLAUDE.md, copilot-instructions.md, .github/instructions) with zero information loss, machine-parsable structure, and token efficiency. | [docs-agent-instructions/SKILL.md](docs-agent-instructions/SKILL.md) | `npx skills add https://github.com/bondansebastian/agent-skills --skill docs-agent-instructions` |
+| 📖 Writing User Guide | `/agency:docs-user-guide` | Write end-user guides, manuals, and help center articles in plain non-technical business language for the app's actual end-user, as numbered step-by-step instructions with a screenshot per step where possible (preferring the playwright-cli tool for browser interaction and screenshot capture, offering to install playwright-cli or its skill if not detected), never referencing ticket numbers, JIRA IDs, feature flags, or other internal identifiers; always checks a project-local MEMORY.md at `.agents/contexts/writing-user-guide/` (a fixed per-project path, regardless of whether the skill itself is installed locally or globally) at the start for a remembered guide language before drafting (asking and saving it if not yet known); when publishing to Notion, always uses the notion-cli (`ntn`) tool — never a Notion MCP server or other integration — offering to install it if not detected; checks MEMORY.md for a known target page and always asks the user explicitly before writing if none is found, then organizes content using the default structure (project page → "User Manual" page → one sub-page per module) unless MEMORY.md or the user specifies otherwise; if a login page blocks screenshot capture, checks a separate, git-ignored credentials folder at `.agents/credentials/writing-user-guide/` for saved credentials and otherwise asks the user, offering to remember them there for next time (kept apart from the regular MEMORY.md context so secrets never risk being committed). | [docs-user-guide/SKILL.md](docs-user-guide/SKILL.md) | `npx skills add https://github.com/bondansebastian/agent-skills --skill docs-user-guide` |
+| 📄 Estimate Project | `/agency:sales-estimate` | Create, name, and rename client estimate documents under docs/estimates/, dated by their Date of assessment metadata field, with a required AI Estimate row and a structured Scope/Assumptions/Breakdown format with a unique index on every section and sub-section (traceable, but not mirrored index-for-index, from the client quotation's Deliverables groups via back-references). Always re-reads the latest estimate (and matching quotation) from disk before estimating or writing, treating it as the source of truth (also on an explicit "refresh the data" request). Always asks the client name fresh per estimate rather than remembering it, and always shows proposed changes to an existing estimate in a table (with effort change and total AI Estimate delta) for confirmation before editing. Triggers whenever the user asks to estimate, scope, or size up a project or task. | [sales-estimate/SKILL.md](sales-estimate/SKILL.md) | `npx skills add https://github.com/bondansebastian/agent-skills --skill sales-estimate` |
+| 💵 Writing Quotations | `/agency:sales-quotation` | Turn an AI Estimate into a client-facing price using a fully-variablized pricing formula (buffer multiplier, man-day hours, base man-day rate, currency) remembered per project in .agents/contexts/writing-quotations/MEMORY.md, write plain-business-language client quotations in Indonesian by default (with a clear Deliverables section and a unique index on every section and sub-section, never rendering empty sections or sub-sections (e.g. an empty Perlu Konfirmasi), following the skill's fixed 4-section structure — Lingkup Pekerjaan, Deliverables, Catatan, Estimasi Waktu & Investasi — traceable back to the estimate document's Breakdown items via back-references) saved as dated Markdown files under docs/quotations/ (always asking the client name and project name fresh, never remembered, with content-based fallbacks), always re-reading the latest quotation and source estimate from disk before writing (latest version is the source of truth; also on an explicit "refresh the data" request), always keeping a datetime-stamped Version in the quotation meta that is refreshed on every update, only producing a polished .docx on an explicit request each time (never auto-regenerating one, always generated via the anthropic-skills:docx skill rather than pandoc or hand-authoring per its own references/docx.md guide, with all references to the estimate removed from the docx, and always as a new file named with the current Version timestamp instead of overwriting a prior docx), always showing proposed changes to a quotation or Zoho Books estimate in a table for confirmation before editing, and handle scoped, non-destructive Zoho Books estimates (service-type line items, no unrequested man-hour detail). Triggers whenever the user asks to price, quote, or update a Zoho Books estimate. | [sales-quotation/SKILL.md](sales-quotation/SKILL.md) | `npx skills add https://github.com/bondansebastian/agent-skills --skill sales-quotation` |
+| 🪙 Token Saver | `/agency:token-saver` | Invoked at the start of every coding task (v1.1.1): makes the main model an orchestrator that plans once in a file, routes each task to the cheapest capable model, caps sub-agent replies, keeps tool output out of the main context, and verifies with commands (browser checks run the app's `test:e2e` script) instead of re-reading code or driving a browser. | [token-saver/SKILL.md](token-saver/SKILL.md) | `npx skills add https://github.com/bondansebastian/agent-skills --skill token-saver` |
 
 ## Repository Layout
 
@@ -69,71 +59,34 @@ Update later with `/plugin marketplace update bondansebastian-skills`. Other age
 agent-skills/
 ├── README.md
 ├── .claude-plugin/
-│   └── marketplace.json
-├── confluence-knowledge-base/
+│   └── marketplace.json        # one plugin: agency
+├── atlassian-confluence/
 │   └── SKILL.md
-├── jira/
+├── atlassian-jira/
 │   ├── SKILL.md
 │   └── references/
-│       ├── commands.md
-│       └── mcp.md
-├── laravel8-guidelines/
+├── atlassian-mcp-setup/
+│   └── SKILL.md
+├── dev-react/
+│   └── SKILL.md
+├── dev-ui-ux/
+│   └── SKILL.md
+├── devops/
+│   ├── SKILL.md
+│   ├── coolify/                # SKILL.md, LICENSE, scripts/, references/
+│   └── oci/                    # SKILL.md, LICENSE, scripts/, references/
+├── docs-agent-instructions/
+│   └── SKILL.md
+├── docs-user-guide/
 │   ├── SKILL.md
 │   └── references/
-│       ├── eloquent.md
-│       ├── queues-jobs.md
-│       ├── security.md
-│       └── testing.md
-├── react-best-practices/
-│   ├── SKILL.md
-│   ├── rules/
-│   └── upstream/
-│       └── rules/
-├── ui-ux-best-practices/
+├── sales-estimate/
 │   └── SKILL.md
-├── install-atlassian-rovo-mcp/
-│   └── SKILL.md
-├── agent-instructor/
-│   └── SKILL.md
-├── estimate-project/
-│   └── SKILL.md
-├── writing-quotations/
+├── sales-quotation/
 │   ├── SKILL.md
 │   └── references/
-│       ├── docx.md
-│       ├── writing-quotations.md
-│       └── zoho-books.md
-├── token-saver/
-│   └── SKILL.md
-├── writing-user-guide/
-│   ├── SKILL.md
-│   └── references/
-│       ├── language-preference.md
-│       ├── handling-authentication.md
-│       └── writing-to-notion.md
-└── devops/
-    ├── SKILL.md
-    ├── coolify/
-    │   ├── SKILL.md
-    │   ├── LICENSE
-    │   ├── scripts/
-    │   │   └── check-mcp-token.sh
-    │   └── references/
-    │       ├── llms.txt
-    │       ├── llms-full.txt
-    │       └── cli-readme.md
-    └── oci/
-        ├── SKILL.md
-        ├── LICENSE
-        ├── scripts/
-        │   ├── download-oci
-        │   ├── ssh-oci
-        │   ├── upload-oci
-        │   └── rotate-oci-config.py
-        └── references/
-            ├── cli-install.md
-            ├── cli-config.md
-            └── bastion-workflow.md
+└── token-saver/
+    └── SKILL.md
 ```
 
 ## Why Agent Skills

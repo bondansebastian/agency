@@ -1,7 +1,7 @@
 ---
-name: writing-user-guide
+name: docs-user-guide
 description: "Use whenever the user asks to write, create, draft, or update a guide, documentation, user manual, help center article, how-to article, or any end-user-facing documentation for an application or feature — covers writing in plain, non-technical business language for a non-technical end-user audience, and never referencing ticket numbers, JIRA IDs, feature flags, internal service/class/table names, or other internal identifiers in the guide."
-version: 1.12.0
+version: 1.13.0
 ---
 
 # Writing User Guide Skill

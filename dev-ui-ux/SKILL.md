@@ -1,7 +1,7 @@
 ---
-name: ui-ux-best-practices
+name: dev-ui-ux
 description: This skill should be used when the user asks about UI/UX best practices, frontend UI implementation, interactive affordances, micro-interactions, motion/animation guidance, accessibility for interactive elements, or improving interactive feedback (including hover and focus states). Provide practical, implementation-focused guidance for visible feedback, performance, and accessibility.
-version: 1.0.2
+version: 1.1.0
 ---
 
 # UI/UX Best Practices — Hover & Clickable Feedback

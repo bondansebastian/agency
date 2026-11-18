@@ -1,7 +1,7 @@
 ---
-name: react-best-practices
+name: dev-react
 description: "Opinionated React component architecture: SRP-driven splits, colocation, state isolation, explicit props, re-exported types, naming conventions, and practical file-size targets for maintainable components."
-version: 1.0.1
+version: 1.1.0
 ---
 
 # React Best Practices Skill

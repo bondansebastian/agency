@@ -1,7 +1,7 @@
 ---
-name: agent-instructor
+name: docs-agent-instructions
 description: "Activate when writing or editing agent/AI/LLM instruction files (AGENTS.md, CLAUDE.md, copilot-instructions.md, .github/instructions/*.md, or any file whose purpose is to instruct an AI agent or LLM). Refines existing instructions for clarity, logical flow, and machine parsability, or synthesizes new instructions from raw requirements — always preserving all constraints, hard-coded values, and safety guardrails without loss."
-version: 1.0.0
+version: 1.1.0
 ---
 
 # Agent Instructor Skill

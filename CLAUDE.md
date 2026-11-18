@@ -14,7 +14,9 @@ description: "Workspace Copilot instructions for the agent-skills repository."
 
 - **README sync**: When you add, remove, or modify any skill (including changes to its `SKILL.md`, description, or `version`), update `README.md`'s Skill Catalog table and any path or description references so the repository README reflects the change. Keep the table rows consistent (icon, skill name, short description, and path). This ensures users and agents can discover skills and see the correct version and location.
 
-- **Marketplace sync**: `.claude-plugin/marketplace.json` publishes each skill as a Claude Code plugin. When you add, remove, rename, or change a skill, update its entry there too (`name`, `description`, `skills` path, and `version` matching the skill's `SKILL.md`), then run `claude plugin validate .` and fix any errors.
+- **Marketplace sync**: `.claude-plugin/marketplace.json` publishes all skills as one Claude Code plugin named `agency` (invoked as `/agency:<skill>`). When you add, remove, or rename a skill, update that plugin's `skills` path list and `description`. When you change any skill's content, also increment the `agency` plugin `version` so installed copies pick up the update. Then run `claude plugin validate .` and fix any errors.
+
+- **Skill naming**: Skill folders and `name` values are domain-first (`atlassian-*`, `dev-*`, `docs-*`, `sales-*`) so related skills sort together under `/agency:`. Do not add an `agency-` prefix to skill names; the plugin supplies it. Per-project state paths under `.agents/` (for example `.agents/contexts/writing-quotations/`) are stable storage keys and must not be renamed when a skill is renamed.
 
 - **Git workflow**: For this repository, always commit directly to `main` and push to `origin/main` — do not create feature branches or pull requests unless explicitly asked.
 

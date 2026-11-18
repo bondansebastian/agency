@@ -1,7 +1,7 @@
 ---
-name: writing-quotations
+name: sales-quotation
 description: "Use when computing a client-facing price/quotation from an AI Estimate, writing the actual client-facing quotation text or document, maintaining this project's pricing-variable ledger (buffer multiplier, man-day hours, base man-day rate, and currency), or creating/updating an estimate in Zoho Books. Covers the fully-variablized pricing formula — never assume $ or any other value, always read the saved ledger in .agents/contexts/writing-quotations/MEMORY.md or ask — writing the quotation in plain business bullet points with a clear Deliverables section and a unique index on every section and sub-section, never rendering a section or sub-section that has no meaningful content (e.g. an empty Perlu Konfirmasi), following this skill's fixed 4-section structure (Lingkup Pekerjaan, Deliverables, Catatan, Estimasi Waktu & Investasi) traceable back to the estimate document's Breakdown items via back-references, in Indonesian by default unless the user explicitly asks for another language (remembered per project in that same context file), always asking the client name and project name fresh for every quotation rather than reusing a remembered one, always saving it as a dated Markdown file under docs/quotations/ (the same naming convention as the estimate-project skill), always including a datetime-stamped Version in the quotation's meta that is refreshed on every update, only producing a polished .docx version when the user explicitly asks for one — never regenerating or auto-refreshing an existing docx off a later edit without a fresh explicit request each time — and, when a docx is generated, always writing it as a new file with the quotation's canonical `Versi` timestamp appended to the filename rather than overwriting any previously generated docx, the rule to only touch the sections the user asked about when editing a Zoho Books estimate, and always using service-type Zoho Books line items without exposing man-hour breakdowns unless explicitly requested. Always trigger when the user asks to price, quote, or create a client-facing quotation, or to create/update a Zoho Books estimate — even if they don't mention docs/quotations/ or Zoho Books by name. For sizing up the underlying work and writing the AI Estimate itself, see the estimate-project skill instead."
-version: 1.12.0
+version: 1.13.0
 ---
 
 # Writing Quotations Skill
@@ -17,7 +17,7 @@ Load this skill when you are:
 
 **This skill must always trigger whenever the user asks the agent to price, quote, or create a client-facing quotation** — even if the request doesn't mention pricing variables or Zoho Books directly.
 
-This skill assumes an `AI Estimate` already exists for the work being priced. If one hasn't been written yet, load the **estimate-project** skill first to size up the work and produce it.
+This skill assumes an `AI Estimate` already exists for the work being priced. If one hasn't been written yet, load the **sales-estimate** skill first to size up the work and produce it.
 
 ---
 
@@ -144,7 +144,7 @@ A new section with no equivalent in the source estimate document. Has these two 
 
 ## Quotation Documents
 
-By default, write every client-facing quotation as its own dated Markdown document under `docs/quotations/`, using the same date-prefixed naming convention as the **estimate-project** skill uses for estimates:
+By default, write every client-facing quotation as its own dated Markdown document under `docs/quotations/`, using the same date-prefixed naming convention as the **sales-estimate** skill uses for estimates:
 
 ```
 docs/quotations/YYYY-MM-DD-<client>-<project-slug>.md
