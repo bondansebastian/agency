@@ -1,7 +1,7 @@
 ---
 name: token-saver
 description: "Invoke at the start of EVERY coding task the user requests (feature, bug fix, refactor, tests, migration, review), before reading code or writing a plan. Keeps token cost down by making the main model an orchestrator: plan once in a file, route each piece of work to the cheapest model that can do it, keep tool output out of the main context, and verify with commands instead of re-reading code."
-version: 1.1.0
+version: 1.1.1
 ---
 
 # Token Saver Skill

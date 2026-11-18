@@ -101,7 +101,7 @@
       "name": "token-saver",
       "source": "./",
       "description": "Run every coding task token-efficiently: plan once in a file, route each task to the cheapest capable model, keep tool output out of the main context, verify with commands.",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "category": "productivity",
       "strict": false,
       "skills": [
