@@ -1,14 +1,14 @@
 ---
 name: docs-user-documentation
 description: "Use whenever the user asks to write, create, draft, or update a guide, documentation, user manual, help center article, how-to article, or any end-user-facing documentation for an application or feature, or asks for a user manual video, tutorial video, walkthrough video, or to re-record one after the app changed — covers plain, non-technical business language for a non-technical end-user audience, step-by-step screenshots, captioned screen-recording videos, publishing to Notion, and applying its extension counterpart (brand credit, look, fixed language, music) when one is installed. Never references ticket numbers, JIRA IDs, feature flags, internal service/class/table names, or other internal identifiers. Not for API or developer docs."
-version: 2.3.0
+version: 2.3.1
 ---
 
 # User Documentation Skill
 
 ## Extension counterpart
 
-Before doing anything else, check the available skills for one named `docs-user-documentation` in a plugin called `agency-skills-<ext_name>` (for example `agency-skills-extension:docs-user-documentation`). If one exists, load it now and follow it together with this skill; where the two differ, the counterpart wins. With several, the last one wins; the `context-management` skill gives the order. If none exists, carry on with this skill's defaults.
+Before doing anything else, check the available skills for one named `docs-user-documentation` in a plugin called `agency-<ext_name>` (for example `agency-extension:docs-user-documentation`). If one exists, load it now and follow it together with this skill; where the two differ, the counterpart wins. With several, the last one wins; the `context-management` skill gives the order. If none exists, carry on with this skill's defaults.
 
 ## When to Use This Skill
 
@@ -38,7 +38,7 @@ Explain what the reader can **do** and **see** (buttons, screens, fields, outcom
 
 This skill holds the method. Everything that belongs to one team or brand (credit and watermark, cover look, fixed language, labels, music, where to publish) comes from this skill's **extension counterpart**, never from this skill.
 
-- The counterpart is the skill `agency-skills-<ext_name>:docs-user-documentation` (see Extension counterpart above). Loading it shows its folder; read the `EXTENSION.md` there first and follow the files it links to. Paths in it are relative to that folder.
+- The counterpart is the skill `agency-<ext_name>:docs-user-documentation` (see Extension counterpart above). Loading it shows its folder; read the `EXTENSION.md` there first and follow the files it links to. Paths in it are relative to that folder.
 - With no counterpart installed, work without one: no credit, no watermark, no music, the default look, and the language rule below.
 - An extension's fixed rules win over this skill's defaults and over `MEMORY.md`; only an explicit instruction from the user in this conversation wins over them.
 - What this skill reads from its extension is in `references/extension.md`. If the user asks to create, install or fix an extension, the `context-management` skill does that.
@@ -63,7 +63,7 @@ The reader, language, core rules and internal-context rules below apply to both 
 | Kind | Path | Used for |
 |---|---|---|
 | Memory | `<project-root>/.agents/contexts/agency/docs-user-documentation/MEMORY.md` | Language preference, Notion targets and structure |
-| Extension | The counterpart skill `agency-skills-<ext_name>:docs-user-documentation` and the `EXTENSION.md` in its folder | Brand, fixed language, labels, look, music, publishing (see `references/extension.md`) |
+| Extension | The counterpart skill `agency-<ext_name>:docs-user-documentation` and the `EXTENSION.md` in its folder | Brand, fixed language, labels, look, music, publishing (see `references/extension.md`) |
 | Credentials | `<project-root>/.agents/credentials/agency/docs-user-documentation/CREDENTIALS.md` | Saved logins for capturing screens (see `references/handling-authentication.md`) |
 | Legacy folders | `<project-root>/.agents/contexts/writing-user-guide/` and `<project-root>/.agents/credentials/writing-user-guide/` | Migrate on encounter |
 

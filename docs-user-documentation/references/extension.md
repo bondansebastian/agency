@@ -2,7 +2,7 @@
 
 How a skill finds its extension counterpart, the precedence, and how to create and install an extension are defined once, in the `context-management` skill. This file covers only what `docs-user-documentation` takes from its extension.
 
-The extension is the folder of the counterpart skill `agency-skills-<ext_name>:docs-user-documentation`. Loading that skill shows the folder's path; every file below is in it.
+The extension is the folder of the counterpart skill `agency-<ext_name>:docs-user-documentation`. Loading that skill shows the folder's path; every file below is in it.
 
 Without an extension: no credit, no watermark, no music, the default look (`video-style.md`), and the language rule in `language-preference.md`. Do not ask the user to create an extension; mention once, in the final report, that one can add a credit, a look and a fixed language.
 

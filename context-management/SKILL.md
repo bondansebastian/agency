@@ -1,14 +1,14 @@
 ---
 name: context-management
-description: "Use whenever an agency skill needs to read, save, or look up customized or parameterized data — remembered preferences and variables for a project (MEMORY.md), a team's or brand's extension (a counterpart skill in a plugin named agency-skills-<ext_name>), or saved credentials — and whenever you create, move, migrate, or audit anything under a project's .agents/ folder. Also use when the user asks to set up, create, install, update, remove, or troubleshoot an extension for the agency skills (for example \"create an extension for my team\", \"why isn't the extension applied\"). Defines where each kind of data lives, how a skill finds its extension counterpart, the precedence between them, the entry format, legacy-folder migration, and what must never be stored. Also use when writing or changing a skill that stores data."
-version: 3.0.0
+description: "Use whenever an agency skill needs to read, save, or look up customized or parameterized data — remembered preferences and variables for a project (MEMORY.md), a team's or brand's extension (a counterpart skill in a plugin named agency-<ext_name>), or saved credentials — and whenever you create, move, migrate, or audit anything under a project's .agents/ folder. Also use when the user asks to set up, create, install, update, remove, or troubleshoot an extension for the agency skills (for example \"create an extension for my team\", \"why isn't the extension applied\"). Defines where each kind of data lives, how a skill finds its extension counterpart, the precedence between them, the entry format, legacy-folder migration, and what must never be stored. Also use when writing or changing a skill that stores data."
+version: 3.0.1
 ---
 
 # Context Management
 
 ## Extension counterpart
 
-Before doing anything else, check the available skills for one named `context-management` in a plugin called `agency-skills-<ext_name>` (for example `agency-skills-extension:context-management`). If one exists, load it now and follow it together with this skill; where the two differ, the counterpart wins. With several, apply them in the order given under Extensions below; the last one wins. If none exists, carry on with this skill's defaults.
+Before doing anything else, check the available skills for one named `context-management` in a plugin called `agency-<ext_name>` (for example `agency-extension:context-management`). If one exists, load it now and follow it together with this skill; where the two differ, the counterpart wins. With several, apply them in the order given under Extensions below; the last one wins. If none exists, carry on with this skill's defaults.
 
 ## Overview
 
@@ -19,7 +19,7 @@ One layout for everything an agency skill customizes per project, team or person
 | Kind | What it is | Who writes it | Where |
 |---|---|---|---|
 | **Memory** | Non-sensitive values remembered for this project so the user is not asked twice: a pricing variable, a default language, a Notion target | The skill, at the user's word | `<project-root>/.agents/contexts/agency/<skill-name>/MEMORY.md` |
-| **Extension** | A team's or brand's house rules and assets that extend the agency skills: credit, look, fixed language, labels, publishing target. The same across every project | The team, in its own plugin. Skills only read it | The counterpart skill `agency-skills-<ext_name>:<skill-name>` and the files in its folder |
+| **Extension** | A team's or brand's house rules and assets that extend the agency skills: credit, look, fixed language, labels, publishing target. The same across every project | The team, in its own plugin. Skills only read it | The counterpart skill `agency-<ext_name>:<skill-name>` and the files in its folder |
 | **Credentials** | Secrets: logins, tokens | The skill, only after the user says yes | `<project-root>/.agents/credentials/agency/<skill-name>/CREDENTIALS.md` |
 
 ```text
@@ -38,19 +38,19 @@ One layout for everything an agency skill customizes per project, team or person
 
 ## Extensions
 
-An extension is a plugin named `agency-skills-<ext_name>`. `<ext_name>` can be anything; it defaults to `extension`, so the default plugin is `agency-skills-extension`. For each agency skill it customizes, the plugin has a skill with **the same name**: its counterpart.
+An extension is a plugin named `agency-<ext_name>`. `<ext_name>` can be anything; it defaults to `extension`, so the default plugin is `agency-extension`. For each agency skill it customizes, the plugin has a skill with **the same name**: its counterpart.
 
 ```text
 agency:docs-user-documentation                        the public skill
-agency-skills-extension:docs-user-documentation       its counterpart, in the extension plugin
+agency-extension:docs-user-documentation       its counterpart, in the extension plugin
 ```
 
 **How a skill finds its counterpart.** Every agency skill does this first, before any other step:
 
-1. Look through the available skills for one with the skill's own name in a plugin whose name starts with `agency-skills-`. Detection is by name; never search the filesystem for it, and never ask the user which extension exists.
+1. Look through the available skills for one with the skill's own name in a plugin whose name starts with `agency-`. Detection is by name; never search the filesystem for it, and never ask the user which extension exists.
 2. If there is one, load it (invoke it as a skill). Loading it shows its folder; that folder is the extension for this skill. Read the `EXTENSION.md` there and follow the files it links to.
 3. Follow both together. Where they differ, the counterpart wins.
-4. If there are several (more than one `agency-skills-*` plugin has a counterpart), load them all and apply them in alphabetical order of `<ext_name>`, unless the skill's `MEMORY.md` has `- **Extension order** — <ext_name>, <ext_name>`. **The last one wins** wherever two of them set the same thing.
+4. If there are several (more than one `agency-*` plugin has a counterpart), load them all and apply them in alphabetical order of `<ext_name>`, unless the skill's `MEMORY.md` has `- **Extension order** — <ext_name>, <ext_name>`. **The last one wins** wherever two of them set the same thing.
 5. If there is none, work with the skill's defaults. This is the normal case; do not ask the user to create an extension.
 
 A counterpart is never used on its own. If it was loaded first, load the public skill of the same name too.
@@ -122,7 +122,7 @@ A skill that stores or reads customized data also:
 
 | Situation | Action |
 |---|---|
-| Starting any agency skill | Look for the same-named skill in an `agency-skills-*` plugin; load it; it wins where the two differ |
+| Starting any agency skill | Look for the same-named skill in an `agency-*` plugin; load it; it wins where the two differ |
 | Several counterparts for one skill | Apply in alphabetical order of `<ext_name>`, or the order saved in memory; the last one wins |
 | A counterpart was loaded without the public skill | Load the public skill of the same name too |
 | A skill needs a remembered value | User's word → extension's fixed rules → `MEMORY.md` → extension's defaults → skill's default or ask |

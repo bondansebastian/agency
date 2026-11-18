@@ -1,4 +1,4 @@
-# agent-skills
+# agency
 
 Rules for every coding agent working in this repository: a public collection of agent skills, published as one Claude Code plugin named `agency`.
 
@@ -90,8 +90,8 @@ There are none yet. If you add any, create exactly two in `.github/workflows/`: 
 
 - **Skill naming**: Skill folders and `name` values are domain-first (`atlassian-*`, `dev-*`, `docs-*`, `sales-*`) so related skills sort together under `/agency:`. Do not add an `agency-` prefix to skill names; the plugin supplies it. When you rename a skill that stores state, move its state path to the new name and add the old folder name to the skill's legacy list (see **Context management**).
 
-- **Context management**: `context-management/SKILL.md` is the single source of truth for customized or parameterized data: memory at `.agents/contexts/agency/<skill-name>/MEMORY.md`, credentials at `.agents/credentials/agency/<skill-name>/`, and extensions as counterpart skills in a plugin named `agency-skills-<ext_name>`. Every skill that stores or reads such data must refer to it in a short storage section that names only the skill's own keys, paths and legacy folders, plus a three-line fallback for standalone installs. Never restate the general rules (precedence, entry format, migration, extension setup) in another skill; change them in `context-management` and bump its version.
+- **Context management**: `context-management/SKILL.md` is the single source of truth for customized or parameterized data: memory at `.agents/contexts/agency/<skill-name>/MEMORY.md`, credentials at `.agents/credentials/agency/<skill-name>/`, and extensions as counterpart skills in a plugin named `agency-<ext_name>`. Every skill that stores or reads such data must refer to it in a short storage section that names only the skill's own keys, paths and legacy folders, plus a three-line fallback for standalone installs. Never restate the general rules (precedence, entry format, migration, extension setup) in another skill; change them in `context-management` and bump its version.
 
-- **Extension counterpart**: Every skill's `SKILL.md` has an `## Extension counterpart` section as its first section, with the standard text and the skill's own name in it. It tells the agent to load the same-named skill from an `agency-skills-<ext_name>` plugin and let it win. Copy it from an existing skill when adding a new one, and never remove it.
+- **Extension counterpart**: Every skill's `SKILL.md` has an `## Extension counterpart` section as its first section, with the standard text and the skill's own name in it. It tells the agent to load the same-named skill from an `agency-<ext_name>` plugin and let it win. Copy it from an existing skill when adding a new one, and never remove it.
 
-- **Brand-neutral skills**: This repository is public. Never put a brand, client, or team-specific rule, name, asset, or default in a skill. Put it in an extension (a private `agency-skills-<ext_name>` plugin) and have the skill take it from its counterpart, falling back to neutral defaults when none is installed.
+- **Brand-neutral skills**: This repository is public. Never put a brand, client, or team-specific rule, name, asset, or default in a skill. Put it in an extension (a private `agency-<ext_name>` plugin) and have the skill take it from its counterpart, falling back to neutral defaults when none is installed.

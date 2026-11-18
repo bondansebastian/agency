@@ -13,8 +13,8 @@
     {
       "name": "agency",
       "source": "./",
-      "description": "All agency skills in one plugin, invoked as /agency:<skill>: Atlassian (Jira, Confluence, Rovo MCP setup), sales (estimates, quotations), docs (user guides and manual videos, agent instructions), dev (project initiation, React, UI/UX), DevOps (Coolify, OCI), token-saver, and context-management (per-project memory, credentials, and extensions installed as agency-skills-<ext_name> plugins).",
-      "version": "2.0.0",
+      "description": "All agency skills in one plugin, invoked as /agency:<skill>: Atlassian (Jira, Confluence, Rovo MCP setup), sales (estimates, quotations), docs (user guides and manual videos, agent instructions), dev (project initiation, React, UI/UX), DevOps (Coolify, OCI), token-saver, and context-management (per-project memory, credentials, and extensions installed as agency-<ext_name> plugins).",
+      "version": "2.1.0",
       "category": "productivity",
       "strict": false,
       "skills": [

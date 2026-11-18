@@ -1,14 +1,14 @@
 ---
 name: dev-ui-ux
 description: This skill should be used when the user asks about UI/UX best practices, frontend UI implementation, interactive affordances, micro-interactions, motion/animation guidance, accessibility for interactive elements, or improving interactive feedback (including hover and focus states). Provide practical, implementation-focused guidance for visible feedback, performance, and accessibility.
-version: 1.2.0
+version: 1.2.1
 ---
 
 # UI/UX Best Practices — Hover & Clickable Feedback
 
 ## Extension counterpart
 
-Before doing anything else, check the available skills for one named `dev-ui-ux` in a plugin called `agency-skills-<ext_name>` (for example `agency-skills-extension:dev-ui-ux`). If one exists, load it now and follow it together with this skill; where the two differ, the counterpart wins. With several, the last one wins; the `context-management` skill gives the order. If none exists, carry on with this skill's defaults.
+Before doing anything else, check the available skills for one named `dev-ui-ux` in a plugin called `agency-<ext_name>` (for example `agency-extension:dev-ui-ux`). If one exists, load it now and follow it together with this skill; where the two differ, the counterpart wins. With several, the last one wins; the `context-management` skill gives the order. If none exists, carry on with this skill's defaults.
 
 Purpose: Ensure consistent, accessible, and pleasant micro-interactions by requiring visible hover feedback for clickable elements and recommending smooth, respectful animations.
 
