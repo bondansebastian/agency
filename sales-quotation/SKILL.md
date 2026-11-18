@@ -1,10 +1,14 @@
 ---
 name: sales-quotation
 description: "Use when computing a client-facing price/quotation from an AI Estimate, writing the actual client-facing quotation text or document, maintaining this project's pricing-variable ledger (buffer multiplier, man-day hours, base man-day rate, and currency), or creating/updating an estimate in Zoho Books. Covers the fully-variablized pricing formula — never assume $ or any other value, always read the saved ledger in .agents/contexts/agency/sales-quotation/MEMORY.md or ask — writing the quotation in plain business bullet points with a clear Deliverables section and a unique index on every section and sub-section, never rendering a section or sub-section that has no meaningful content (e.g. an empty Perlu Konfirmasi), following this skill's fixed 4-section structure (Lingkup Pekerjaan, Deliverables, Catatan, Estimasi Waktu & Investasi) traceable back to the estimate document's Breakdown items via back-references, in Indonesian by default unless the user explicitly asks for another language (remembered per project in that same context file), always asking the client name and project name fresh for every quotation rather than reusing a remembered one, always saving it as a dated Markdown file under docs/quotations/ (the same naming convention as the estimate-project skill), always including a datetime-stamped Version in the quotation's meta that is refreshed on every update, only producing a polished .docx version when the user explicitly asks for one — never regenerating or auto-refreshing an existing docx off a later edit without a fresh explicit request each time — and, when a docx is generated, always writing it as a new file with the quotation's canonical `Versi` timestamp appended to the filename rather than overwriting any previously generated docx, the rule to only touch the sections the user asked about when editing a Zoho Books estimate, and always using service-type Zoho Books line items without exposing man-hour breakdowns unless explicitly requested. Always trigger when the user asks to price, quote, or create a client-facing quotation, or to create/update a Zoho Books estimate — even if they don't mention docs/quotations/ or Zoho Books by name. For sizing up the underlying work and writing the AI Estimate itself, see the estimate-project skill instead."
-version: 1.13.4
+version: 1.14.0
 ---
 
 # Writing Quotations Skill
+
+## Extension counterpart
+
+Before doing anything else, check the available skills for one named `sales-quotation` in a plugin called `agency-skills-<ext_name>` (for example `agency-skills-extension:sales-quotation`). If one exists, load it now and follow it together with this skill; where the two differ, the counterpart wins. With several, the last one wins; the `context-management` skill gives the order. If none exists, carry on with this skill's defaults.
 
 ## When to Use This Skill
 
@@ -23,12 +27,12 @@ This skill assumes an `AI Estimate` already exists for the work being priced. If
 
 ## Where This Skill Stores Context
 
-**Follow the `context-management` skill (`/agency:context-management`) for where and how**: resolving `<project-root>`, the lookup order (user's instruction → profile → memory → default), the entry format, migrating a legacy folder, and what must never be stored. If that skill is not available: use the paths below inside the current project (never the skill's own folder), read a profile before memory, and move the legacy folder to the current path the first time you find it, or keep using it if it cannot be moved.
+**Follow the `context-management` skill (`/agency:context-management`) for where and how**: resolving `<project-root>`, the precedence between the user's instruction, the extension, memory and defaults, the entry format, migrating a legacy folder, and what must never be stored. If that skill is not available: use the paths below inside the current project (never the skill's own folder), follow this skill's extension counterpart when one is installed, and move the legacy folder to the current path the first time you find it, or keep using it if it cannot be moved.
 
 | Kind | Path | Used for |
 |---|---|---|
 | Memory | `<project-root>/.agents/contexts/agency/sales-quotation/MEMORY.md` | The values below |
-| Profile | `<project-root>/.agents/contexts/<pack>/sales-quotation/PROFILE.md` | Optional team rules (for example a fixed quotation language or house pricing variables); they win over memory |
+| Extension | The counterpart skill `agency-skills-<ext_name>:sales-quotation` and the `EXTENSION.md` in its folder | Optional team rules (for example a fixed quotation language or house pricing variables); they win over memory |
 | Legacy memory folder | `<project-root>/.agents/contexts/writing-quotations/` | Migrate on encounter |
 
 Store:

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "agency-skills-<ext_name>",
+  "owner": {
+    "name": "<Owner>"
+  },
+  "metadata": {
+    "description": "<Team or brand> extension for the agency skills.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "agency-skills-<ext_name>",
+      "source": "./",
+      "description": "<Team or brand> extension for the agency skills: one counterpart per customized skill.",
+      "version": "1.0.0",
+      "category": "productivity",
+      "strict": false,
+      "skills": [
+        "./<skill-name>"
+      ]
+    }
+  ]
+}

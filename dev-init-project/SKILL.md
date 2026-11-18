@@ -1,10 +1,14 @@
 ---
 name: dev-init-project
 description: "Use when setting up a new or existing repository for coding agents (Claude Code, Gemini CLI, Codex), when a repo has no AGENTS.md or has a CLAUDE.md or GEMINI.md with real content, when the user asks to \"write to agents.md\", when creating GitHub Actions workflows, before moving a Jira card for work done in a repo, before reporting a change as done, or when opening or merging a PR."
-version: 1.1.1
+version: 1.2.0
 ---
 
 # Project initiation
+
+## Extension counterpart
+
+Before doing anything else, check the available skills for one named `dev-init-project` in a plugin called `agency-skills-<ext_name>` (for example `agency-skills-extension:dev-init-project`). If one exists, load it now and follow it together with this skill; where the two differ, the counterpart wins. With several, the last one wins; the `context-management` skill gives the order. If none exists, carry on with this skill's defaults.
 
 ## Overview
 
@@ -42,7 +46,7 @@ List the project's statuses once (`listJiraStatuses`), then use exactly one row:
 - "Build succeeds" means the `Deploy` workflow run (section 7) on the merge commit of the default branch finished green. A green PR doesn't count, so check that run after the merge.
 - If that run fails, leave the card where it is and tell the user.
 - Put the ticket key in commit messages and the PR title.
-- This table wins over the `atlassian-jira` skill's general rules: these moves need no approval, and no in-between status is used. A project that does need one (a stop in "Code Review" or "QA", or a workflow that refuses the direct move) records it as a `Card moves` entry in the `atlassian-jira` skill's context, following the `context-management` skill (`<project-root>/.agents/contexts/agency/atlassian-jira/MEMORY.md`, or a profile pack). Only such an entry changes the table; never add an in-between move on your own.
+- This table wins over the `atlassian-jira` skill's general rules: these moves need no approval, and no in-between status is used. A project that does need one (a stop in "Code Review" or "QA", or a workflow that refuses the direct move) records it as a `Card moves` entry in the `atlassian-jira` skill's context, following the `context-management` skill (`<project-root>/.agents/contexts/agency/atlassian-jira/MEMORY.md`, or an extension). Only such an entry changes the table; never add an in-between move on your own.
 
 ## 4. Merging the PR
 

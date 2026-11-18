@@ -1,11 +1,15 @@
 ---
 name: devops
 description: Use when the user wants to interact with, manage, deploy to, or query a supported DevOps/hosting platform — currently Coolify (self-hosted PaaS for apps, databases, and services; via the Coolify MCP server when connected, otherwise the `coolify` CLI) and OCI (Oracle Cloud Infrastructure, including bastion-tunneled SSH/SCP to private compute instances). Triggers on platform names (Coolify, OCI/Oracle Cloud, and later Vercel, Cloudflare), or requests to deploy, check server/app status, view logs, manage environment variables, databases, or services on those platforms.
-version: 1.5.0
+version: 1.6.0
 license: MIT
 ---
 
 # DevOps
+
+## Extension counterpart
+
+Before doing anything else, check the available skills for one named `devops` in a plugin called `agency-skills-<ext_name>` (for example `agency-skills-extension:devops`). If one exists, load it now and follow it together with this skill; where the two differ, the counterpart wins. With several, the last one wins; the `context-management` skill gives the order. If none exists, carry on with this skill's defaults.
 
 Router skill for platform-management tasks. Each supported platform is self-contained in its own subdirectory with vendored CLI docs — no shared code between platforms.
 

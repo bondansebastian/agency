@@ -8,7 +8,7 @@ Every Notion operation in one task — reading an existing page, creating a new 
 
 Pick the integration in this order, before writing anything:
 
-1. **The one the profile names** (see the `context-management` skill), when there is a profile and it names one.
+1. **The one the extension names** (see the `context-management` skill), when there is an extension and it names one.
 2. **`notion-cli`** (the `ntn` command), when it runs and is signed in (it uses `NOTION_API_TOKEN` if set, otherwise `ntn login`).
 3. **A connected Notion connector** (its `notion-*` tools), when one is available in the session.
 4. **None available** — offer to install `notion-cli` with `curl -fsSL https://ntn.dev | bash` (and its skill with `npx skills add https://github.com/makenotion/skills.git --skill notion-cli`). If the user declines, stop and ask how they'd like the guide published instead.
@@ -40,11 +40,11 @@ Once the target project's Notion location is known (via the Core Rule above), or
 2. **"User Manual" page** — a page directly under the project page (create it if it doesn't already exist).
 3. **Module pages** — for each module being documented, create a sub-page under "User Manual".
 
-Apply this default only if neither the profile nor `MEMORY.md` records a different structure for this project — a profile's structure wins, then a `MEMORY.md` structure entry.
+Apply this default only if neither the extension nor `MEMORY.md` records a different structure for this project — an extension's structure wins, then a `MEMORY.md` structure entry.
 
 ## A Manual Page With a Video
 
-When the output includes a video, the guide page has this order (about 500 words at most; split into sub-pages if longer). Headings are in the guide's language; a profile may give the exact headings.
+When the output includes a video, the guide page has this order (about 500 words at most; split into sub-pages if longer). Headings are in the guide's language; an extension may give the exact headings.
 
 1. Two or three sentences: what the feature does for the user.
 2. The video, then a short callout that the data in it is sample data.
@@ -92,7 +92,7 @@ Keep entries short and matchable by guide/feature name. Use two entry kinds:
 
 | Situation | Action |
 |---|---|
-| Any Notion read or write | One integration for the whole task: the profile's choice, else `notion-cli` (`ntn`), else a connected Notion connector |
+| Any Notion read or write | One integration for the whole task: the extension's choice, else `notion-cli` (`ntn`), else a connected Notion connector |
 | No Notion integration available | Offer to install `notion-cli`; if declined, ask how the guide should be published |
 | `MEMORY.md` has a matching target-page entry | Use it as the target; no need to ask |
 | `MEMORY.md` doesn't exist yet | Treat as no entries — ask before writing |

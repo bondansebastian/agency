@@ -1,21 +1,21 @@
 // Records a user documentation video: opens a web page, plays a scenario against it with Playwright
 // and writes an mp4.
 //   node record.mjs --scenario <file.mjs> --url <http://localhost:5173/> [--serve "<command>"]
-//                   [--out <dir>] [--ready "<css selector>"] [--profile <profile.json>] [--music <file>]
+//                   [--out <dir>] [--ready "<css selector>"] [--brand <brand.json>] [--music <file>]
 // --serve starts the app (for example "pnpm exec vite preview") and stops it afterwards.
-// --profile applies a brand profile: credit and watermark, cover look, locale, music bed.
-// --music mixes this audio file under the video (overrides the profile's music).
+// --brand applies a brand: credit and watermark, cover look, locale, music bed.
+// --music mixes this audio file under the video (overrides the brand's music).
 import { spawn, spawnSync } from "node:child_process";
 import { dirname, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { loadProfile, sleep, startRecording, toMp4 } from "./lib.mjs";
+import { loadBrand, sleep, startRecording, toMp4 } from "./lib.mjs";
 
 const args = Object.fromEntries(
   process.argv.slice(2).flatMap((a, i, all) => (a.startsWith("--") ? [[a.slice(2), all[i + 1]]] : [])),
 );
 if (!args.scenario || !args.url) {
   console.log(
-    'Usage: node record.mjs --scenario <file.mjs> --url <url> [--serve "<command>"] [--out <dir>] [--ready "<selector>"] [--profile <profile.json>] [--music <file>]',
+    'Usage: node record.mjs --scenario <file.mjs> --url <url> [--serve "<command>"] [--out <dir>] [--ready "<selector>"] [--brand <brand.json>] [--music <file>]',
   );
   process.exit(1);
 }
@@ -23,8 +23,8 @@ if (!args.scenario || !args.url) {
 const scenarioFile = resolve(args.scenario);
 const { meta, default: play } = await import(pathToFileURL(scenarioFile).href);
 const outDir = resolve(args.out ?? join(dirname(scenarioFile), "out"));
-const profile = loadProfile(args.profile);
-const music = args.music ? resolve(args.music) : profile.music;
+const brand = loadBrand(args.brand);
+const music = args.music ? resolve(args.music) : brand.music;
 
 let server = null;
 if (args.serve) {
@@ -47,7 +47,7 @@ try {
     url: args.url,
     outDir,
     readySelector: args.ready ?? meta.readySelector ?? "body",
-    profile,
+    brand,
   });
   await play(rec);
   const webm = await finish();
