@@ -74,6 +74,7 @@ A **profile pack** holds what belongs to one team (a credit and watermark, a cov
 ```text
 agent-skills/
 ├── README.md
+├── AGENTS.md                   # repo rules for agents; CLAUDE.md and GEMINI.md are symlinks to it
 ├── .claude-plugin/
 │   └── marketplace.json        # one plugin: agency
 ├── atlassian-confluence/
