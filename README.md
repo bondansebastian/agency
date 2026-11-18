@@ -50,17 +50,17 @@ Use the name from the catalog below, for example `--skill atlassian-jira`. Skill
 | Skill | Command | Version | What it does |
 |---|---|---|---|
 | 📚 [Confluence Knowledge Base](atlassian-confluence/SKILL.md) | `/agency:atlassian-confluence` | 1.2.1 | Build and maintain a product-focused Confluence knowledge base that design, engineering, sales and support can all read. |
-| 🧭 [Jira](atlassian-jira/SKILL.md) | `/agency:atlassian-jira` | 1.3.1 | View, create and update Jira issues in plain language, through the Atlassian MCP server or the `jira` CLI. Always sets a time estimate on the native Original Estimate field. |
+| 🧭 [Jira](atlassian-jira/SKILL.md) | `/agency:atlassian-jira` | 1.3.2 | View, create and update Jira issues in plain language, through the Atlassian MCP server or the `jira` CLI. Always sets a time estimate on the native Original Estimate field. |
 | 🔌 [Atlassian MCP Setup](atlassian-mcp-setup/SKILL.md) | `/agency:atlassian-mcp-setup` | 1.2.1 | Install and configure the Atlassian Rovo MCP server, per project or for many projects, for the user's OS and client. |
 | 🗂️ [Context Management](context-management/SKILL.md) | `/agency:context-management` | 3.0.1 | The one layout for customized data: project memory, credentials and extensions. Also creates, installs and troubleshoots an extension on request. |
 | 🚀 [Init Project](dev-init-project/SKILL.md) | `/agency:dev-init-project` | 1.2.1 | Set up a repository for coding agents: `AGENTS.md` with `CLAUDE.md` and `GEMINI.md` symlinks, Jira card moves, squash auto-merge, the `Tests` and `Deploy` workflows, and a Playwright browser test script. |
-| ⚛️ [React](dev-react/SKILL.md) | `/agency:dev-react` | 1.2.1 | React component architecture: single-responsibility splits, colocation, state isolation, explicit props, naming and file-size targets. |
+| ⚛️ [React](dev-react/SKILL.md) | `/agency:dev-react` | 1.2.2 | React component architecture: single-responsibility splits, colocation, state isolation, explicit props, naming and file-size targets. |
 | 🎨 [UI/UX](dev-ui-ux/SKILL.md) | `/agency:dev-ui-ux` | 1.2.1 | Visible feedback on every clickable element, smooth micro-interactions and accessible motion preferences. |
 | ⚙️ [DevOps](devops/SKILL.md) | `/agency:devops` | 1.6.1 | Manage Coolify (MCP server first, `coolify` CLI as fallback) and Oracle Cloud Infrastructure (`oci` CLI, SSH and SCP through a bastion tunnel) in plain language. |
 | 🧠 [Agent Instructions](docs-agent-instructions/SKILL.md) | `/agency:docs-agent-instructions` | 1.2.1 | Write or refine instruction files for AI agents with no loss of constraints, a machine-parsable structure and few tokens. |
-| 📖 [User Documentation](docs-user-documentation/SKILL.md) | `/agency:docs-user-documentation` | 2.3.1 | Write end-user guides in plain language with a screenshot per step, or record a captioned walkthrough video with its manual page, and publish to Notion. |
+| 📖 [User Documentation](docs-user-documentation/SKILL.md) | `/agency:docs-user-documentation` | 2.4.0 | Write end-user guides in plain language with a screenshot per step, or record a captioned walkthrough video with its manual page, and publish to Notion. |
 | 📄 [Estimate](sales-estimate/SKILL.md) | `/agency:sales-estimate` | 1.7.1 | Create and maintain structured project estimate documents under `docs/estimates/`, with a required AI Estimate and indexed Scope, Assumptions and Breakdown sections. |
-| 💵 [Quotation](sales-quotation/SKILL.md) | `/agency:sales-quotation` | 1.14.1 | Turn an AI Estimate into a client-facing quotation with a pricing formula remembered per project, and manage the matching Zoho Books estimate. |
+| 💵 [Quotation](sales-quotation/SKILL.md) | `/agency:sales-quotation` | 1.14.2 | Turn an AI Estimate into a client-facing quotation with a pricing formula remembered per project, and manage the matching Zoho Books estimate. |
 | 🪙 [Token Saver](token-saver/SKILL.md) | `/agency:token-saver` | 1.2.1 | Keep coding tasks cheap: plan once in a file, route each piece of work to the cheapest capable model, keep tool output out of the main context, verify with commands. |
 
 Skill names are domain-first (`atlassian-*`, `dev-*`, `docs-*`, `sales-*`) so related skills sort together.

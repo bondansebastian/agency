@@ -213,6 +213,8 @@ export async function startRecording({ url, outDir, readySelector = "body", bran
     viewport: { width: WIDTH, height: HEIGHT },
     recordVideo: { dir: outDir, size: { width: WIDTH, height: HEIGHT } },
     locale,
+    // DOCS_STORAGE_STATE: a saved logged-in browser state (Playwright storageState), for apps that need a login.
+    ...(process.env.DOCS_STORAGE_STATE ? { storageState: process.env.DOCS_STORAGE_STATE } : {}),
   });
   const page = await context.newPage();
   await page.goto(url);
