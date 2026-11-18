@@ -1,7 +1,7 @@
 // A scenario for one feature. Copy this file, rename it after the feature and fill it in.
 // Write every caption and card in the guide's language (the brand's, when there is one).
 // Run: node record.mjs --scenario <this file> --url <app url> [--serve "<start command>"]
-//        [--brand .agents/contexts/agency/@<name>/docs-user-documentation/brand.json]
+//        [--brand <extension counterpart folder>/brand.json]
 
 export const meta = {
   /** File name of the mp4 (and of the video in the manual). */

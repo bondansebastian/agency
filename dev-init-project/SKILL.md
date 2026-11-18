@@ -1,10 +1,14 @@
 ---
 name: dev-init-project
 description: "Use when setting up a new or existing repository for coding agents (Claude Code, Gemini CLI, Codex), when a repo has no AGENTS.md or has a CLAUDE.md or GEMINI.md with real content, when the user asks to \"write to agents.md\", when creating GitHub Actions workflows, before moving a Jira card for work done in a repo, before reporting a change as done, or when opening or merging a PR."
-version: 1.1.2
+version: 1.2.0
 ---
 
 # Project initiation
+
+## Extension counterpart
+
+Before doing anything else, check the available skills for one named `dev-init-project` in a plugin called `agency-skills-<ext_name>` (for example `agency-skills-extension:dev-init-project`). If one exists, load it now and follow it together with this skill; where the two differ, the counterpart wins. With several, the last one wins; the `context-management` skill gives the order. If none exists, carry on with this skill's defaults.
 
 ## Overview
 

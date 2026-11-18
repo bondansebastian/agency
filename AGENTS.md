@@ -67,7 +67,7 @@ There are none yet. If you add any, create exactly two in `.github/workflows/`: 
 
 1. Create `<skill-name>/SKILL.md` with `name`, `description` and `version` in its frontmatter. The folder name equals `name`.
 2. Name it domain-first (see Skill naming).
-3. If it stores or reads customized data, add the storage section that refers to `context-management` (see Context management).
+3. Add the `## Extension counterpart` section as its first section (see Extension counterpart). If it stores or reads customized data, also add the storage section that refers to `context-management` (see Context management).
 4. Add its path to the `agency` plugin's `skills` list in `.claude-plugin/marketplace.json`, update the plugin `description`, and increment the plugin `version`.
 5. Add its row to the README's Skill Catalog and its folder to the Repository Layout tree.
 6. Check that it collides with no other skill's triggers or rules. Where two skills overlap, say in both which one wins.
@@ -90,6 +90,8 @@ There are none yet. If you add any, create exactly two in `.github/workflows/`: 
 
 - **Skill naming**: Skill folders and `name` values are domain-first (`atlassian-*`, `dev-*`, `docs-*`, `sales-*`) so related skills sort together under `/agency:`. Do not add an `agency-` prefix to skill names; the plugin supplies it. When you rename a skill that stores state, move its state path to the new name and add the old folder name to the skill's legacy list (see **Context management**).
 
-- **Context management**: `context-management/SKILL.md` is the single source of truth for customized or parameterized data: memory at `.agents/contexts/agency/<skill-name>/MEMORY.md`, extensions at `.agents/contexts/agency/@<name>/<skill-name>/EXTENSION.md`, credentials at `.agents/credentials/agency/<skill-name>/`. Every skill that stores or reads such data must refer to it in a short storage section that names only the skill's own keys, paths and legacy folders, plus a three-line fallback for standalone installs. Never restate the general rules (lookup order, entry format, migration, extension mounting) in another skill; change them in `context-management` and bump its version.
+- **Context management**: `context-management/SKILL.md` is the single source of truth for customized or parameterized data: memory at `.agents/contexts/agency/<skill-name>/MEMORY.md`, credentials at `.agents/credentials/agency/<skill-name>/`, and extensions as counterpart skills in a plugin named `agency-skills-<ext_name>`. Every skill that stores or reads such data must refer to it in a short storage section that names only the skill's own keys, paths and legacy folders, plus a three-line fallback for standalone installs. Never restate the general rules (precedence, entry format, migration, extension setup) in another skill; change them in `context-management` and bump its version.
 
-- **Brand-neutral skills**: This repository is public. Never put a brand, client, or team-specific rule, name, asset, or default in a skill. Put it in an extension and have the skill read it, falling back to neutral defaults when no extension exists.
+- **Extension counterpart**: Every skill's `SKILL.md` has an `## Extension counterpart` section as its first section, with the standard text and the skill's own name in it. It tells the agent to load the same-named skill from an `agency-skills-<ext_name>` plugin and let it win. Copy it from an existing skill when adding a new one, and never remove it.
+
+- **Brand-neutral skills**: This repository is public. Never put a brand, client, or team-specific rule, name, asset, or default in a skill. Put it in an extension (a private `agency-skills-<ext_name>` plugin) and have the skill take it from its counterpart, falling back to neutral defaults when none is installed.

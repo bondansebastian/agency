@@ -4,7 +4,7 @@ A captioned screen recording of one feature of a web app (Playwright + Chromium,
 
 ## Workflow
 
-1. Read the extension (the `context-management` skill says where; `extension.md` says what it holds). Read the project's `AGENTS.md` and README for how to start the app with sample data (a browser preview, a demo account, a seeded database) and for terminology rules. If the app cannot show the feature without real data, say so and ask instead of recording real customer data.
+1. Load the extension counterpart if one is installed and read its `EXTENSION.md` (`extension.md` says what it holds). Read the project's `AGENTS.md` and README for how to start the app with sample data (a browser preview, a demo account, a seeded database) and for terminology rules. If the app cannot show the feature without real data, say so and ask instead of recording real customer data.
 2. Look in `<project>/scripts/manual-video/scenarios/` for a scenario that covers the feature. If found, run it again (step 6) and update only what changed in the UI.
 3. If none: copy the scenario template to `<project>/scripts/manual-video/scenarios/<feature>.mjs` (the extension's template when it links one, otherwise `templates/scenario.template.mjs`), and copy `scripts/lib.mjs` and `scripts/record.mjs` to `<project>/scripts/manual-video/` if the project does not have them yet. Plan the story first: 3 to 6 steps, one caption per action, then optional other cases, then the summary card.
 4. Make sure Playwright and ffmpeg are available (`troubleshooting.md`).
@@ -14,7 +14,7 @@ A captioned screen recording of one feature of a web app (Playwright + Chromium,
    ```bash
    node scripts/manual-video/record.mjs --scenario <file> --url <app url> \
      [--serve "<command that starts the app>"] [--out <dir>] \
-     [--brand .agents/contexts/agency/@<name>/docs-user-documentation/brand.json] [--music <file>]
+     [--brand <counterpart folder>/brand.json] [--music <file>]
    ```
 
    A 4-minute video takes about 4 minutes of real time; run it in the background and wait.

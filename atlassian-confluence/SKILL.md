@@ -1,11 +1,15 @@
 ---
 name: atlassian-confluence
 description: Guide for creating and maintaining a product-specific Confluence knowledge base where all teams share understanding of the product, features, decisions, and customer insights in plain language. ALWAYS use this skill when the user requests ANY Confluence operation—creating pages, documenting features, setting up structures, managing business rules, or updating content. Use for both single pages and full space architecture. The knowledge base is product-focused, may contain product-related business rules, and should be accessible to design, engineering, sales, and support teams.
-version: 1.1.0
+version: 1.2.0
 license: MIT
 ---
 
 # Confluence Knowledge Base
+
+## Extension counterpart
+
+Before doing anything else, check the available skills for one named `atlassian-confluence` in a plugin called `agency-skills-<ext_name>` (for example `agency-skills-extension:atlassian-confluence`). If one exists, load it now and follow it together with this skill; where the two differ, the counterpart wins. With several, the last one wins; the `context-management` skill gives the order. If none exists, carry on with this skill's defaults.
 
 Use this skill to design, create, update, and govern a product-focused Confluence knowledge base that is understandable across design, engineering, sales, and support.
 

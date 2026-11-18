@@ -1,11 +1,15 @@
 ---
 name: atlassian-mcp-setup
 description: Setup and install guide for Atlassian Rovo MCP in IDE and agent environments. ALWAYS use this skill when the user asks to install, configure, fix authentication for, or use Atlassian Rovo MCP. Start by asking setup questions (project-local vs multi-project, OS/runtime, client) and then provide the matching install path with exact commands.
-version: 1.1.0
+version: 1.2.0
 license: MIT
 ---
 
 # Install Atlassian Rovo MCP
+
+## Extension counterpart
+
+Before doing anything else, check the available skills for one named `atlassian-mcp-setup` in a plugin called `agency-skills-<ext_name>` (for example `agency-skills-extension:atlassian-mcp-setup`). If one exists, load it now and follow it together with this skill; where the two differ, the counterpart wins. With several, the last one wins; the `context-management` skill gives the order. If none exists, carry on with this skill's defaults.
 
 Use this skill to guide users through installing and configuring Atlassian Rovo MCP with the correct scope:
 

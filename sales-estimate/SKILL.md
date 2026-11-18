@@ -1,10 +1,14 @@
 ---
 name: sales-estimate
 description: "Use when creating, naming, renaming, or filling in the metadata table of a project estimate document under docs/estimates/ — covers date-prefixed filenames keyed to the Date of assessment field, the required AI Estimate metadata row (never a separate Estimate or Human Estimate row), and the required Scope/Assumptions/Breakdown document structure with a unique index on every section and sub-section (traceable, but not mirrored index-for-index, from the client quotation's Deliverables groups via back-references). Always asks the client name fresh for every new estimate rather than remembering it. Always trigger when the user asks to estimate a project, size up a task, scope out how long something will take, or write/draft/create an estimate document — even if the request doesn't mention filenames, metadata, or docs/estimates/ directly. For turning the estimate into a client-facing price or quotation, tracking pricing variables, or Zoho Books estimates, see the sales-quotation skill instead."
-version: 1.6.0
+version: 1.7.0
 ---
 
 # Estimate Project Skill
+
+## Extension counterpart
+
+Before doing anything else, check the available skills for one named `sales-estimate` in a plugin called `agency-skills-<ext_name>` (for example `agency-skills-extension:sales-estimate`). If one exists, load it now and follow it together with this skill; where the two differ, the counterpart wins. With several, the last one wins; the `context-management` skill gives the order. If none exists, carry on with this skill's defaults.
 
 ## When to Use This Skill
 

@@ -1,10 +1,14 @@
 ---
 name: docs-agent-instructions
 description: "Activate when writing or editing agent/AI/LLM instruction files (AGENTS.md, CLAUDE.md, copilot-instructions.md, .github/instructions/*.md, or any file whose purpose is to instruct an AI agent or LLM). Refines existing instructions for clarity, logical flow, and machine parsability, or synthesizes new instructions from raw requirements — always preserving all constraints, hard-coded values, and safety guardrails without loss."
-version: 1.1.2
+version: 1.2.0
 ---
 
 # Agent Instructor Skill
+
+## Extension counterpart
+
+Before doing anything else, check the available skills for one named `docs-agent-instructions` in a plugin called `agency-skills-<ext_name>` (for example `agency-skills-extension:docs-agent-instructions`). If one exists, load it now and follow it together with this skill; where the two differ, the counterpart wins. With several, the last one wins; the `context-management` skill gives the order. If none exists, carry on with this skill's defaults.
 
 ## When to Use This Skill
 

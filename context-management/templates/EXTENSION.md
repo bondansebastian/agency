@@ -19,4 +19,5 @@ Only settings the skill documents have any effect. Leave a row out to keep the s
 ## Notes
 
 - No secrets, credentials or client data in this file or this folder.
+- Paths in this file are relative to this folder, which the agency skill learns when it loads the counterpart `SKILL.md` beside it.
 - <Anything a person or agent needs to know to use this extension correctly.>

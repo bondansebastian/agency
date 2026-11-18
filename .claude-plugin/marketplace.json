@@ -7,14 +7,14 @@
   },
   "metadata": {
     "description": "Curated agent skills encoding domain expertise, workflows, and high-quality execution patterns.",
-    "version": "2.0.0"
+    "version": "3.0.0"
   },
   "plugins": [
     {
       "name": "agency",
       "source": "./",
-      "description": "All agency skills in one plugin, invoked as /agency:<skill>: Atlassian (Jira, Confluence, Rovo MCP setup), sales (estimates, quotations), docs (user guides and manual videos, agent instructions), dev (project initiation, React, UI/UX), DevOps (Coolify, OCI), token-saver, and context-management (per-project memory, extensions, credentials).",
-      "version": "1.5.0",
+      "description": "All agency skills in one plugin, invoked as /agency:<skill>: Atlassian (Jira, Confluence, Rovo MCP setup), sales (estimates, quotations), docs (user guides and manual videos, agent instructions), dev (project initiation, React, UI/UX), DevOps (Coolify, OCI), token-saver, and context-management (per-project memory, credentials, and extensions installed as agency-skills-<ext_name> plugins).",
+      "version": "2.0.0",
       "category": "productivity",
       "strict": false,
       "skills": [

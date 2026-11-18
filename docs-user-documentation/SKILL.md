@@ -1,10 +1,14 @@
 ---
 name: docs-user-documentation
-description: "Use whenever the user asks to write, create, draft, or update a guide, documentation, user manual, help center article, how-to article, or any end-user-facing documentation for an application or feature, or asks for a user manual video, tutorial video, walkthrough video, or to re-record one after the app changed — covers plain, non-technical business language for a non-technical end-user audience, step-by-step screenshots, captioned screen-recording videos, publishing to Notion, and applying an extension (brand credit, look, fixed language, music) when the project mounts one. Never references ticket numbers, JIRA IDs, feature flags, internal service/class/table names, or other internal identifiers. Not for API or developer docs."
-version: 2.2.0
+description: "Use whenever the user asks to write, create, draft, or update a guide, documentation, user manual, help center article, how-to article, or any end-user-facing documentation for an application or feature, or asks for a user manual video, tutorial video, walkthrough video, or to re-record one after the app changed — covers plain, non-technical business language for a non-technical end-user audience, step-by-step screenshots, captioned screen-recording videos, publishing to Notion, and applying its extension counterpart (brand credit, look, fixed language, music) when one is installed. Never references ticket numbers, JIRA IDs, feature flags, internal service/class/table names, or other internal identifiers. Not for API or developer docs."
+version: 2.3.0
 ---
 
 # User Documentation Skill
+
+## Extension counterpart
+
+Before doing anything else, check the available skills for one named `docs-user-documentation` in a plugin called `agency-skills-<ext_name>` (for example `agency-skills-extension:docs-user-documentation`). If one exists, load it now and follow it together with this skill; where the two differ, the counterpart wins. With several, the last one wins; the `context-management` skill gives the order. If none exists, carry on with this skill's defaults.
 
 ## When to Use This Skill
 
@@ -32,15 +36,12 @@ Explain what the reader can **do** and **see** (buttons, screens, fields, outcom
 
 ## Extension: Who the Documentation Is Made For
 
-This skill holds the method. Everything that belongs to one team or brand (credit and watermark, cover look, fixed language, labels, music, where to publish) comes from an **extension**, never from this skill.
+This skill holds the method. Everything that belongs to one team or brand (credit and watermark, cover look, fixed language, labels, music, where to publish) comes from this skill's **extension counterpart**, never from this skill.
 
-**Before anything else, look for an extension**, following the `context-management` skill:
-
-1. `<project-root>/.agents/contexts/agency/@<name>/docs-user-documentation/EXTENSION.md` — an extension mounted in the project (often a git submodule).
-2. `~/.agents/contexts/agency/@<name>/docs-user-documentation/EXTENSION.md` — an extension for every project on this machine.
-3. None found — work without one: no credit, no watermark, no music, the default look, and the language rule below.
-
-When an extension exists, read its `EXTENSION.md` first and follow it. An extension's fixed rules win over this skill's defaults and over `MEMORY.md`; only an explicit instruction from the user in this conversation wins over the extension. If the project declares an extension but its folder is empty (a submodule that was not fetched), fetch it; if that fails, stop and tell the user — never fall back to "no extension" silently. What this skill reads from an extension is in `references/extension.md`. If the user asks to add, create or fix an extension, the `context-management` skill does that.
+- The counterpart is the skill `agency-skills-<ext_name>:docs-user-documentation` (see Extension counterpart above). Loading it shows its folder; read the `EXTENSION.md` there first and follow the files it links to. Paths in it are relative to that folder.
+- With no counterpart installed, work without one: no credit, no watermark, no music, the default look, and the language rule below.
+- An extension's fixed rules win over this skill's defaults and over `MEMORY.md`; only an explicit instruction from the user in this conversation wins over them.
+- What this skill reads from its extension is in `references/extension.md`. If the user asks to create, install or fix an extension, the `context-management` skill does that.
 
 ---
 
@@ -57,12 +58,12 @@ The reader, language, core rules and internal-context rules below apply to both 
 
 ## Where This Skill Stores Data: Contexts vs. Credentials, Always Per-Project
 
-**Follow the `context-management` skill (`/agency:context-management`) for where and how**: resolving `<project-root>`, the lookup order (user's instruction → extension → memory → default), the entry format, migrating a legacy folder, and what must never be stored. If that skill is not available: use the paths below inside the current project (never the skill's own folder), read an extension before memory, and move the legacy folder to the current path the first time you find it, or keep using it if it cannot be moved.
+**Follow the `context-management` skill (`/agency:context-management`) for where and how**: resolving `<project-root>`, the precedence between the user's instruction, the extension, memory and defaults, the entry format, migrating a legacy folder, and what must never be stored. If that skill is not available: use the paths below inside the current project (never the skill's own folder), follow this skill's extension counterpart when one is installed, and move the legacy folder to the current path the first time you find it, or keep using it if it cannot be moved.
 
 | Kind | Path | Used for |
 |---|---|---|
-| Memory | `<project-root>/.agents/contexts/agency/docs-user-documentation/MEMORY.md` | Language preference, Notion targets and structure, the chosen extension |
-| Extension | `<project-root>/.agents/contexts/agency/@<name>/docs-user-documentation/EXTENSION.md` | Brand, fixed language, labels, look, music, publishing (see `references/extension.md`) |
+| Memory | `<project-root>/.agents/contexts/agency/docs-user-documentation/MEMORY.md` | Language preference, Notion targets and structure |
+| Extension | The counterpart skill `agency-skills-<ext_name>:docs-user-documentation` and the `EXTENSION.md` in its folder | Brand, fixed language, labels, look, music, publishing (see `references/extension.md`) |
 | Credentials | `<project-root>/.agents/credentials/agency/docs-user-documentation/CREDENTIALS.md` | Saved logins for capturing screens (see `references/handling-authentication.md`) |
 | Legacy folders | `<project-root>/.agents/contexts/writing-user-guide/` and `<project-root>/.agents/credentials/writing-user-guide/` | Migrate on encounter |
 
@@ -129,7 +130,7 @@ If reaching the screen you need to screenshot requires signing in first, don't g
 
 ## Video
 
-For a video, follow `references/video.md` from start to finish: plan the story, write a scenario with the `rec.*` helpers, record it with `scripts/record.mjs` (passing the extension's `brand.json` as `--brand` when there is one), and **look at the result** before reporting. The default look is in `references/video-style.md`; fixes are in `references/troubleshooting.md`.
+For a video, follow `references/video.md` from start to finish: plan the story, write a scenario with the `rec.*` helpers, record it with `scripts/record.mjs` (passing the `brand.json` from the counterpart's folder as `--brand` when there is one), and **look at the result** before reporting. The default look is in `references/video-style.md`; fixes are in `references/troubleshooting.md`.
 
 - The data in a video is sample data, and the cover says so. Never record real customer data. If the app cannot show the feature without real data, say so and ask.
 - UI labels are quoted exactly as the app shows them, in bold.
@@ -159,9 +160,8 @@ If the guide or manual page is being published or updated in Notion, never assum
 | Writing to the credentials folder for the first time in a project | Check the project's `.gitignore` excludes `.agents/credentials/`; add an entry if missing — this folder must never be committed |
 | Reading or writing anything in Notion | One integration per task: the extension's choice, else `notion-cli` (`ntn`) if installed and signed in, else a connected Notion connector |
 | No Notion integration available at all | Offer to install `notion-cli` per `curl -fsSL https://ntn.dev \| bash`; if the user declines, ask how they want the guide published |
-| Starting any task | Look for an extension (per the `context-management` skill) and read its `EXTENSION.md` before drafting |
+| Starting any task | Load the extension counterpart if one is installed and read its `EXTENSION.md` before drafting |
 | Reading or saving any remembered value, extension or credential | Follow the `context-management` skill; this skill only names its own keys and paths |
-| Project declares an extension but the folder is empty | Fetch it (`git submodule update --init <path>`); if that fails, stop and tell the user — never fall back to the neutral look silently |
 | Asked for a video, tutorial, walkthrough or re-recording | Follow `references/video.md`; pass the extension's `brand.json` as `--brand` |
 | A scenario for the feature already exists in `scripts/manual-video/scenarios/` | Re-run it and change only what changed in the UI |
 | Brand, client or team-specific rule comes up while writing | It belongs in an extension, not in this skill and not in the guide's method |
