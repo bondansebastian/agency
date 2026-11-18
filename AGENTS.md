@@ -61,7 +61,7 @@ Every skill listed in `.claude-plugin/marketplace.json` must appear in that outp
 
 ## GitHub workflows
 
-There are none yet. If you add any, create exactly two in `.github/workflows/`: `tests.yml` (`Tests`, on `pull_request` only, lint and tests only, never a build) and `deploy.yml` (`Deploy`, on `push` to `main` only, build → publish → deploy). No other workflow files. Follow the `dev-project-initiation` skill, section 7, including `.github/AGENTS.md` and the `tests` gate job.
+There are none yet. If you add any, create exactly two in `.github/workflows/`: `tests.yml` (`Tests`, on `pull_request` only, lint and tests only, never a build) and `deploy.yml` (`Deploy`, on `push` to `main` only, build → publish → deploy). No other workflow files. Follow the `dev-init-project` skill, section 7, including `.github/AGENTS.md` and the `tests` gate job.
 
 ## New-skill checklist
 

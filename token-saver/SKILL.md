@@ -1,7 +1,7 @@
 ---
 name: token-saver
 description: "Invoke at the start of EVERY coding task the user requests (feature, bug fix, refactor, tests, migration, review), before reading code or writing a plan. Keeps token cost down by making the main model an orchestrator: plan once in a file, route each piece of work to the cheapest model that can do it, keep tool output out of the main context, and verify with commands instead of re-reading code."
-version: 1.1.2
+version: 1.1.3
 ---
 
 # Token Saver Skill
@@ -99,7 +99,7 @@ Browser verification:
 - The only exception is a new UI with no test script yet: look at it in the browser once, then add
   its script before the work is done.
 - If the app has a web UI and no `test:e2e` script at all, set one up first by following section 8
-  of the `dev-project-initiation` skill (Playwright, `e2e/smoke.spec.ts`, the `e2e` CI job), then carry
+  of the `dev-init-project` skill (Playwright, `e2e/smoke.spec.ts`, the `e2e` CI job), then carry
   on.
 - Run `test:e2e` with its output filtered to the failures. A failing spec is a failed check: it goes
   back to the same agent with only the failing output.

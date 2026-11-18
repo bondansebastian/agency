@@ -14,7 +14,7 @@
       "name": "agency",
       "source": "./",
       "description": "All agency skills in one plugin, invoked as /agency:<skill>: Atlassian (Jira, Confluence, Rovo MCP setup), sales (estimates, quotations), docs (user guides and manual videos, agent instructions), dev (project initiation, React, UI/UX), DevOps (Coolify, OCI), token-saver, and context-management (per-project memory, profile packs, credentials).",
-      "version": "1.4.0",
+      "version": "1.4.1",
       "category": "productivity",
       "strict": false,
       "skills": [
@@ -22,7 +22,7 @@
         "./atlassian-jira",
         "./atlassian-mcp-setup",
         "./context-management",
-        "./dev-project-initiation",
+        "./dev-init-project",
         "./dev-react",
         "./dev-ui-ux",
         "./devops",

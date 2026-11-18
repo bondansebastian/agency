@@ -1,7 +1,7 @@
 ---
-name: dev-project-initiation
+name: dev-init-project
 description: "Use when setting up a new or existing repository for coding agents (Claude Code, Gemini CLI, Codex), when a repo has no AGENTS.md or has a CLAUDE.md or GEMINI.md with real content, when the user asks to \"write to agents.md\", when creating GitHub Actions workflows, before moving a Jira card for work done in a repo, before reporting a change as done, or when opening or merging a PR."
-version: 1.1.0
+version: 1.1.1
 ---
 
 # Project initiation

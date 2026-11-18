@@ -1,7 +1,7 @@
 ---
 name: docs-agent-instructions
 description: "Activate when writing or editing agent/AI/LLM instruction files (AGENTS.md, CLAUDE.md, copilot-instructions.md, .github/instructions/*.md, or any file whose purpose is to instruct an AI agent or LLM). Refines existing instructions for clarity, logical flow, and machine parsability, or synthesizes new instructions from raw requirements — always preserving all constraints, hard-coded values, and safety guardrails without loss."
-version: 1.1.1
+version: 1.1.2
 ---
 
 # Agent Instructor Skill
@@ -20,13 +20,13 @@ Load this skill when you are writing or editing any of the following:
 
 ## Where the Text Goes
 
-This skill decides **how** instructions are written. **Which file they go in is decided by the `dev-project-initiation` skill, and it wins over this skill:**
+This skill decides **how** instructions are written. **Which file they go in is decided by the `dev-init-project` skill, and it wins over this skill:**
 
 - Content lives in `AGENTS.md` only. `CLAUDE.md` and `GEMINI.md` are symlinks to it and never hold content.
 - Asked to write or edit `CLAUDE.md` or `GEMINI.md`: edit the `AGENTS.md` beside it. If `CLAUDE.md` or `GEMINI.md` is a real file with content, merge it into `AGENTS.md` (`git mv CLAUDE.md AGENTS.md` keeps history) and replace it with the symlink, as that skill's section 1 describes, then refine the merged text.
 - Put each rule in the `AGENTS.md` of the deepest folder it applies to (that skill's section 2), creating the file and its symlinks if needed. The root file gets only repo-wide rules. Tell the user which file you chose.
 - Tool-specific files that are not symlink targets (`.github/copilot-instructions.md`, `.github/instructions/*.md`, a system prompt file) are edited in place.
-- If the `dev-project-initiation` skill is not available, still apply the three rules above.
+- If the `dev-init-project` skill is not available, still apply the three rules above.
 
 ---
 
