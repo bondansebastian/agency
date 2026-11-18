@@ -1,19 +1,20 @@
 /* global window, document, CSSStyleSheet */
-// Shared pieces of the IgnisLabs user documentation videos: the on-screen overlay (caption bar, cursor,
-// click ripple, title cards, IgnisLabs cover and watermark) and the helpers a scenario uses to drive a web
-// page. A scenario only says what to click and what to say.
+// Shared pieces of the user documentation videos: the on-screen overlay (caption bar, cursor, click
+// ripple, title cards, cover and optional credit watermark) and the helpers a scenario uses to drive a
+// web page. A scenario only says what to click and what to say. Everything brand-specific (credit text,
+// cover look, locale, music) comes from a profile (see references/profile.md), never from this file.
 import { spawnSync } from "node:child_process";
-import { mkdirSync, readdirSync, renameSync, rmSync } from "node:fs";
-import { join } from "node:path";
+import { mkdirSync, readFileSync, readdirSync, renameSync, rmSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 /**
- * Playwright is taken from IGNIS_PLAYWRIGHT (path to another install's index.js), else from
- * @playwright/test, else from playwright. IGNIS_CHROMIUM names a browser executable to use instead of
+ * Playwright is taken from DOCS_PLAYWRIGHT (path to another install's index.js), else from
+ * @playwright/test, else from playwright. DOCS_CHROMIUM names a browser executable to use instead of
  * Playwright's own (the browser builds must match the Playwright version, or the recording is silently empty).
  */
 async function loadChromium() {
-  const other = process.env.IGNIS_PLAYWRIGHT;
+  const other = process.env.DOCS_PLAYWRIGHT;
   let mod;
   if (other) mod = await import(pathToFileURL(other).href);
   else {
@@ -28,8 +29,29 @@ async function loadChromium() {
 
 export const WIDTH = 1280;
 export const HEIGHT = 720;
-/** The maker credit of every IgnisLabs video: on the cover, and as a small watermark on the rest. */
-export const BRAND = "by IgnisLabs";
+/** Without a profile: no credit, no watermark, no music, the default look. */
+export const DEFAULT_PROFILE = { credit: "", locale: "en-US", css: "", music: null };
+
+/**
+ * Reads a profile.json (see references/profile.md). Fields, all optional:
+ *   credit   maker credit, shown as a pill on the cover and as a small watermark on every other frame
+ *   locale   browser locale of the recording, for example "id-ID"
+ *   cssFile  a CSS file appended to the overlay stylesheet (restyle the cover with `#demo-card.cover ...`)
+ *   music    an audio file mixed quietly under the video
+ * `cssFile` and `music` are resolved against the folder of the profile file.
+ */
+export function loadProfile(file) {
+  if (!file) return { ...DEFAULT_PROFILE };
+  const path = resolve(file);
+  const raw = JSON.parse(readFileSync(path, "utf8"));
+  const here = dirname(path);
+  return {
+    ...DEFAULT_PROFILE,
+    ...raw,
+    css: raw.cssFile ? readFileSync(resolve(here, raw.cssFile), "utf8") : (raw.css ?? ""),
+    music: raw.music ? resolve(here, raw.music) : null,
+  };
+}
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
@@ -39,7 +61,7 @@ export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
  * popovers: they sit in the top layer, above the native <dialog>s of the app, and `front()` re-shows
  * them so they stay above a dialog that opened later.
  */
-function installOverlay(brand) {
+function installOverlay({ credit, css }) {
   const make = (id, css) => {
     const el = document.createElement("div");
     el.id = id;
@@ -77,26 +99,7 @@ function installOverlay(brand) {
     .k-by{font-size:22px;font-weight:600;letter-spacing:.12em;margin-top:30px;padding:8px 22px;border-radius:999px;
       background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35)}
     #demo-wm{font-family:Inter,system-ui,sans-serif;pointer-events:none!important}
-    /* The cover only: the look of ignislabs.dev (near-black base, ember glow, fire-gradient title).
-       Space Grotesk and JetBrains Mono are used when installed on the recording machine, else Inter. */
-    #demo-card.cover{font-family:"Space Grotesk",Inter,system-ui,sans-serif;color:#f4efe9;
-      background-color:#07060a!important;
-      background-image:radial-gradient(ellipse 55% 60% at 80% 105%,rgba(255,106,0,.42),rgba(255,106,0,0) 70%),
-        radial-gradient(ellipse 30% 36% at 80% 100%,rgba(255,179,71,.34),rgba(255,179,71,0) 70%),
-        linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px)!important;
-      background-size:100% 100%,100% 100%,48px 48px,48px 48px!important}
-    #demo-card.cover .k-eyebrow{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-size:18px;
-      font-weight:400;letter-spacing:.25em;opacity:1;color:#9a93a6;padding:9px 22px;border-radius:999px;
-      background:rgba(22,21,27,.4);border:1px solid rgba(255,255,255,.1)}
-    #demo-card.cover .k-title{font-weight:600;letter-spacing:-.025em;line-height:1.1;padding-bottom:.08em;
-      background:linear-gradient(100deg,#fff3d6 0%,#ffb347 30%,#ff6a00 65%,#ff2d55 100%);
-      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
-    #demo-card.cover .k-sub{color:#9a93a6;opacity:1}
-    #demo-card.cover .k-by{color:#07060a;border:0;background:linear-gradient(to right,#ffb347,#ff6a00);
-      box-shadow:0 0 36px rgba(255,106,0,.35)}
-    #demo-card.cover .k-fine{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
-      letter-spacing:.08em;opacity:1;color:#9a93a6}
+    ${css}
   `);
   document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
 
@@ -122,13 +125,16 @@ function installOverlay(brand) {
   );
 
   // Small muted watermark, bottom right (clear of the caption bar and of the dialog buttons).
-  const wm = make(
-    "demo-wm",
-    base +
-      "right:12px;bottom:6px;font-size:12px;line-height:1;letter-spacing:.06em;color:rgba(255,255,255,.82);" +
-      "background:rgba(17,17,28,.5);border-radius:999px;padding:4px 10px;",
-  );
-  wm.textContent = brand;
+  // Only when the profile has a credit.
+  const wm = credit
+    ? make(
+        "demo-wm",
+        base +
+          "right:12px;bottom:6px;font-size:12px;line-height:1;letter-spacing:.06em;color:rgba(255,255,255,.82);" +
+          "background:rgba(17,17,28,.5);border-radius:999px;padding:4px 10px;",
+      )
+    : null;
+  if (wm) wm.textContent = credit;
   let coverShown = false;
 
   const reshow = (el) => {
@@ -136,7 +142,7 @@ function installOverlay(brand) {
     el.showPopover();
   };
   const front = () => {
-    if (!coverShown) reshow(wm);
+    if (wm && !coverShown) reshow(wm);
     reshow(cap);
     reshow(cur);
   };
@@ -172,6 +178,7 @@ function installOverlay(brand) {
       card.innerHTML = html;
       card.style.display = "flex";
       reshow(card);
+      if (!wm) return;
       if (cover) {
         if (wm.matches(":popover-open")) wm.hidePopover();
       } else {
@@ -194,11 +201,12 @@ function installOverlay(brand) {
  * Opens the page in a recording browser context and returns the helpers a scenario uses.
  * `finish()` closes everything and returns the path of the recorded webm.
  */
-export async function startRecording({ url, outDir, readySelector = "body", locale = "id-ID" }) {
+export async function startRecording({ url, outDir, readySelector = "body", profile = DEFAULT_PROFILE }) {
+  const { credit, css, locale } = { ...DEFAULT_PROFILE, ...profile };
   rmSync(outDir, { recursive: true, force: true });
   mkdirSync(outDir, { recursive: true });
-  // IGNIS_CHROMIUM: use this browser instead of Playwright's own (see README).
-  const executablePath = process.env.IGNIS_CHROMIUM;
+  // DOCS_CHROMIUM: use this browser instead of Playwright's own (see references/troubleshooting.md).
+  const executablePath = process.env.DOCS_CHROMIUM;
   const chromium = await loadChromium();
   const browser = await chromium.launch(executablePath ? { executablePath } : {});
   const context = await browser.newContext({
@@ -209,7 +217,7 @@ export async function startRecording({ url, outDir, readySelector = "body", loca
   const page = await context.newPage();
   await page.goto(url);
   await page.waitForSelector(readySelector, { timeout: 30_000 });
-  await page.evaluate(installOverlay, BRAND);
+  await page.evaluate(installOverlay, { credit, css });
 
   const demo = (name, ...args) => page.evaluate(([fn, a]) => window.__demo[fn](...a), [name, args]);
 
@@ -252,7 +260,7 @@ export async function startRecording({ url, outDir, readySelector = "body", loca
       await demo("card", html, false);
     },
     /**
-     * The cover card, always with "by IgnisLabs". Every video starts with one.
+     * The cover card, with the profile's credit when it has one. Every video starts with one.
      * `eyebrow` is the small line on top, `note` the small line below (for example "data contoh").
      */
     async showCover({ eyebrow, title, subtitle, note = "" }) {
@@ -262,7 +270,7 @@ export async function startRecording({ url, outDir, readySelector = "body", loca
         `<div class="k-eyebrow">${eyebrow}</div>
          <div class="k-title">${title}</div>
          <div class="k-sub">${subtitle}</div>
-         <div class="k-by">${BRAND}</div>
+         ${credit ? `<div class="k-by">${credit}</div>` : ""}
          ${note ? `<div class="k-fine">${note}</div>` : ""}`,
         true,
       );
@@ -297,7 +305,7 @@ export async function startRecording({ url, outDir, readySelector = "body", loca
 
 /**
  * webm to a small H.264 mp4 (the first 0.8 s, a blank page while it loads, is cut).
- * With `music` (the IgnisLabs ambient bed) the music is mixed under the finished video.
+ * With `music` (a music bed, normally from the profile) the music is mixed under the finished video.
  */
 export function toMp4(webm, mp4, music) {
   const run = spawnSync(

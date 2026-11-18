@@ -1,53 +1,202 @@
 ---
 name: docs-user-documentation
-description: Create IgnisLabs-branded Indonesian user documentation for a web app feature - a captioned screen-recording video (cover "by IgnisLabs", muted watermark, Indonesian captions, cursor, title cards) and the matching Notion User Manual page. Use when asked for a user manual video, tutorial video, walkthrough video, panduan pengguna or manual page of a feature, or to re-record an existing manual video after the app changed.
-version: 1.0.1
+description: "Use whenever the user asks to write, create, draft, or update a guide, documentation, user manual, help center article, how-to article, or any end-user-facing documentation for an application or feature, or asks for a user manual video, tutorial video, walkthrough video, or to re-record one after the app changed — covers plain, non-technical business language for a non-technical end-user audience, step-by-step screenshots, captioned screen-recording videos, publishing to Notion, and applying a brand profile (credit, look, language, music) when the project provides one. Never references ticket numbers, JIRA IDs, feature flags, internal service/class/table names, or other internal identifiers. Not for API or developer docs."
+version: 2.0.0
 ---
 
-# IgnisLabs user documentation
+# User Documentation Skill
 
-A captioned screen-recording video of one feature of a web app (Playwright + Chromium, sample data, Indonesian captions, visible cursor, title cards, quiet ambient music, no voice-over) plus the matching page in the product's **User Manual** in Notion.
+## When to Use This Skill
 
-## When to use
+Load this skill whenever you are writing or editing content meant for the people who **use** an application — not the people who build or support it internally:
 
-- Asked for a user manual video, tutorial video, walkthrough video, "panduan pengguna" or manual page of a feature.
-- Asked to re-record an existing manual video after the app changed.
-- Not for API docs or developer docs.
+- User guides, user manuals, help center articles
+- How-to / step-by-step instructions for end users
+- In-app help text, tooltips, or onboarding copy
+- Customer-facing release notes describing a new feature
+- User manual videos, tutorial videos and walkthrough videos of a feature, including re-recording one after the app changed
 
-## Rules that never change
+Not for API docs or developer docs.
 
-- The cover always says "by IgnisLabs" and is made with `rec.cover`. The cover has the look of ignislabs.dev (dark, ember glow, fire-gradient title).
-- The watermark is added by `lib.mjs` and is never removed or hidden, except on the cover.
-- Captions and manual text are in Indonesian.
+**This skill must always trigger whenever the user asks to write, create, draft, or update a "guide," "documentation," "manual," "help doc," or similar end-user-facing document** — even if the request is a short, generic ask like "write a guide for this feature" or "create documentation for X" that doesn't spell out these rules.
+
+---
+
+## The Reader
+
+Write for the actual end-user of the application: someone who uses the product to get their work done and has **no knowledge of how it's built**. They don't know what a database, API, queue, cache, feature flag, or backend service is, and they don't need to. Before writing a line, picture that reader and ask "would this sentence mean anything to them?" — if not, cut or rephrase it.
+
+Explain what the reader can **do** and **see** (buttons, screens, fields, outcomes), not how the system works underneath.
+
+---
+
+## Profile: Who the Documentation Is Made For
+
+This skill holds the method. Everything that belongs to one team or brand (credit and watermark, cover look, fixed language, labels, music, where to publish) comes from a **profile**, never from this skill.
+
+**Before anything else, look for a profile** as described in `references/profile.md`:
+
+1. `<project-root>/.agents/profiles/<pack>/docs-user-documentation/PROFILE.md` — a profile pack mounted in the project (often a git submodule).
+2. `~/.agents/profiles/<pack>/docs-user-documentation/PROFILE.md` — a profile for every project on this machine.
+3. None found — work without one: no credit, no watermark, no music, the default look, and the language rule below.
+
+When a profile exists, read its `PROFILE.md` first and follow it. A profile's fixed rules win over this skill's defaults and over `MEMORY.md`; only an explicit instruction from the user in this conversation wins over the profile. If the project declares a pack but its folder is empty (a submodule that was not fetched), do not fall back to "no profile" — see `references/profile.md`.
+
+---
+
+## Outputs
+
+| Output | When |
+|---|---|
+| **Written guide** with a screenshot per step | The default. Any request for a guide, manual, help article or how-to. |
+| **Video** with captions, plus its manual page | The user asks for a video, tutorial, walkthrough or re-recording, or the profile names video as its default output. See `references/video.md`. |
+
+The reader, language, core rules and internal-context rules below apply to both outputs: a caption in a video follows the same rules as a sentence in a guide.
+
+---
+
+## Where This Skill Stores Data: Contexts vs. Credentials, Always Per-Project
+
+This skill checks and saves data in two **separate** fixed locations inside the **current project** — never inside the skill's own folder, so it doesn't matter whether this skill is installed locally inside the project or globally in a shared/home-directory location shared across many projects:
+
+- **Contexts** (non-sensitive: language preference, Notion targets/structure) — `MEMORY.md` in:
+  ```
+  <project-root>/.agents/contexts/agency/docs-user-documentation/MEMORY.md
+  ```
+- **Credentials** (sensitive: saved login credentials) — in:
+  ```
+  <project-root>/.agents/credentials/agency/docs-user-documentation/
+  ```
+
+Take `<project-root>` as the root of the project you're currently working in. Create either directory (and the file inside it) if it doesn't exist yet — don't wait for one to already be there.
+
+**Keep these strictly separate.** Never write login credentials into the contexts `MEMORY.md`, and never write language/Notion preferences into the credentials folder — see `references/handling-authentication.md` for the credentials file's format. The credentials folder holds secrets and must never be committed to git: before writing to it for the first time in a project, check that the project's `.gitignore` excludes `.agents/credentials/` (or at least `.agents/credentials/agency/docs-user-documentation/`), and add an entry if it's missing.
+
+**Legacy location (migrate on encounter).** Before this skill was renamed, it stored the same data under an older folder name:
+
+- `<project-root>/.agents/contexts/writing-user-guide/` → `<project-root>/.agents/contexts/agency/docs-user-documentation/`
+- `<project-root>/.agents/credentials/writing-user-guide/` → `<project-root>/.agents/credentials/agency/docs-user-documentation/`
+
+Check for the legacy folder every time you resolve the path above:
+
+- **Only the legacy folder exists** — move it to the new path (use `git mv` when the file is tracked, otherwise a plain move), then read and write the new path from then on. Tell the user in one line that you migrated it.
+- **Both exist** — the new path wins. Copy across any entries that only the legacy file has, then delete the legacy file.
+- **Migration isn't possible** (read-only filesystem, the user declines, or another tool still depends on the legacy path) — keep reading **and writing** the legacy path for now, and say so. Retry the migration the next time the skill runs.
+- **Never create a fresh file at the new path while an unmigrated legacy file exists** — that would hide the saved values and make you re-ask for them.
+- **Credentials:** the legacy credentials folder is normally git-ignored, so move it with a plain move, never `git mv` or `git add`. Before moving, make sure `.gitignore` covers the new path (`.agents/credentials/` or `.agents/credentials/agency/docs-user-documentation/`); if it only names the legacy folder, add the new entry first.
+
+**Checking order when this skill is invoked:** check the contexts `MEMORY.md` first (language preference, Notion target). Only check the credentials folder if authentication actually turns out to be necessary (e.g. a login page blocks screenshot capture) — don't check it proactively.
+
+Every `MEMORY.md` reference in this document and in `references/language-preference.md` and `references/writing-to-notion.md` means the contexts path above. Every credentials reference in `references/handling-authentication.md` means the credentials path above. Re-derive `<project-root>` whenever the active project changes within a session — never reuse a previous project's files.
+
+---
+
+## Language
+
+Before drafting any content, determine what language the guide should be written in. **If a profile fixes the language, use it and skip the rest of this rule.** Otherwise see `references/language-preference.md` for the full rule: if the user hasn't already stated a language, check this skill's `MEMORY.md` (resolved per the Memory Location section above) for a remembered default first; if none is saved, ask the user, then save their answer to `MEMORY.md` so future guides use it automatically without asking again.
+
+---
+
+## Core Rules
+
+1. **Plain, non-technical business language.** Describe features in terms of what the user does and what happens as a result — everyday words, not engineering vocabulary. If a technical term is unavoidable (e.g., the product itself is a developer tool and "API key" is a UI label the user sees), use only the term the user actually sees on screen — never the internal name for it.
+
+2. **Never reference ticket numbers or internal identifiers.** This includes JIRA/ticket IDs (`PROJ-4821`), feature flag names (`bulk_export_v2`), internal class/controller/service names (`AuthController`, `NotifyService`), database or table names (`otp_codes`), infrastructure details (SQS, Lambda, Redis, S3), commit hashes, and internal codenames. None of these belong in a document the end user reads, regardless of who asks or why (e.g. "so support can cross-reference it") — that need belongs in an internal runbook, not the user guide.
+
+3. **Stay in the reader's shoes throughout.** Every section — steps, troubleshooting, "good to know" notes — should read as if written for someone who has never seen the app's internals and never will.
+
+---
+
+## Handling Internal Context You're Given
+
+You'll often be handed a ticket, engineering notes, or a Slack message full of implementation detail to write the guide *from*. Use it to understand what changed and how to explain the outcome — but treat all of it as raw material, not content to copy in:
+
+- Extract: what the user can now do, what steps they take, what they'll see, what to do if something goes wrong.
+- Discard: ticket IDs, flag names, class/service/table names, infra choices, internal-only caveats.
+- If support or another internal team genuinely needs the technical cross-reference, offer to write that separately (e.g., an internal runbook note) — keep it out of the user-facing document itself.
+
+---
+
+## Structure: Step by Step, With Screenshots Where Possible
+
+Write any set of instructions as a numbered, step-by-step sequence — one user action per step, in the order the user actually performs them (click X → see Y → enter Z), not a prose paragraph describing the flow.
+
+For each step, include a screenshot of the actual screen/state the user sees at that point whenever you're able to capture or generate one (e.g. you have access to the running app, a browser, or existing product screenshots to pull from). When you need to interact with a browser to navigate the app and capture these screenshots, prefer the `playwright-cli` tool over other browser automation methods.
+
+- Place the screenshot immediately after the step it illustrates, not batched at the end.
+- Capture only what's relevant to that step — crop or point to the specific button/field rather than a whole cluttered screen when possible.
+- If you cannot produce a real screenshot (no access to the app, no design assets, etc.), do not fabricate or describe a fake one — write the step clearly in text and note that a screenshot should be added, rather than inventing image content.
+- Screenshots must follow the same rules as the rest of the guide: no internal tool chrome, debug panels, ticket numbers, or internal identifiers visible in the captured image — crop or redact them out.
+
+Steps that are purely informational (a note, a warning, "good to know") don't need a screenshot — reserve them for actions the user takes or state changes they need to visually confirm.
+
+### If playwright-cli Isn't Available
+
+Before using `playwright-cli` to capture screenshots, check whether it's actually available:
+
+- If `playwright-cli` itself or its dependencies aren't detected, don't silently fall back or skip screenshots — offer to install them following the guide at https://github.com/microsoft/playwright-cli.
+- If no `playwright-cli` skill is detected, offer to install it with `npx skills add https://github.com/microsoft/playwright-cli --skill playwright-cli`.
+- Only proceed without it (falling back to text-only steps per the rule above) if the user declines the install.
+
+### If You Hit a Login Page While Capturing Screenshots
+
+If reaching the screen you need to screenshot requires signing in first, don't guess credentials or skip the screenshot silently. See `references/handling-authentication.md` for the full rule: check the credentials folder (resolved per the section above) for saved credentials first, otherwise ask the user for the login credentials, and offer to save their answer there for next time.
+
+---
+
+## Video
+
+For a video, follow `references/video.md` from start to finish: plan the story, write a scenario with the `rec.*` helpers, record it with `scripts/record.mjs` (passing the profile's `profile.json` as `--profile` when there is one), and **look at the result** before reporting. The default look is in `references/video-style.md`; fixes are in `references/troubleshooting.md`.
+
+- The data in a video is sample data, and the cover says so. Never record real customer data. If the app cannot show the feature without real data, say so and ask.
 - UI labels are quoted exactly as the app shows them, in bold.
-- Use the product's own user-facing terminology (read the project's `AGENTS.md` and UI strings). Never use an internal or code name the user does not see.
-- The data in the video is sample data, and the cover says so. Never record real customer data.
-- Never change the visual constants in [references/branding.md](references/branding.md).
-- Every video gets the IgnisLabs ambient bed (`assets/ignis-ambient-bed.mp3`, generated, no third-party licence) through `--music`, at about -24 LUFS, unless the user asks for a silent video. Use no other music and no voice-over.
+- No voice-over. Music only when the profile provides a bed or the user gives a file.
 
-## Workflow
+---
 
-1. Read the project's `AGENTS.md` and README for how to start the app with sample data (a browser preview, a demo account, a seeded database) and for terminology rules. If the app cannot show the feature without real data, say so and ask instead of recording real customer data.
-2. Look in `<project>/scripts/manual-video/scenarios/` for a scenario that covers the feature. If found, run it again (step 6) and update only what changed in the UI.
-3. If none: copy `templates/scenario.template.mjs` to `<project>/scripts/manual-video/scenarios/<feature>.mjs`, and copy `scripts/lib.mjs` and `scripts/record.mjs` to `<project>/scripts/manual-video/` if the project does not have them yet. Plan the story first: 3 to 6 steps, one caption per action, then optional "Kasus lain", then the summary card. Follow [references/labels.md](references/labels.md).
-4. Make sure Playwright and ffmpeg are available ([references/troubleshooting.md](references/troubleshooting.md)).
-5. Write the scenario with the helpers: `rec.cover`, `rec.caption`, `rec.click`, `rec.type`, `rec.move`, `rec.card`, `rec.hideCaption`, `rec.showCursor`, `rec.page`.
-6. Record: `node scripts/manual-video/record.mjs --scenario <file> --url <app url> [--serve "<command that starts the app>"] [--out <dir>] --music <this skill's folder>/assets/ignis-ambient-bed.mp3`. A 4-minute video takes about 4 minutes of real time; run it in the background and wait.
-7. **Look at the result.** Make a contact sheet (`ffmpeg -i <mp4> -vf "fps=1/10,scale=480:-1,tile=3x4" -frames:v 2 sheet_%d.png`) and view it. Check:
-   - the cover shows "by IgnisLabs";
-   - the watermark is on every other frame and does not cover a button;
-   - every caption is readable and matches the screen;
-   - no frame is blank or shows an error;
-   - the mp4 has an audio stream (`ffprobe -v error -show_entries stream=codec_type -of csv=p=0 <mp4>` prints `video` and `audio`).
+## Publishing to Notion
 
-   Fix and re-record until it is right.
-8. Save the scenario in the project (commit it if the project uses git). Put the mp4 in Notion ([references/manual-page.md](references/manual-page.md)). Report the Notion link, the duration and size, and what the sample data covers.
+If the guide or manual page is being published or updated in Notion, never assume which page to write to. See `references/publishing-to-notion.md` for the full rule: check this skill's `MEMORY.md` (resolved per the Memory Location section above) for a known target page first, ask the user explicitly when none is found, and offer to save their answer to `MEMORY.md` for next time. Once the target is known, organize content using the default structure — project page → "User Manual" page → one sub-page per module — unless the profile, `MEMORY.md` or the user sets a different structure.
 
-## Pointers
+**Use one Notion integration per task, never two.** Take the one the profile names; otherwise `notion-cli` (the `ntn` command) when it is installed and signed in; otherwise a connected Notion connector. Mixing integrations against the same pages risks conflicting page IDs, formatting, or auth scope. See `references/publishing-to-notion.md`.
 
-- [references/branding.md](references/branding.md): colours, sizes, cover palette, video format, pace.
-- [references/labels.md](references/labels.md): fixed Indonesian labels and caption rules.
-- [references/manual-page.md](references/manual-page.md): the Notion page structure and the video upload steps.
-- [references/troubleshooting.md](references/troubleshooting.md): requirements and fixes.
-- `assets/ignis-ambient-bed.mp3`: the music bed (about 6 minutes, looped for longer videos). `scripts/make-bed.py`: generates it; only needed to retune the bed.
-- `scripts/lib.mjs`: overlay and helpers. `scripts/record.mjs`: runner. `templates/scenario.template.mjs`: starting point for a scenario.
+---
+
+## Quick Reference
+
+| Situation | Action |
+|---|---|
+| Starting any guide-writing task | Resolve `<project-root>/.agents/contexts/agency/docs-user-documentation/MEMORY.md` (see Memory Location section — same path regardless of install location), then check it for a remembered language preference before drafting; if none, ask the user and save their answer |
+| `.agents/contexts/agency/docs-user-documentation/` doesn't exist yet in this project | Create the folder and `MEMORY.md` inside it — don't wait for one to already be there |
+| Writing steps for a feature | Describe screens, buttons, and outcomes the user sees — not the backend flow, as a numbered step-by-step sequence with a screenshot per step where possible |
+| No access to the app/assets to capture a real screenshot | Write the step in text and note a screenshot should be added — never fabricate one |
+| `playwright-cli` or its dependencies not detected | Offer to install per https://github.com/microsoft/playwright-cli |
+| No `playwright-cli` skill detected | Offer to install with `npx skills add https://github.com/microsoft/playwright-cli --skill playwright-cli` |
+| Login page blocks screenshot capture | Check the credentials folder for saved credentials; if none, ask the user for login credentials — never guess or skip silently |
+| Writing to the credentials folder for the first time in a project | Check the project's `.gitignore` excludes `.agents/credentials/`; add an entry if missing — this folder must never be committed |
+| Reading or writing anything in Notion | One integration per task: the profile's choice, else `notion-cli` (`ntn`) if installed and signed in, else a connected Notion connector |
+| No Notion integration available at all | Offer to install `notion-cli` per `curl -fsSL https://ntn.dev \| bash`; if the user declines, ask how they want the guide published |
+| Starting any task | Look for a profile (`references/profile.md`) and read its `PROFILE.md` before drafting |
+| Project declares a profile pack but the folder is empty | Fetch it (`git submodule update --init <path>`); if that fails, stop and tell the user — never fall back to the neutral look silently |
+| Asked for a video, tutorial, walkthrough or re-recording | Follow `references/video.md`; pass the profile's `profile.json` as `--profile` |
+| A scenario for the feature already exists in `scripts/manual-video/scenarios/` | Re-run it and change only what changed in the UI |
+| Brand, client or team-specific rule comes up while writing | It belongs in a profile, not in this skill and not in the guide's method |
+| Given a ticket number and told to include it "for support" | Leave it out of the guide; offer a separate internal note instead |
+| Tempted to explain *why* something works a certain way | Only explain if it changes what the user should do; otherwise omit |
+| Feature flag gates who sees a feature | Say "this feature is being rolled out gradually" — never name the flag |
+| An error code or internal identifier appears in engineering notes | Translate to what the user sees/experiences, or omit entirely |
+| Technical term is unavoidable because it's the product's own domain | Use only the on-screen label, never the internal/code name for it |
+
+## Common Mistakes
+
+- Including a JIRA/ticket number "for traceability" or "so support can look it up."
+- Naming a feature flag, internal service, class, table, or infrastructure component (Redis, SQS, Lambda, S3, etc.).
+- Explaining the backend mechanism (queues, workers, rate limiters) instead of the user-visible behavior and timing.
+- Writing precise internal thresholds/config values instead of the user-relevant outcome (e.g. state "you'll need to wait a little while" rather than exposing internal tuning numbers, unless the number itself is what the user needs to know, like a 24-hour link expiry).
+- Slipping into engineering vocabulary because the source material (tickets, Slack messages) was full of it.
+- Writing steps as a dense paragraph instead of a numbered, one-action-per-step sequence.
+- Describing or inventing a screenshot instead of either capturing a real one or flagging that one needs to be added.
+- Including internal tool chrome, debug panels, or identifiers visible inside a captured screenshot.
+- Ignoring a profile that the project provides, or inventing a credit, watermark or music when there is none.
+- Reporting a video as done without looking at a contact sheet of its frames.
+- Recording real customer data because the sample data did not show the feature.
