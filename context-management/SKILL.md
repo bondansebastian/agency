@@ -1,7 +1,7 @@
 ---
 name: context-management
 description: "Use whenever an agency skill needs to read, save, or look up customized or parameterized data for a project — remembered preferences and variables (MEMORY.md), a team or brand profile (PROFILE.md from a profile pack), or saved credentials — and whenever you create, move, migrate, or audit anything under a project's .agents/ folder. Defines where each kind of data lives, the lookup order and precedence, the entry format, legacy-folder migration, how profile packs are mounted, and what must never be stored. Also use when writing or changing a skill that stores data."
-version: 1.0.0
+version: 1.1.0
 ---
 
 # Context Management
@@ -13,16 +13,16 @@ One layout for everything an agency skill customizes per project, team or person
 | Kind | What it is | Who writes it | Path |
 |---|---|---|---|
 | **Memory** | Non-sensitive values remembered for this project so the user is not asked twice: a pricing variable, a default language, a Notion target | The skill, at the user's word | `<project-root>/.agents/contexts/agency/<skill-name>/MEMORY.md` |
-| **Profile** | A team's or brand's house rules and assets: credit, look, fixed language, labels, publishing target. The same across many projects | The team, in a profile pack. Skills only read it | `<project-root>/.agents/contexts/profiles/<pack>/<skill-name>/PROFILE.md` |
+| **Profile** | A team's or brand's house rules and assets: credit, look, fixed language, labels, publishing target. The same across many projects | The team, in a profile pack. Skills only read it | `<project-root>/.agents/contexts/<pack>/<skill-name>/PROFILE.md` |
 | **Credentials** | Secrets: logins, tokens | The skill, only after the user says yes | `<project-root>/.agents/credentials/agency/<skill-name>/CREDENTIALS.md` |
 
 ```text
 <project-root>/.agents/
-├── contexts/
-│   ├── agency/                      # memory, written by skills, committed
+├── contexts/                        # every folder here is one source of context
+│   ├── agency/                      # this project's own memory, written by skills, committed
 │   │   └── <skill-name>/MEMORY.md
-│   └── profiles/                    # profile packs, read-only, usually git submodules
-│       └── <pack>/<skill-name>/PROFILE.md
+│   └── <pack>/                      # a profile pack, read-only, usually a git submodule
+│       └── <skill-name>/PROFILE.md
 └── credentials/                     # secrets, never committed
     └── agency/<skill-name>/CREDENTIALS.md
 ```
@@ -30,7 +30,9 @@ One layout for everything an agency skill customizes per project, team or person
 - `<skill-name>` is the skill's `name` exactly (`sales-quotation`, not `agency:sales-quotation`).
 - `<project-root>` is the root of the project being worked in, normally the git top level. Never the skill's own folder, so it does not matter where the skill is installed. Re-derive it whenever the active project changes within a session, and never reuse another project's files.
 - Create a memory or credentials folder and file when first needed; don't wait for one to exist.
-- A profile pack can also sit at `~/.agents/contexts/profiles/<pack>/` to apply to every project on the machine.
+- Every folder under `.agents/contexts/` is a source of context. `agency` is the project's own. Any other folder that contains `<skill-name>/PROFILE.md` is a profile pack. A folder that is neither (for example `.agents/contexts/jira/`) is a legacy memory folder; see below.
+- A pack is never named `agency`, and never after a skill's legacy folder.
+- A profile pack can also sit at `~/.agents/contexts/<pack>/` to apply to every project on the machine.
 
 ## Reading: order and precedence
 
@@ -50,7 +52,7 @@ Further rules:
 
 ### A declared pack that is empty
 
-If `.gitmodules` lists a path under `.agents/contexts/profiles/`, or a pack folder exists but has no files, the project has a profile that was not fetched. Do not treat it as "no profile":
+If `.gitmodules` lists a path under `.agents/contexts/`, or a folder there other than `agency` exists but has no files, the project has a profile that was not fetched. Do not treat it as "no profile":
 
 1. Run `git submodule update --init <path>`.
 2. If that fails (no access to a private repository, no network), stop and tell the user which pack is missing and why. Continue without it only if the user says so, and say in the report that the profile was not applied.
@@ -96,9 +98,9 @@ A pack is a folder with one sub-folder per skill, named exactly like the skill, 
 Make and mount one:
 
 1. Create a repository (private when the brand should stay private) with `<skill-name>/PROFILE.md` for each skill it customizes. `PROFILE.md` states settings and fixed rules in plain language and links to any other file the skill should use (label sets, a look reference, templates, machine-readable settings, assets).
-2. Mount it in each project: `git submodule add <url> .agents/contexts/profiles/<pack>`.
+2. Mount it in each project: `git submodule add <url> .agents/contexts/<pack>`.
 3. Keep it out of builds and images: add `.agents/` to `.dockerignore`, and do not fetch submodules in CI or on the deployment platform unless the build itself needs them. A pack is only read by the people and agents doing the work a skill describes; a deployment that tries to fetch a private pack without access fails.
-4. A project pins one commit of the pack. To take a newer version: `git submodule update --remote .agents/contexts/profiles/<pack>`, then commit the pointer.
+4. A project pins one commit of the pack. To take a newer version: `git submodule update --remote .agents/contexts/<pack>`, then commit the pointer.
 
 What a given skill reads from its profile (which settings, which files) is documented in that skill.
 
@@ -117,7 +119,7 @@ A skill that stores or reads customized data:
 | Situation | Action |
 |---|---|
 | A skill needs a remembered value | User's word → profile → `MEMORY.md` → default or ask |
-| Starting a task in a skill that supports profiles | Look for `PROFILE.md` in `.agents/contexts/profiles/*/<skill-name>/`, then `~/.agents/contexts/profiles/` |
+| Starting a task in a skill that supports profiles | Look for `<skill-name>/PROFILE.md` in every folder under `.agents/contexts/` except `agency`, then under `~/.agents/contexts/` |
 | Pack folder exists but is empty | `git submodule update --init <path>`; if it fails, stop and tell the user |
 | User confirms a storable value | Save it to `MEMORY.md` as one bullet; say what was saved and where |
 | User gives a login | Use it; ask before saving; check `.gitignore` covers `.agents/credentials/` first |

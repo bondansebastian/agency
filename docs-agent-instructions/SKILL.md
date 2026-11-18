@@ -1,7 +1,7 @@
 ---
 name: docs-agent-instructions
 description: "Activate when writing or editing agent/AI/LLM instruction files (AGENTS.md, CLAUDE.md, copilot-instructions.md, .github/instructions/*.md, or any file whose purpose is to instruct an AI agent or LLM). Refines existing instructions for clarity, logical flow, and machine parsability, or synthesizes new instructions from raw requirements — always preserving all constraints, hard-coded values, and safety guardrails without loss."
-version: 1.1.0
+version: 1.1.1
 ---
 
 # Agent Instructor Skill
@@ -10,11 +10,23 @@ version: 1.1.0
 
 Load this skill when you are writing or editing any of the following:
 
-- `AGENTS.md` — OpenAI Codex or similar agent instruction files
-- `CLAUDE.md` — Claude Code workspace instruction files
+- `AGENTS.md` — the instruction file every coding agent reads
+- `CLAUDE.md` / `GEMINI.md` — only as names for the same instructions; see Where the Text Goes below
 - `.github/copilot-instructions.md` — GitHub Copilot repository instructions
 - `.github/instructions/*.md` — GitHub Copilot scoped instruction files
 - Any file whose primary purpose is to instruct an AI agent, LLM, or IDE coding assistant (e.g., `SYSTEM_PROMPT.md`, `agent-config.md`, `llm-instructions.md`)
+
+---
+
+## Where the Text Goes
+
+This skill decides **how** instructions are written. **Which file they go in is decided by the `dev-project-initiation` skill, and it wins over this skill:**
+
+- Content lives in `AGENTS.md` only. `CLAUDE.md` and `GEMINI.md` are symlinks to it and never hold content.
+- Asked to write or edit `CLAUDE.md` or `GEMINI.md`: edit the `AGENTS.md` beside it. If `CLAUDE.md` or `GEMINI.md` is a real file with content, merge it into `AGENTS.md` (`git mv CLAUDE.md AGENTS.md` keeps history) and replace it with the symlink, as that skill's section 1 describes, then refine the merged text.
+- Put each rule in the `AGENTS.md` of the deepest folder it applies to (that skill's section 2), creating the file and its symlinks if needed. The root file gets only repo-wide rules. Tell the user which file you chose.
+- Tool-specific files that are not symlink targets (`.github/copilot-instructions.md`, `.github/instructions/*.md`, a system prompt file) are edited in place.
+- If the `dev-project-initiation` skill is not available, still apply the three rules above.
 
 ---
 
@@ -75,7 +87,7 @@ Triggered when the user provides raw requirements, drafts, or unstructured notes
 ### Step 1 — Identify Mode and Gather Context
 
 1. Confirm whether the task is Refinement Mode or Create Mode.
-2. Identify the target file type (e.g., `CLAUDE.md`, `.github/copilot-instructions.md`) and any scoping patterns present.
+2. Identify the target file (per Where the Text Goes: `AGENTS.md` in the deepest folder the rules apply to, never `CLAUDE.md` or `GEMINI.md` themselves) and any scoping patterns present.
 3. If the user has not provided the file path or repository context, request it before proceeding.
 
 ### Step 2 — Analyze Input

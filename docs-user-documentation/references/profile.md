@@ -2,7 +2,7 @@
 
 Where profiles live, the lookup order, precedence, an unfetched pack, and how to make and mount a pack are defined once, in the `context-management` skill. This file covers only what `docs-user-documentation` takes from its profile.
 
-Profile path: `<project-root>/.agents/contexts/profiles/<pack>/docs-user-documentation/PROFILE.md` (or the same under `~/.agents/`).
+Profile path: `<project-root>/.agents/contexts/<pack>/docs-user-documentation/PROFILE.md` (or the same under `~/.agents/`).
 
 Without a profile: no credit, no watermark, no music, the default look (`video-style.md`), and the language rule in `language-preference.md`. Do not ask the user to create a profile; mention once, in the final report, that one can add a credit, a look and a fixed language.
 

@@ -1,7 +1,7 @@
 ---
 name: dev-project-initiation
 description: "Use when setting up a new or existing repository for coding agents (Claude Code, Gemini CLI, Codex), when a repo has no AGENTS.md or has a CLAUDE.md or GEMINI.md with real content, when the user asks to \"write to agents.md\", when creating GitHub Actions workflows, before moving a Jira card for work done in a repo, before reporting a change as done, or when opening or merging a PR."
-version: 1.0.0
+version: 1.1.0
 ---
 
 # Project initiation
@@ -42,6 +42,7 @@ List the project's statuses once (`listJiraStatuses`), then use exactly one row:
 - "Build succeeds" means the `Deploy` workflow run (section 7) on the merge commit of the default branch finished green. A green PR doesn't count, so check that run after the merge.
 - If that run fails, leave the card where it is and tell the user.
 - Put the ticket key in commit messages and the PR title.
+- This table wins over the `atlassian-jira` skill's general rules: these moves need no approval, and no in-between status is used. A project that does need one (a stop in "Code Review" or "QA", or a workflow that refuses the direct move) records it as a `Card moves` entry in the `atlassian-jira` skill's context, following the `context-management` skill (`<project-root>/.agents/contexts/agency/atlassian-jira/MEMORY.md`, or a profile pack). Only such an entry changes the table; never add an in-between move on your own.
 
 ## 4. Merging the PR
 
@@ -54,13 +55,16 @@ List the project's statuses once (`listJiraStatuses`), then use exactly one row:
 
 ## 5. Browser verification
 
-Every change (feature, bug fix, refactor, dependency or config change) is checked in a real browser before you report it as done or open the PR. This applies wherever a user can see or reach the result: UI pages, HTTP endpoints, and server behaviour that shows up in a UI. Passing tests and a clean typecheck don't count as this check.
+Every change (feature, bug fix, refactor, dependency or config change) is browser-verified before you report it as done or open the PR. This applies wherever a user can see or reach the result: UI pages, HTTP endpoints, and server behaviour that shows up in a UI. Passing unit tests and a clean typecheck don't count as this check.
 
-1. Build the app and start it with throwaway data and test credentials.
-2. Drive Chromium with Playwright (headless is fine). Go through the exact flow the change touches, and also the case it must leave alone (for example a row that must not appear).
-3. Take screenshots and look at them. A blank page, a missing row or an error message is a failure.
-4. Keep the driver script and the screenshots out of the commit.
-5. In the report and the PR description, say what you checked in the browser and what you saw.
+**"Browser-verify" means: run the app's `test:e2e` script and see it pass.** This is the `token-saver` skill's rule and it wins here: do not open a browser, click through pages or read screenshots to verify, because that is one of the most expensive ways to check a change.
+
+1. Add or update the spec in the app's `e2e/` folder for the flow the change touches, including the case it must leave alone (for example a row that must not appear).
+2. Run `test:e2e` with its output filtered to the failures. A failing spec is a failed check.
+3. Commit the spec with the change.
+4. In the report and the PR description, name `test:e2e` as the command and say which spec covers the change.
+
+If the app has a web UI and no `test:e2e` script, set one up first (section 8), then verify with it. The only time you look at a page yourself is a new UI that has no test script yet: look at it in the browser once, then add its script before the work is done.
 
 If a browser check isn't possible (no visible effect, CI-only change, a desktop app on a platform you can't run), say so explicitly and say what you verified instead. Never imply a browser check you didn't run.
 
@@ -182,7 +186,7 @@ export default defineConfig({
 });
 ```
 
-In an app that has this script, section 5's browser check is done by running `test:e2e` and seeing it pass, and the spec you added or updated is committed with the change. Step 4 of section 5 (keep the driver script out of the commit) covers only throwaway scripts in an app that has no browser test script. Screenshots stay out of the commit either way.
+Section 5's browser check is done by running this script and seeing it pass, and the spec you added or updated is committed with the change. Screenshots and one-off driver scripts stay out of the commit.
 
 ## Common mistakes
 
@@ -192,8 +196,10 @@ In an app that has this script, section 5's browser check is done by running `te
 | A scoped rule put in the root file | Move it to the subfolder's `AGENTS.md` |
 | The card moved to Code Review when the PR opened | Done (two-column board) or no move (Done-only board) |
 | Done on merge, or on a green PR | Follow the table: PR opened, or a green build on the default branch |
-| Reported done because the tests passed | Run the browser check, or say why it wasn't possible |
-| Saying "verified" without looking at the screenshots | Open every screenshot; a blank page counts as a failure |
+| Reported done because the unit tests passed | Run `test:e2e`, or say why a browser check wasn't possible |
+| Clicking through the app in a browser to verify, when `test:e2e` exists or could be added | Add or update the spec and run `test:e2e` |
+| Moved the card through Code Review or QA because the board has the column | Skip it, unless a `Card moves` entry in the `atlassian-jira` context says otherwise |
+| Asked for approval before a card move from the table | The table is a standing instruction; move the card |
 | Opened the PR and left it for the user to merge | Turn on squash auto-merge as soon as it opens |
 | Turned on auto-merge, then pushed more commits (docs, AGENTS.md) | Push everything first; the PR can merge before the extra commits land |
 | Moved the card to Done because auto-merge was turned on | Follow the table in section 3; auto-merge is not a Jira event |

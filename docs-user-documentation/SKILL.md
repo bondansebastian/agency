@@ -1,7 +1,7 @@
 ---
 name: docs-user-documentation
 description: "Use whenever the user asks to write, create, draft, or update a guide, documentation, user manual, help center article, how-to article, or any end-user-facing documentation for an application or feature, or asks for a user manual video, tutorial video, walkthrough video, or to re-record one after the app changed — covers plain, non-technical business language for a non-technical end-user audience, step-by-step screenshots, captioned screen-recording videos, publishing to Notion, and applying a brand profile (credit, look, language, music) when the project provides one. Never references ticket numbers, JIRA IDs, feature flags, internal service/class/table names, or other internal identifiers. Not for API or developer docs."
-version: 2.1.0
+version: 2.1.1
 ---
 
 # User Documentation Skill
@@ -36,8 +36,8 @@ This skill holds the method. Everything that belongs to one team or brand (credi
 
 **Before anything else, look for a profile**, following the `context-management` skill:
 
-1. `<project-root>/.agents/contexts/profiles/<pack>/docs-user-documentation/PROFILE.md` — a profile pack mounted in the project (often a git submodule).
-2. `~/.agents/contexts/profiles/<pack>/docs-user-documentation/PROFILE.md` — a profile for every project on this machine.
+1. `<project-root>/.agents/contexts/<pack>/docs-user-documentation/PROFILE.md` — a profile pack mounted in the project (often a git submodule).
+2. `~/.agents/contexts/<pack>/docs-user-documentation/PROFILE.md` — a profile for every project on this machine.
 3. None found — work without one: no credit, no watermark, no music, the default look, and the language rule below.
 
 When a profile exists, read its `PROFILE.md` first and follow it. A profile's fixed rules win over this skill's defaults and over `MEMORY.md`; only an explicit instruction from the user in this conversation wins over the profile. If the project declares a pack but its folder is empty (a submodule that was not fetched), fetch it; if that fails, stop and tell the user — never fall back to "no profile" silently. What this skill reads from a profile is in `references/profile.md`.
@@ -62,7 +62,7 @@ The reader, language, core rules and internal-context rules below apply to both 
 | Kind | Path | Used for |
 |---|---|---|
 | Memory | `<project-root>/.agents/contexts/agency/docs-user-documentation/MEMORY.md` | Language preference, Notion targets and structure, the chosen profile pack |
-| Profile | `<project-root>/.agents/contexts/profiles/<pack>/docs-user-documentation/PROFILE.md` | Brand, fixed language, labels, look, music, publishing (see `references/profile.md`) |
+| Profile | `<project-root>/.agents/contexts/<pack>/docs-user-documentation/PROFILE.md` | Brand, fixed language, labels, look, music, publishing (see `references/profile.md`) |
 | Credentials | `<project-root>/.agents/credentials/agency/docs-user-documentation/CREDENTIALS.md` | Saved logins for capturing screens (see `references/handling-authentication.md`) |
 | Legacy folders | `<project-root>/.agents/contexts/writing-user-guide/` and `<project-root>/.agents/credentials/writing-user-guide/` | Migrate on encounter |
 
