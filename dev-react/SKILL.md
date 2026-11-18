@@ -1,14 +1,14 @@
 ---
 name: dev-react
 description: "Opinionated React component architecture: SRP-driven splits, colocation, state isolation, explicit props, re-exported types, naming conventions, and practical file-size targets for maintainable components."
-version: 1.2.0
+version: 1.2.1
 ---
 
 # React Best Practices Skill
 
 ## Extension counterpart
 
-Before doing anything else, check the available skills for one named `dev-react` in a plugin called `agency-skills-<ext_name>` (for example `agency-skills-extension:dev-react`). If one exists, load it now and follow it together with this skill; where the two differ, the counterpart wins. With several, the last one wins; the `context-management` skill gives the order. If none exists, carry on with this skill's defaults.
+Before doing anything else, check the available skills for one named `dev-react` in a plugin called `agency-<ext_name>` (for example `agency-extension:dev-react`). If one exists, load it now and follow it together with this skill; where the two differ, the counterpart wins. With several, the last one wins; the `context-management` skill gives the order. If none exists, carry on with this skill's defaults.
 
 ## When to use this skill
 

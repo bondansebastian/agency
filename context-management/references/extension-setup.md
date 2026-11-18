@@ -2,13 +2,13 @@
 
 Do these steps for the user; don't hand them a list of commands unless they ask for one. Ask only for what you cannot find out yourself.
 
-An extension is a plugin named `agency-skills-<ext_name>`. For every agency skill it customizes it has a skill of the same name (the counterpart), whose folder holds an `EXTENSION.md` and any files that links to.
+An extension is a plugin named `agency-<ext_name>`. For every agency skill it customizes it has a skill of the same name (the counterpart), whose folder holds an `EXTENSION.md` and any files that links to.
 
 ## Naming
 
 - Ask the user for `<ext_name>` and offer the default, `extension`. Lowercase letters, digits and hyphens.
-- The plugin, and normally its repository, is called `agency-skills-<ext_name>` (`agency-skills-extension`, `agency-skills-acme`).
-- The plugin name must start with `agency-skills-`; that prefix is how the agency skills find it.
+- The plugin, and normally its repository, is called `agency-<ext_name>` (`agency-extension`, `agency-acme`).
+- The plugin name must start with `agency-`; that prefix is how the agency skills find it.
 - Each counterpart's `name` is exactly the name of the agency skill it extends.
 
 ## Create a new extension
@@ -19,7 +19,7 @@ An extension is a plugin named `agency-skills-<ext_name>`. For every agency skil
 4. **Write the files** in a new folder outside any project:
 
    ```text
-   agency-skills-<ext_name>/
+   agency-<ext_name>/
    ├── .claude-plugin/
    │   └── marketplace.json         # start from templates/marketplace.json
    ├── README.md                    # what it is, how to install it
@@ -32,7 +32,7 @@ An extension is a plugin named `agency-skills-<ext_name>`. For every agency skil
        └── ...                      # files EXTENSION.md links to
    ```
 
-   - In `marketplace.json`, the plugin `name` is `agency-skills-<ext_name>` and `skills` lists every counterpart folder.
+   - In `marketplace.json`, the plugin `name` is `agency-<ext_name>` and `skills` lists every counterpart folder.
    - In each counterpart's `SKILL.md`, `name` equals the agency skill's name, and the `description` says it extends that skill and is loaded together with it.
    - `AGENTS.md` says at least: only this team's knowledge belongs here, a rule that would help any team belongs in the public skill; one folder per skill, named exactly like the skill; no secrets, credentials or client data; never move a file that `EXTENSION.md` points to without updating the pointer; increment the plugin `version` on every change.
 5. **Never put a secret in an extension.** A login or token the user offers goes to credentials in the project, not here.
@@ -46,7 +46,7 @@ The user installs an extension once; it then applies in every project.
 
 | Where the user works | How |
 |---|---|
-| Claude Code in a terminal, the desktop app or an IDE | `/plugin marketplace add <owner>/agency-skills-<ext_name>`, then `/plugin install agency-skills-<ext_name>@<marketplace-name>`. A private repository is cloned with the git credentials already on the machine (for GitHub over HTTPS: `gh auth login`, then `gh auth setup-git`). |
+| Claude Code in a terminal, the desktop app or an IDE | `/plugin marketplace add <owner>/agency-<ext_name>`, then `/plugin install agency-<ext_name>@<marketplace-name>`. A private repository is cloned with the git credentials already on the machine (for GitHub over HTTPS: `gh auth login`, then `gh auth setup-git`). |
 | Claude Code on the web, and everyone in an organization | An organization owner adds the repository under Organization settings → Plugins & skills on claude.ai. It is read through the organization's GitHub connection and synced to every session. |
 
 You cannot do either for the user from inside a session that lacks those rights. Tell them which one applies and what to click or run, then carry on once they confirm. Installed plugins take effect in a new session.
@@ -57,13 +57,13 @@ Change the files in the extension's repository, increment the plugin `version` i
 
 ## Remove
 
-Ask first: removing it changes the output of every skill it customized. Uninstall the plugin (`/plugin uninstall agency-skills-<ext_name>@<marketplace-name>`, or remove it in the organization settings). To switch an extension off for one project only, save `- **Extension** — none` in that skill's `MEMORY.md` in the project.
+Ask first: removing it changes the output of every skill it customized. Uninstall the plugin (`/plugin uninstall agency-<ext_name>@<marketplace-name>`, or remove it in the organization settings). To switch an extension off for one project only, save `- **Extension** — none` in that skill's `MEMORY.md` in the project.
 
 ## Troubleshoot
 
 | Symptom | Cause and fix |
 |---|---|
-| A skill ignores the extension | Check, in order: the plugin is installed and enabled in this session (its skills appear as `agency-skills-<ext_name>:<skill-name>`); the plugin name starts with `agency-skills-`; the counterpart's `name` is exactly the agency skill's name; the folder is listed under `skills` in `marketplace.json`; the skill documents the setting being used; the project's memory does not say `- **Extension** — none`. |
+| A skill ignores the extension | Check, in order: the plugin is installed and enabled in this session (its skills appear as `agency-<ext_name>:<skill-name>`); the plugin name starts with `agency-`; the counterpart's `name` is exactly the agency skill's name; the folder is listed under `skills` in `marketplace.json`; the skill documents the setting being used; the project's memory does not say `- **Extension** — none`. |
 | The extension was just installed or changed, and nothing happened | Plugins load when a session starts. Start a new session; for a change, make sure the plugin `version` was incremented. |
 | Two extensions customize the same skill | Both apply, in alphabetical order of `<ext_name>`, and the last one wins. To change the order, save `- **Extension order** — <ext_name>, <ext_name>` in that skill's `MEMORY.md`. |
 | The counterpart loaded but its files are missing | The plugin did not ship them. Check that the files `EXTENSION.md` links to are inside the counterpart's folder and committed. |

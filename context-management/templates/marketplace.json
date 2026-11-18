@@ -1,6 +1,6 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "agency-skills-<ext_name>",
+  "name": "agency-<ext_name>",
   "owner": {
     "name": "<Owner>"
   },
@@ -10,7 +10,7 @@
   },
   "plugins": [
     {
-      "name": "agency-skills-<ext_name>",
+      "name": "agency-<ext_name>",
       "source": "./",
       "description": "<Team or brand> extension for the agency skills: one counterpart per customized skill.",
       "version": "1.0.0",

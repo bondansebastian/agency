@@ -1,14 +1,14 @@
 ---
 name: token-saver
 description: "Invoke at the start of EVERY coding task the user requests (feature, bug fix, refactor, tests, migration, review), before reading code or writing a plan. Keeps token cost down by making the main model an orchestrator: plan once in a file, route each piece of work to the cheapest model that can do it, keep tool output out of the main context, and verify with commands instead of re-reading code."
-version: 1.2.0
+version: 1.2.1
 ---
 
 # Token Saver Skill
 
 ## Extension counterpart
 
-Before doing anything else, check the available skills for one named `token-saver` in a plugin called `agency-skills-<ext_name>` (for example `agency-skills-extension:token-saver`). If one exists, load it now and follow it together with this skill; where the two differ, the counterpart wins. With several, the last one wins; the `context-management` skill gives the order. If none exists, carry on with this skill's defaults.
+Before doing anything else, check the available skills for one named `token-saver` in a plugin called `agency-<ext_name>` (for example `agency-extension:token-saver`). If one exists, load it now and follow it together with this skill; where the two differ, the counterpart wins. With several, the last one wins; the `context-management` skill gives the order. If none exists, carry on with this skill's defaults.
 
 ## When to use this skill
 
