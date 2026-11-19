@@ -1,7 +1,7 @@
 ---
 name: token-saver
 description: "Invoke at the start of EVERY coding task the user requests (feature, bug fix, refactor, tests, migration, review), before reading code or writing a plan. Keeps token cost down by making the main model an orchestrator: plan once in a file, route each piece of work to the cheapest model that can do it, keep tool output out of the main context, and verify with commands instead of re-reading code."
-version: 1.3.0
+version: 1.4.0
 ---
 
 # Token Saver Skill
@@ -32,8 +32,8 @@ Size the process to the task first:
    `docs/plans/<date>-<topic>.md`): the decisions (names, columns, endpoints, keys, no "TBD"), then
    numbered tasks in dependency order. Each task names the exact files it creates or changes, its
    tests, and the commands that must pass. A task that adds or changes a UI or a user-visible
-   feature also names the browser spec file it adds or updates (in the app's `e2e/` folder) and
-   lists `test:e2e` among its commands. Mark which tasks can run in parallel.
+   feature also names the browser spec files it adds, updates or must run (in the app's `e2e/`
+   folder) and lists `test:e2e -- <those specs>` among its commands, not the full suite. Mark which tasks can run in parallel.
 3. **Route each task to the cheapest model that can do it** (table below), one task per agent.
 4. **Verify with commands, commit, start the next group.** The orchestrator does not write the code.
 
@@ -111,8 +111,14 @@ Browser verification:
   that manual check passes, it scripts the same check in `e2e/` and runs `test:e2e` before the task
   is done. The passing spec is the verification, not the manual run. Never drive the same check by
   hand twice.
-- Run `test:e2e` with its output filtered to the failures. A failing spec is a failed check: it goes
-  back to the same agent with only the failing output.
+- Run only the specs related to the change (`test:e2e -- e2e/<spec>`), with the output filtered to
+  the failures. A failing spec is a failed check: it goes back to the same agent with only the
+  failing output.
+- Leave the full suite to the PR's `e2e` CI job. Run it locally only when there is no such job, the
+  change touches code every page depends on (layout, routing, auth, global config), or the related
+  specs are unknown. `dev-init-project` section 5 has the details and wins on any difference.
+- Find the related specs in the `AGENTS.md` next to the changed code. When the link isn't obvious
+  from the names, the agent that made the change adds a short file → spec note there.
 
 ## Report to the user
 
@@ -131,4 +137,5 @@ Browser verification:
 - An agent clicking through the app in a browser to verify, when a `test:e2e` script exists or could
   be added.
 - Treating a green `test:e2e` that only calls an API as the browser check.
+- Running the full e2e suite locally after every change, when the PR's `e2e` job runs it anyway.
 - A manual browser check that never became a spec, so the next agent drives it by hand again.
