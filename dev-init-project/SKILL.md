@@ -1,7 +1,7 @@
 ---
 name: dev-init-project
 description: "Use when setting up a new or existing repository for coding agents (Claude Code, Gemini CLI, Codex), when a repo has no AGENTS.md or has a CLAUDE.md or GEMINI.md with real content, when the user asks to \"write to agents.md\", when creating GitHub Actions workflows, before moving a Jira card for work done in a repo, before reporting a change as done, when opening or merging a PR, or after finishing a task in a claude.ai cloud session (to offer scripting the runtime setup in the environment's setup script)."
-version: 1.6.0
+version: 1.7.0
 ---
 
 # Project initiation
@@ -123,11 +123,11 @@ When you create GitHub Actions workflows, create exactly these two in `.github/w
 | `tests.yml`, `Tests` | `pull_request` only | Lint and tests only (jobs below) |
 | `deploy.yml`, `Deploy` | `push` to `main` only | Build → publish → deploy |
 
-**The PR workflow (`Tests`) never includes a build: only lint and tests.**
+**The PR workflow (`Tests`) never includes a Docker build: only lint and tests.** An app build that a test script needs (for example `test:e2e` building the UI it serves) is part of that test and is allowed.
 
-- No other workflow files. A new check goes into `Tests`. A new build, publish or deploy step goes into `Deploy`.
+- No other workflow files. A new check goes into `Tests`. A new image build, publish or deploy step goes into `Deploy`.
 - `Tests` has no `push` trigger. `Deploy` has no `pull_request` trigger and uses `on: push: branches: [main]`.
-- Lint and tests never run in `Deploy`. Build, publish and deploy never run in `Tests`.
+- Lint and tests never run in `Deploy`. A Docker build, image publish and deploy never run in `Tests`.
 - The default branch is `main`. A squash merge is a push to it, so it fires `Deploy`.
 
 ### `Tests` (`.github/workflows/tests.yml`)
@@ -146,7 +146,8 @@ When you create GitHub Actions workflows, create exactly these two in `.github/w
 
 - Name the matrix job `integration (${{ matrix.module }})` so each module shows as its own check.
 - `tests` (the gate job) is the single required status check on `main` and the check squash auto-merge waits on (section 4).
-- Never in this workflow: `pnpm build` / `npm run build` (or any other package-manager build), `docker build`, image publishing or registry login, a job named `build`, or a build action (`docker/build-push-action` and the like).
+- Never in this workflow: `docker build` / `docker buildx`, image publishing or registry login, a job named `build`, or a Docker build action (`docker/build-push-action`, `docker/setup-buildx-action` and the like).
+- A package-manager build (`pnpm build`, `npm run build`) is allowed only inside the test that needs it, such as an app's `test:e2e`. Don't add a standalone build job or step to catch compile errors; `lint` (typecheck) covers that.
 
 ### `Deploy` (`.github/workflows/deploy.yml`)
 
@@ -160,7 +161,7 @@ When you create GitHub Actions workflows, create exactly these two in `.github/w
 
 Add a test (run in `unit`) that parses the workflow YAML and fails if:
 
-1. `tests.yml` contains a build: a build/`docker build` command, a publish step, a job named `build`, or a build action.
+1. `tests.yml` contains a Docker build: a `docker build`/`docker buildx` command, an image publish or registry login step, a job named `build`, or a Docker build action. Check the steps' `run` and `uses` values, not comments.
 2. Any backend integration spec file is run by zero matrix jobs, or by two or more.
 3. A backend module has no `integration` matrix entry.
 4. An app has a `playwright.config.ts`, but `tests.yml` has no `e2e` job that runs its `test:e2e`, or the `tests` gate doesn't list `e2e` in `needs`.
@@ -169,7 +170,7 @@ Checks 2 and 3 count backend module specs only. The Playwright specs in an app's
 
 ### `.github/AGENTS.md`
 
-Create it (with the `CLAUDE.md` and `GEMINI.md` symlinks, section 1) and write the rule into it: "The PR workflow (`Tests`) never includes a build: only lint and tests." Add the job list, the composite action, the contract test, and that adding a backend module means adding its integration matrix entry.
+Create it (with the `CLAUDE.md` and `GEMINI.md` symlinks, section 1) and write the rule into it: "The PR workflow (`Tests`) never includes a Docker build: only lint and tests." Add the job list, the composite action, the contract test, and that adding a backend module means adding its integration matrix entry.
 
 ### Tell the user
 
@@ -182,7 +183,7 @@ Every new project with a web UI starts with a browser end-to-end test script. Do
 0. **Free the name.** If the app or repo already has an `e2e/` folder, a `test:e2e` script or an `e2e` CI job that runs non-browser tests (API, HTTP, CLI), rename them first, as section 5 says (`test:api`, `api-tests/`), and update every reference. The steps below then create the browser script under the freed name. This applies to existing repos too: the first agent that needs a browser check and finds no browser script does this setup.
 1. **Playwright.** Add `@playwright/test` as a dev dependency of the app and a `test:e2e` script (`playwright test`) to the app's `package.json`. Put a `playwright.config.ts` beside it (example below). Its `webServer` starts the app, or the app's browser preview with sample data, so the script needs nothing started by hand. It reads the browser path from the `PW_CHROME` env var when that is set, and uses Playwright's own Chromium when it isn't. Add `playwright-report/` and `test-results/` to `.gitignore`.
 2. **Smoke spec.** Create `e2e/` in the app's folder with one spec, `e2e/smoke.spec.ts`: the app loads and the main navigation works, at phone, tablet and desktop widths (the three projects in the config). Where the navigation collapses into a menu at a narrow width, the spec opens the menu first.
-3. **CI job.** Add the `e2e` job to `Tests` (section 7), so it runs on every pull request. Its steps: checkout, `./.github/actions/setup`, `playwright install --with-deps chromium`, the app's `test:e2e`, then `actions/upload-artifact` with `if: failure()` uploading the app's `playwright-report/`. The `webServer` command must start the app without a build step, because `Tests` never builds.
+3. **CI job.** Add the `e2e` job to `Tests` (section 7), so it runs on every pull request. Its steps: checkout, `./.github/actions/setup`, `playwright install --with-deps chromium`, the app's `test:e2e`, then `actions/upload-artifact` with `if: failure()` uploading the app's `playwright-report/`. Prefer a `webServer` command that starts the dev server or the sample-data preview. When the suite needs built output (for example a backend that serves the built UI), `test:e2e` may build the app first; it never runs a Docker build.
 4. **Gate.** Add `e2e` to the `needs` of the `tests` gate job, so a failing browser test blocks the merge.
 5. **AGENTS.md.** Write these rules into the `AGENTS.md` of the app's folder (create it with its `CLAUDE.md` and `GEMINI.md` symlinks, section 1), in these words:
    - "Whenever you test a new UI or feature, update the browser test scripts in the same piece of work."
@@ -214,7 +215,7 @@ export default defineConfig({
     { name: 'desktop', use: { ...chrome, viewport: { width: 1440, height: 900 } } },
   ],
   webServer: {
-    command: 'pnpm dev', // or the preview-with-sample-data command; never a build
+    command: 'pnpm dev', // or the preview-with-sample-data command; never a Docker build
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
@@ -273,8 +274,8 @@ Script rules:
 | Moved the card to Done because auto-merge was turned on | Follow the table in section 3; auto-merge is not a Jira event |
 | One `ci.yml` that lints, tests, builds and deploys | Split into `Tests` (PR only) and `Deploy` (push to `main` only) |
 | `Tests` also triggers on push to `main`, or `Deploy` also runs on PRs | `Tests`: `pull_request` only. `Deploy`: `push` to `main` only |
-| Lint or tests repeated inside `Deploy`, or a build step inside `Tests` | Lint and tests live only in `Tests`; build, publish and deploy only in `Deploy` |
-| A "build check" job in `Tests` to catch compile errors | `lint` (typecheck) covers it; never build in the PR workflow |
+| Lint or tests repeated inside `Deploy`, or a Docker build inside `Tests` | Lint and tests live only in `Tests`; Docker build, publish and deploy only in `Deploy` |
+| A "build check" job in `Tests` to catch compile errors | `lint` (typecheck) covers it; an app build runs in `Tests` only inside the test that needs it (`test:e2e`) |
 | Every job required in branch protection, or none | Require only the `tests` gate job |
 | One integration job running every module's specs, or a module missing from the matrix | One `integration (<module>)` per backend module; the contract test enforces it |
 | Install steps copied into every job | Use the `.github/actions/setup` composite action |
@@ -283,7 +284,7 @@ Script rules:
 | A web UI app set up with no browser test script | Do section 8 during setup: Playwright, `test:e2e`, the smoke spec, the `e2e` job |
 | New UI or feature checked by hand in the browser, test scripts left as they were | Update the specs in `e2e/` in the same piece of work, then run `test:e2e` |
 | `e2e` job added to `Tests` but not to the gate's `needs` | Add it; the contract test (check 4) enforces it |
-| `webServer` runs a build before serving | Start the dev server or the sample-data preview; `Tests` never builds |
+| `webServer` runs a build when a dev server or preview would do | Start the dev server or the sample-data preview; build first only when the suite needs built output, never a Docker build |
 | Offered a cloud setup script in a local CLI or IDE session | Section 9 applies only when `CLAUDE_CODE_REMOTE` is `true` |
 | Proposed a new setup script when one already exists | Offer only the missing runtimes or packages; say nothing if none are missing |
 | Changed the cloud environment without asking first | List what the script installs and wait for an explicit yes |
