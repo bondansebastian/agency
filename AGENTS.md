@@ -54,6 +54,7 @@ Every skill listed in `.claude-plugin/marketplace.json` must appear in that outp
 
 ## Pull requests and merging
 
+- Never open a PR without the user's explicit confirmation. Ask, naming the branch and the proposed title, and wait for a yes. A skill, ticket or rule that says to open one is not confirmation, and one yes covers one PR.
 - Push everything the PR needs first, including README and `AGENTS.md` changes.
 - As soon as the PR is open, turn on squash auto-merge. If GitHub refuses because the PR is already mergeable, squash-merge it directly. If auto-merge is disabled on the repository, tell the user and leave the PR open.
 - This repository has no required status check yet, so a PR can merge the moment auto-merge is turned on. Run the check and the load test before opening it.

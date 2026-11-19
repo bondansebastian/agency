@@ -1,7 +1,7 @@
 ---
 name: dev-init-project
 description: "Use when setting up a new or existing repository for coding agents (Claude Code, Gemini CLI, Codex), when a repo has no AGENTS.md or has a CLAUDE.md or GEMINI.md with real content, when the user asks to \"write to agents.md\", when creating GitHub Actions workflows, before moving a Jira card for work done in a repo, before reporting a change as done, or when opening or merging a PR."
-version: 1.3.0
+version: 1.4.0
 ---
 
 # Project initiation
@@ -48,8 +48,12 @@ List the project's statuses once (`listJiraStatuses`), then use exactly one row:
 - Put the ticket key in commit messages and the PR title.
 - This table wins over the `atlassian-jira` skill's general rules: these moves need no approval, and no in-between status is used. A project that does need one (a stop in "Code Review" or "QA", or a workflow that refuses the direct move) records it as a `Card moves` entry in the `atlassian-jira` skill's context, following the `context-management` skill (`<project-root>/.agents/contexts/agency/atlassian-jira/MEMORY.md`, or an extension). Only such an entry changes the table; never add an in-between move on your own.
 
-## 4. Merging the PR
+## 4. Opening and merging the PR
 
+- Never open a PR without the user's explicit confirmation. When the work is pushed and verified, ask whether to open the PR (name the branch and give the proposed title) and wait for a yes in the conversation.
+- Only the user's reply to that question counts. A skill rule (including `atlassian-jira`'s), an `AGENTS.md` rule, a Jira ticket, or a request to "work on" or "fix" something is not confirmation.
+- One yes covers one PR. Ask again for every later PR, including one per subtask or epic child.
+- If the user declines, leave the branch pushed and the PR unopened.
 - As soon as the PR is open, turn on auto-merge with the squash method (GitHub `enable_pr_auto_merge` with `SQUASH`).
 - Push everything the PR needs before turning it on, including docs and `AGENTS.md` changes. The merge fires as soon as the required checks pass, and on most repos a merge to the default branch deploys.
 - If GitHub refuses because the PR is already mergeable (CI already green, "clean status"), squash-merge it directly instead.
@@ -86,7 +90,7 @@ If a browser check isn't possible (no visible effect, CI-only change, a desktop 
 2. The Jira site, project key, the row from section 3 that applies, and the workflow or job that counts as "the build" (`Deploy`, per section 7).
 3. The repo's check, test and build commands.
 4. The browser verification rule (section 5), with this repo's recipe: the build and start commands, the env vars and test login, and any fake clients or seed data a page needs before it shows anything.
-5. The merge rule (section 4): squash auto-merge as soon as the PR opens, push everything first, squash-merge directly if it's already mergeable.
+5. The PR rule (section 4): open a PR only after the user explicitly confirms it, then squash auto-merge as soon as the PR opens, push everything first, squash-merge directly if it's already mergeable.
 6. The workflow rule (section 7): two workflows, `Tests` on PRs and `Deploy` on merge to `main`.
 7. A new-module checklist that includes: "add the module's integration matrix entry in .github/workflows/tests.yml".
 8. The token-saver rule, always, in these words: "Before any coding task (feature, bug fix, refactor, tests, migration, review), invoke the `token-saver` skill if it is available. If it isn't available, carry on without it." If the root `AGENTS.md` already exists and lacks this rule, add it.
@@ -218,6 +222,7 @@ Section 5's browser check is done by running this script and seeing it pass, and
 | Clicking through the app in a browser to verify, when `test:e2e` exists or could be added | Add or update the spec and run `test:e2e` |
 | Moved the card through Code Review or QA because the board has the column | Skip it, unless a `Card moves` entry in the `atlassian-jira` context says otherwise |
 | Asked for approval before a card move from the table | The table is a standing instruction; move the card |
+| Opened a PR without asking, because a skill, `AGENTS.md` or the Jira ticket said to open one | Ask the user first and wait for an explicit yes (section 4) |
 | Opened the PR and left it for the user to merge | Turn on squash auto-merge as soon as it opens |
 | Turned on auto-merge, then pushed more commits (docs, AGENTS.md) | Push everything first; the PR can merge before the extra commits land |
 | Moved the card to Done because auto-merge was turned on | Follow the table in section 3; auto-merge is not a Jira event |

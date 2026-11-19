@@ -50,10 +50,10 @@ Use the name from the catalog below, for example `--skill atlassian-jira`. Skill
 | Skill | Command | Version | What it does |
 |---|---|---|---|
 | 📚 [Confluence Knowledge Base](atlassian-confluence/SKILL.md) | `/agency:atlassian-confluence` | 1.2.1 | Build and maintain a product-focused Confluence knowledge base that design, engineering, sales and support can all read. |
-| 🧭 [Jira](atlassian-jira/SKILL.md) | `/agency:atlassian-jira` | 1.3.3 | View, create and update Jira issues in plain language, through the Atlassian MCP server or the `jira` CLI. Always sets a time estimate on the native Original Estimate field. |
+| 🧭 [Jira](atlassian-jira/SKILL.md) | `/agency:atlassian-jira` | 1.3.4 | View, create and update Jira issues in plain language, through the Atlassian MCP server or the `jira` CLI. Always sets a time estimate on the native Original Estimate field. |
 | 🔌 [Atlassian MCP Setup](atlassian-mcp-setup/SKILL.md) | `/agency:atlassian-mcp-setup` | 1.2.1 | Install and configure the Atlassian Rovo MCP server, per project or for many projects, for the user's OS and client. |
 | 🗂️ [Context Management](context-management/SKILL.md) | `/agency:context-management` | 3.0.1 | The one layout for customized data: project memory, credentials and extensions. Also creates, installs and troubleshoots an extension on request. |
-| 🚀 [Init Project](dev-init-project/SKILL.md) | `/agency:dev-init-project` | 1.3.0 | Set up a repository for coding agents: `AGENTS.md` with `CLAUDE.md` and `GEMINI.md` symlinks, Jira card moves, squash auto-merge, the `Tests` and `Deploy` workflows, and a Playwright browser test script. |
+| 🚀 [Init Project](dev-init-project/SKILL.md) | `/agency:dev-init-project` | 1.4.0 | Set up a repository for coding agents: `AGENTS.md` with `CLAUDE.md` and `GEMINI.md` symlinks, Jira card moves, PRs opened only on explicit confirmation, squash auto-merge, the `Tests` and `Deploy` workflows, and a Playwright browser test script. |
 | ⚛️ [React](dev-react/SKILL.md) | `/agency:dev-react` | 1.2.2 | React component architecture: single-responsibility splits, colocation, state isolation, explicit props, naming and file-size targets. |
 | 🎨 [UI/UX](dev-ui-ux/SKILL.md) | `/agency:dev-ui-ux` | 1.2.1 | Visible feedback on every clickable element, smooth micro-interactions and accessible motion preferences. |
 | ⚙️ [DevOps](devops/SKILL.md) | `/agency:devops` | 1.6.1 | Manage Coolify (MCP server first, `coolify` CLI as fallback) and Oracle Cloud Infrastructure (`oci` CLI, SSH and SCP through a bastion tunnel) in plain language. |
@@ -71,6 +71,7 @@ Skill names are domain-first (`atlassian-*`, `dev-*`, `docs-*`, `sales-*`) so re
 | When | Which skill decides |
 |---|---|
 | A Jira card moves because of work in a repository | `dev-init-project`. `atlassian-jira` performs the move with no approval and no in-between status, unless the project's memory records an override. |
+| A PR is about to be opened | `dev-init-project`: ask the user and open it only after an explicit yes, even when `atlassian-jira` says the work ends in a PR. |
 | An instruction file is written or edited | `dev-init-project` decides the file (`AGENTS.md`, never `CLAUDE.md` or `GEMINI.md`). `docs-agent-instructions` decides the wording. |
 | A change is browser-verified | `token-saver`: run the app's `test:e2e` script, which holds browser tests only (an API suite there is renamed to `test:api`). A check driven by hand once is scripted before the work is done. `dev-init-project` sets that script up. |
 | A quotation is needed | `sales-estimate` produces the AI Estimate first; `sales-quotation` prices it. |
