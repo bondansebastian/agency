@@ -1,7 +1,7 @@
 ---
 name: dev-init-project
 description: "Use when setting up a new or existing repository for coding agents (Claude Code, Gemini CLI, Codex), when a repo has no AGENTS.md or has a CLAUDE.md or GEMINI.md with real content, when the user asks to \"write to agents.md\", when creating GitHub Actions workflows, before moving a Jira card for work done in a repo, before reporting a change as done, or when opening or merging a PR."
-version: 1.2.1
+version: 1.3.0
 ---
 
 # Project initiation
@@ -68,7 +68,15 @@ Every change (feature, bug fix, refactor, dependency or config change) is browse
 3. Commit the spec with the change.
 4. In the report and the PR description, name `test:e2e` as the command and say which spec covers the change.
 
-If the app has a web UI and no `test:e2e` script, set one up first (section 8), then verify with it. The only time you look at a page yourself is a new UI that has no test script yet: look at it in the browser once, then add its script before the work is done.
+**The `e2e` name is reserved for browser tests.** `e2e/`, `test:e2e` and the `e2e` CI job mean Playwright specs that drive a real browser, nothing else. Before you rely on them, check what they actually run. If they hold API, HTTP or other non-browser tests (supertest, a REST client, `fetch` calls with no page), that suite is not a browser check, however green it is:
+
+1. Rename it, proactively and in the same piece of work, without asking: the script to `test:api` (or `test:integration`), the folder to `api-tests/` (or the backend's `test/` folder), and the CI job to match. Update every reference: `package.json`, configs, `.github/workflows/`, README and `AGENTS.md` files.
+2. Run the renamed suite once and see it pass, so the rename broke nothing.
+3. Set up the browser script under the freed name (section 8), then verify with it.
+
+If the app has a web UI and no browser test script, set one up first (section 8), even though the repo never had one, then verify with it.
+
+**Script every check you drive by hand.** When no spec covers a flow yet, you may drive the browser by hand (Playwright MCP, a browser tool) to find the selectors and the expected result. Once that manual check passes, turn the same check into a spec in `e2e/`, run `test:e2e` and see it pass before the work is done. The manual run doesn't count as the verification; the passing spec does. Never drive the same check by hand a second time: if a spec for it exists, run it; if it doesn't, the previous agent skipped this step, so write it now.
 
 If a browser check isn't possible (no visible effect, CI-only change, a desktop app on a platform you can't run), say so explicitly and say what you verified instead. Never imply a browser check you didn't run.
 
@@ -150,13 +158,16 @@ After scaffolding, tell the user to set `tests` (the gate job) as the required s
 
 Every new project with a web UI starts with a browser end-to-end test script. Do these steps during setup, before any feature work, in each app that has a web UI:
 
+0. **Free the name.** If the app or repo already has an `e2e/` folder, a `test:e2e` script or an `e2e` CI job that runs non-browser tests (API, HTTP, CLI), rename them first, as section 5 says (`test:api`, `api-tests/`), and update every reference. The steps below then create the browser script under the freed name. This applies to existing repos too: the first agent that needs a browser check and finds no browser script does this setup.
 1. **Playwright.** Add `@playwright/test` as a dev dependency of the app and a `test:e2e` script (`playwright test`) to the app's `package.json`. Put a `playwright.config.ts` beside it (example below). Its `webServer` starts the app, or the app's browser preview with sample data, so the script needs nothing started by hand. It reads the browser path from the `PW_CHROME` env var when that is set, and uses Playwright's own Chromium when it isn't. Add `playwright-report/` and `test-results/` to `.gitignore`.
 2. **Smoke spec.** Create `e2e/` in the app's folder with one spec, `e2e/smoke.spec.ts`: the app loads and the main navigation works, at phone, tablet and desktop widths (the three projects in the config). Where the navigation collapses into a menu at a narrow width, the spec opens the menu first.
 3. **CI job.** Add the `e2e` job to `Tests` (section 7), so it runs on every pull request. Its steps: checkout, `./.github/actions/setup`, `playwright install --with-deps chromium`, the app's `test:e2e`, then `actions/upload-artifact` with `if: failure()` uploading the app's `playwright-report/`. The `webServer` command must start the app without a build step, because `Tests` never builds.
 4. **Gate.** Add `e2e` to the `needs` of the `tests` gate job, so a failing browser test blocks the merge.
 5. **AGENTS.md.** Write these rules into the `AGENTS.md` of the app's folder (create it with its `CLAUDE.md` and `GEMINI.md` symlinks, section 1), in these words:
    - "Whenever you test a new UI or feature, update the browser test scripts in the same piece of work."
-   - "'Browser-verify' means: run `test:e2e` and see it pass. The only exception is a new UI with no test script yet: look at it in the browser, then add its script before the work is done."
+   - "'Browser-verify' means: run `test:e2e` and see it pass. A passing API or integration suite is not a browser check."
+   - "When no spec covers a flow yet, you may drive the browser by hand once to find it. After that manual check passes, script it in `e2e/` and run `test:e2e` before the work is done. Never drive the same check by hand twice."
+   - "`e2e/` and `test:e2e` hold browser tests only. API tests live under `test:api`."
 6. **README.** Add `test:e2e` to the README's commands table.
 
 ```ts
@@ -200,6 +211,9 @@ Section 5's browser check is done by running this script and seeing it pass, and
 | A scoped rule put in the root file | Move it to the subfolder's `AGENTS.md` |
 | The card moved to Code Review when the PR opened | Done (two-column board) or no move (Done-only board) |
 | Done on merge, or on a green PR | Follow the table: PR opened, or a green build on the default branch |
+| `test:e2e` or `e2e/` already runs API tests, so it was treated as the browser check | Rename it to `test:api` / `api-tests/`, update every reference, then add the Playwright script under `test:e2e` (sections 5 and 8) |
+| No browser tests in the repo, so the browser check was skipped | Set up section 8 now, in the same piece of work |
+| Drove the browser by hand, it worked, and the work was reported done | Script that same check in `e2e/` and run `test:e2e` before reporting |
 | Reported done because the unit tests passed | Run `test:e2e`, or say why a browser check wasn't possible |
 | Clicking through the app in a browser to verify, when `test:e2e` exists or could be added | Add or update the spec and run `test:e2e` |
 | Moved the card through Code Review or QA because the board has the column | Skip it, unless a `Card moves` entry in the `atlassian-jira` context says otherwise |

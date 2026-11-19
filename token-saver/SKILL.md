@@ -1,7 +1,7 @@
 ---
 name: token-saver
 description: "Invoke at the start of EVERY coding task the user requests (feature, bug fix, refactor, tests, migration, review), before reading code or writing a plan. Keeps token cost down by making the main model an orchestrator: plan once in a file, route each piece of work to the cheapest model that can do it, keep tool output out of the main context, and verify with commands instead of re-reading code."
-version: 1.2.1
+version: 1.3.0
 ---
 
 # Token Saver Skill
@@ -100,11 +100,17 @@ Browser verification:
 - Whenever a task tests a new UI or feature, the same task updates the browser test scripts. The
   agent that built the feature writes or updates the spec in the app's `e2e/` folder; the
   orchestrator only runs the command.
-- The only exception is a new UI with no test script yet: look at it in the browser once, then add
-  its script before the work is done.
-- If the app has a web UI and no `test:e2e` script at all, set one up first by following section 8
-  of the `dev-init-project` skill (Playwright, `e2e/smoke.spec.ts`, the `e2e` CI job), then carry
-  on.
+- `e2e/` and `test:e2e` are reserved for browser tests. If they run API or other non-browser tests,
+  a green run is not a browser check: rename that suite (`test:api`, `api-tests/`) and every
+  reference to it, proactively and in the same task, then set up the browser script under the freed
+  name (`dev-init-project` sections 5 and 8).
+- If the app has a web UI and no browser test script at all, set one up first by following section
+  8 of the `dev-init-project` skill (Playwright, `e2e/smoke.spec.ts`, the `e2e` CI job), even though
+  the repo never had one, then carry on.
+- When no spec covers a flow yet, the agent may drive the browser by hand once to find it. After
+  that manual check passes, it scripts the same check in `e2e/` and runs `test:e2e` before the task
+  is done. The passing spec is the verification, not the manual run. Never drive the same check by
+  hand twice.
 - Run `test:e2e` with its output filtered to the failures. A failing spec is a failed check: it goes
   back to the same agent with only the failing output.
 
@@ -112,7 +118,8 @@ Browser verification:
 
 - Say which tasks are done, which are verified and by which command, and which are not verified yet.
 - When a UI change is reported as verified, name `test:e2e` as the command and say which spec covers
-  it. If the exception was used, say the UI was looked at by hand and which spec was added.
+  it. If a check was first driven by hand, say so and name the spec that now scripts it. If an API
+  suite was renamed off `test:e2e`, say what it was renamed to.
 - List every decision an agent made that the user did not approve, so they can object early.
 
 ## Pitfalls
@@ -123,3 +130,5 @@ Browser verification:
 - Fanning out many agents without asking: tell the user the rough scale first when it is large.
 - An agent clicking through the app in a browser to verify, when a `test:e2e` script exists or could
   be added.
+- Treating a green `test:e2e` that only calls an API as the browser check.
+- A manual browser check that never became a spec, so the next agent drives it by hand again.

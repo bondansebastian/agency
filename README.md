@@ -53,7 +53,7 @@ Use the name from the catalog below, for example `--skill atlassian-jira`. Skill
 | 🧭 [Jira](atlassian-jira/SKILL.md) | `/agency:atlassian-jira` | 1.3.3 | View, create and update Jira issues in plain language, through the Atlassian MCP server or the `jira` CLI. Always sets a time estimate on the native Original Estimate field. |
 | 🔌 [Atlassian MCP Setup](atlassian-mcp-setup/SKILL.md) | `/agency:atlassian-mcp-setup` | 1.2.1 | Install and configure the Atlassian Rovo MCP server, per project or for many projects, for the user's OS and client. |
 | 🗂️ [Context Management](context-management/SKILL.md) | `/agency:context-management` | 3.0.1 | The one layout for customized data: project memory, credentials and extensions. Also creates, installs and troubleshoots an extension on request. |
-| 🚀 [Init Project](dev-init-project/SKILL.md) | `/agency:dev-init-project` | 1.2.1 | Set up a repository for coding agents: `AGENTS.md` with `CLAUDE.md` and `GEMINI.md` symlinks, Jira card moves, squash auto-merge, the `Tests` and `Deploy` workflows, and a Playwright browser test script. |
+| 🚀 [Init Project](dev-init-project/SKILL.md) | `/agency:dev-init-project` | 1.3.0 | Set up a repository for coding agents: `AGENTS.md` with `CLAUDE.md` and `GEMINI.md` symlinks, Jira card moves, squash auto-merge, the `Tests` and `Deploy` workflows, and a Playwright browser test script. |
 | ⚛️ [React](dev-react/SKILL.md) | `/agency:dev-react` | 1.2.2 | React component architecture: single-responsibility splits, colocation, state isolation, explicit props, naming and file-size targets. |
 | 🎨 [UI/UX](dev-ui-ux/SKILL.md) | `/agency:dev-ui-ux` | 1.2.1 | Visible feedback on every clickable element, smooth micro-interactions and accessible motion preferences. |
 | ⚙️ [DevOps](devops/SKILL.md) | `/agency:devops` | 1.6.1 | Manage Coolify (MCP server first, `coolify` CLI as fallback) and Oracle Cloud Infrastructure (`oci` CLI, SSH and SCP through a bastion tunnel) in plain language. |
@@ -62,7 +62,7 @@ Use the name from the catalog below, for example `--skill atlassian-jira`. Skill
 | ⚖️ [Legal](legal/SKILL.md) | `/agency:legal` | 1.0.1 | Draft contracts and other legal documents. Requires Anthropic's `legal` plugin, reads Indonesian law from the Pasal.id connector, and applies Indonesian law unless the user names another jurisdiction. |
 | 📄 [Estimate](sales-estimate/SKILL.md) | `/agency:sales-estimate` | 1.7.1 | Create and maintain structured project estimate documents under `docs/estimates/`, with a required AI Estimate and indexed Scope, Assumptions and Breakdown sections. |
 | 💵 [Quotation](sales-quotation/SKILL.md) | `/agency:sales-quotation` | 1.14.3 | Turn an AI Estimate into a client-facing quotation with a pricing formula remembered per project, and manage the matching Zoho Books estimate. |
-| 🪙 [Token Saver](token-saver/SKILL.md) | `/agency:token-saver` | 1.2.1 | Keep coding tasks cheap: plan once in a file, route each piece of work to the cheapest capable model, keep tool output out of the main context, verify with commands. |
+| 🪙 [Token Saver](token-saver/SKILL.md) | `/agency:token-saver` | 1.3.0 | Keep coding tasks cheap: plan once in a file, route each piece of work to the cheapest capable model, keep tool output out of the main context, verify with commands. |
 
 Skill names are domain-first (`atlassian-*`, `dev-*`, `docs-*`, `sales-*`) so related skills sort together.
 
@@ -72,7 +72,7 @@ Skill names are domain-first (`atlassian-*`, `dev-*`, `docs-*`, `sales-*`) so re
 |---|---|
 | A Jira card moves because of work in a repository | `dev-init-project`. `atlassian-jira` performs the move with no approval and no in-between status, unless the project's memory records an override. |
 | An instruction file is written or edited | `dev-init-project` decides the file (`AGENTS.md`, never `CLAUDE.md` or `GEMINI.md`). `docs-agent-instructions` decides the wording. |
-| A change is browser-verified | `token-saver`: run the app's `test:e2e` script. `dev-init-project` sets that script up. |
+| A change is browser-verified | `token-saver`: run the app's `test:e2e` script, which holds browser tests only (an API suite there is renamed to `test:api`). A check driven by hand once is scripted before the work is done. `dev-init-project` sets that script up. |
 | A quotation is needed | `sales-estimate` produces the AI Estimate first; `sales-quotation` prices it. |
 | A contract or other legal document is needed | `legal` drafts it, after invoking Anthropic's `legal:*` skills, with the law read from Pasal.id. `sales-quotation` stops at the quotation. |
 | Any skill needs remembered data, a login or a team's rules | `context-management` says where it lives. |
