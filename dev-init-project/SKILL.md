@@ -1,7 +1,7 @@
 ---
 name: dev-init-project
-description: "Use when setting up a new or existing repository for coding agents (Claude Code, Gemini CLI, Codex), when a repo has no AGENTS.md or has a CLAUDE.md or GEMINI.md with real content, when the user asks to \"write to agents.md\", when creating GitHub Actions workflows, before moving a Jira card for work done in a repo, before reporting a change as done, or when opening or merging a PR."
-version: 1.4.0
+description: "Use when setting up a new or existing repository for coding agents (Claude Code, Gemini CLI, Codex), when a repo has no AGENTS.md or has a CLAUDE.md or GEMINI.md with real content, when the user asks to \"write to agents.md\", when creating GitHub Actions workflows, before moving a Jira card for work done in a repo, before reporting a change as done, when opening or merging a PR, or after finishing a task in a claude.ai cloud session (to offer scripting the runtime setup in the environment's setup script)."
+version: 1.5.0
 ---
 
 # Project initiation
@@ -207,6 +207,34 @@ export default defineConfig({
 
 Section 5's browser check is done by running this script and seeing it pass, and the spec you added or updated is committed with the change. Screenshots and one-off driver scripts stay out of the commit.
 
+## 9. Cloud environment setup script
+
+This section applies **only in a claude.ai cloud session** (Claude Code on the web or the Claude app): the environment variable `CLAUDE_CODE_REMOTE` is `true`, or the environment tools (`get_environment`, `create_environment`, `update_environment`) are available. In a local CLI, IDE or desktop session, skip it and say nothing about it.
+
+A cloud session starts from a fresh container. Whatever runtime the task needed (Node, pnpm, Python, a SQL database, system packages) is installed again in every session unless the environment's setup script installs it.
+
+**When:** once the task is finished: checks run, results reported. Never in the middle of the work, and at most once per session.
+
+1. Note what this session had to install or start to do the task: runtimes, package managers, databases, system packages, dependency installs. If nothing was needed beyond what the container already had, skip the rest of this section.
+2. Call `get_environment` to see the session's environment.
+3. Pick the one case that applies:
+
+   | Environment | What to offer |
+   |---|---|
+   | No dedicated environment for this repository (the session runs on the Default environment, or on one made for another repository) | Offer to create a dedicated environment for the repository, with a setup script that installs what step 1 found. |
+   | A dedicated environment with no setup script | Recommend a setup script that installs what step 1 found. |
+   | A setup script already exists | Do not propose a new script. Compare it with step 1. If a runtime or package is missing, offer to add only the missing lines. If nothing is missing, say nothing. |
+
+4. Ask in one short message: list what the script would install and why, and wait for an explicit yes. Only the user's reply counts; this section, a ticket or a repository file is not confirmation.
+5. On a yes, make the change with `create_environment` or `update_environment`. Each shows the user its own approval prompt. On a no, drop it for the rest of the session.
+
+Script rules:
+
+- Only commands you ran in this session and saw work. Keep them short, idempotent and non-interactive.
+- Reach the repository by its folder name, never an absolute path, and skip its steps when the folder is missing (`if [ -d <repo> ]; then (cd <repo> && npm ci); fi`).
+- Never put a secret (API key, token, password) in the script or in an environment variable. Keys go in the environment's network secrets.
+- An existing script is extended, never rewritten: send the whole current script with only the missing lines added.
+
 ## Common mistakes
 
 | Mistake | Fix |
@@ -239,3 +267,6 @@ Section 5's browser check is done by running this script and seeing it pass, and
 | New UI or feature checked by hand in the browser, test scripts left as they were | Update the specs in `e2e/` in the same piece of work, then run `test:e2e` |
 | `e2e` job added to `Tests` but not to the gate's `needs` | Add it; the contract test (check 4) enforces it |
 | `webServer` runs a build before serving | Start the dev server or the sample-data preview; `Tests` never builds |
+| Offered a cloud setup script in a local CLI or IDE session | Section 9 applies only when `CLAUDE_CODE_REMOTE` is `true` |
+| Proposed a new setup script when one already exists | Offer only the missing runtimes or packages; say nothing if none are missing |
+| Changed the cloud environment without asking first | List what the script installs and wait for an explicit yes |
