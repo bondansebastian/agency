@@ -46,7 +46,8 @@ When activated, the skill first determines which backend is available:
 Once a backend is detected:
 
 1. **Read operations** (viewing, listing): Execute immediately and display results
-2. **Write operations** (create, update, transition):
+2. **Create operations**: execute straight away, with no draft confirmation. Afterwards report the issue key, its link and the time estimate.
+3. **Update and transition operations**:
    - Fetch current issue state first
    - Show proposed changes
    - Request user approval
@@ -231,7 +232,7 @@ The skill follows strict safety protocols:
 
 **Always:**
 - Shows commands/tool calls before executing
-- Requests approval before modifications
+- Requests approval before modifying existing tickets (creating a ticket needs none)
 - Preserves original content when editing
 - Verifies updates after applying
 - Surfaces authentication issues clearly
