@@ -8,7 +8,7 @@
 
 ## What this is
 
-`agency` is a single [Claude Code plugin](https://code.claude.com/docs/en/plugin-marketplaces) with 13 skills. Each skill is a folder with a `SKILL.md` that tells an agent when to use it and how to do the work. In Claude Code every skill is invoked as `/agency:<skill>`, and typing `/agency` lists them all.
+`agency` is a single [Claude Code plugin](https://code.claude.com/docs/en/plugin-marketplaces) with 14 skills. Each skill is a folder with a `SKILL.md` that tells an agent when to use it and how to do the work. In Claude Code every skill is invoked as `/agency:<skill>`, and typing `/agency` lists them all.
 
 Three ideas hold the collection together:
 
@@ -59,8 +59,9 @@ Use the name from the catalog below, for example `--skill atlassian-jira`. Skill
 | ⚙️ [DevOps](devops/SKILL.md) | `/agency:devops` | 1.6.1 | Manage Coolify (MCP server first, `coolify` CLI as fallback) and Oracle Cloud Infrastructure (`oci` CLI, SSH and SCP through a bastion tunnel) in plain language. |
 | 🧠 [Agent Instructions](docs-agent-instructions/SKILL.md) | `/agency:docs-agent-instructions` | 1.2.1 | Write or refine instruction files for AI agents with no loss of constraints, a machine-parsable structure and few tokens. |
 | 📖 [User Documentation](docs-user-documentation/SKILL.md) | `/agency:docs-user-documentation` | 2.4.0 | Write end-user guides in plain language with a screenshot per step, or record a captioned walkthrough video with its manual page, and publish to Notion. |
+| ⚖️ [Legal](legal/SKILL.md) | `/agency:legal` | 1.0.1 | Draft contracts and other legal documents. Requires Anthropic's `legal` plugin, reads Indonesian law from the Pasal.id connector, and applies Indonesian law unless the user names another jurisdiction. |
 | 📄 [Estimate](sales-estimate/SKILL.md) | `/agency:sales-estimate` | 1.7.1 | Create and maintain structured project estimate documents under `docs/estimates/`, with a required AI Estimate and indexed Scope, Assumptions and Breakdown sections. |
-| 💵 [Quotation](sales-quotation/SKILL.md) | `/agency:sales-quotation` | 1.14.2 | Turn an AI Estimate into a client-facing quotation with a pricing formula remembered per project, and manage the matching Zoho Books estimate. |
+| 💵 [Quotation](sales-quotation/SKILL.md) | `/agency:sales-quotation` | 1.14.3 | Turn an AI Estimate into a client-facing quotation with a pricing formula remembered per project, and manage the matching Zoho Books estimate. |
 | 🪙 [Token Saver](token-saver/SKILL.md) | `/agency:token-saver` | 1.2.1 | Keep coding tasks cheap: plan once in a file, route each piece of work to the cheapest capable model, keep tool output out of the main context, verify with commands. |
 
 Skill names are domain-first (`atlassian-*`, `dev-*`, `docs-*`, `sales-*`) so related skills sort together.
@@ -73,6 +74,7 @@ Skill names are domain-first (`atlassian-*`, `dev-*`, `docs-*`, `sales-*`) so re
 | An instruction file is written or edited | `dev-init-project` decides the file (`AGENTS.md`, never `CLAUDE.md` or `GEMINI.md`). `docs-agent-instructions` decides the wording. |
 | A change is browser-verified | `token-saver`: run the app's `test:e2e` script. `dev-init-project` sets that script up. |
 | A quotation is needed | `sales-estimate` produces the AI Estimate first; `sales-quotation` prices it. |
+| A contract or other legal document is needed | `legal` drafts it, after invoking Anthropic's `legal:*` skills, with the law read from Pasal.id. `sales-quotation` stops at the quotation. |
 | Any skill needs remembered data, a login or a team's rules | `context-management` says where it lives. |
 
 ## Customizing
@@ -163,6 +165,9 @@ agency/
 │   ├── references/             # extension, language, Notion, video, troubleshooting
 │   ├── scripts/                # lib.mjs, record.mjs (video recorder)
 │   └── templates/              # scenario.template.mjs
+├── legal/
+│   ├── SKILL.md
+│   └── references/             # Indonesian statutes to start from
 ├── sales-estimate/
 │   └── SKILL.md
 ├── sales-quotation/

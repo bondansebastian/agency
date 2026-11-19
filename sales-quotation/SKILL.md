@@ -1,7 +1,7 @@
 ---
 name: sales-quotation
 description: "Use when the user asks to price work, quote a client, or create or update a client-facing quotation, or to create or update an estimate in Zoho Books — even if they don't mention docs/quotations/ or Zoho Books by name. Covers computing the price from an AI Estimate with a pricing formula whose variables (buffer multiplier, man-day hours, base man-day rate, currency) are remembered per project and never assumed; writing the quotation in plain business language with a fixed, indexed section structure and a Deliverables list, in Indonesian by default; saving it as a dated, versioned Markdown file under docs/quotations/; producing a .docx only on explicit request; and editing Zoho Books estimates with service-type line items. Always asks the client name and project name fresh. For sizing the work and writing the AI Estimate itself, use the sales-estimate skill first."
-version: 1.14.2
+version: 1.14.3
 ---
 
 # Writing Quotations Skill
@@ -20,6 +20,8 @@ Load this skill when you are:
 - Creating or updating an estimate in Zoho Books
 
 **This skill must always trigger whenever the user asks the agent to price, quote, or create a client-facing quotation** — even if the request doesn't mention pricing variables or Zoho Books directly.
+
+A contract or other legal document, including one built on an accepted quotation, is drafted by the **legal** skill, not this one. This skill stops at the quotation.
 
 This skill assumes an `AI Estimate` already exists for the work being priced. If one hasn't been written yet, load the **sales-estimate** skill first to size up the work and produce it.
 
