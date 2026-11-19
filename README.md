@@ -50,7 +50,7 @@ Use the name from the catalog below, for example `--skill atlassian-jira`. Skill
 | Skill | Command | Version | What it does |
 |---|---|---|---|
 | 📚 [Confluence Knowledge Base](atlassian-confluence/SKILL.md) | `/agency:atlassian-confluence` | 1.2.1 | Build and maintain a product-focused Confluence knowledge base that design, engineering, sales and support can all read. |
-| 🧭 [Jira](atlassian-jira/SKILL.md) | `/agency:atlassian-jira` | 1.3.2 | View, create and update Jira issues in plain language, through the Atlassian MCP server or the `jira` CLI. Always sets a time estimate on the native Original Estimate field. |
+| 🧭 [Jira](atlassian-jira/SKILL.md) | `/agency:atlassian-jira` | 1.3.3 | View, create and update Jira issues in plain language, through the Atlassian MCP server or the `jira` CLI. Always sets a time estimate on the native Original Estimate field. |
 | 🔌 [Atlassian MCP Setup](atlassian-mcp-setup/SKILL.md) | `/agency:atlassian-mcp-setup` | 1.2.1 | Install and configure the Atlassian Rovo MCP server, per project or for many projects, for the user's OS and client. |
 | 🗂️ [Context Management](context-management/SKILL.md) | `/agency:context-management` | 3.0.1 | The one layout for customized data: project memory, credentials and extensions. Also creates, installs and troubleshoots an extension on request. |
 | 🚀 [Init Project](dev-init-project/SKILL.md) | `/agency:dev-init-project` | 1.2.1 | Set up a repository for coding agents: `AGENTS.md` with `CLAUDE.md` and `GEMINI.md` symlinks, Jira card moves, squash auto-merge, the `Tests` and `Deploy` workflows, and a Playwright browser test script. |
