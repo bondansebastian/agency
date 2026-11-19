@@ -1,7 +1,7 @@
 ---
 name: dev-react
-description: "Opinionated React component architecture: SRP-driven splits, colocation, state isolation, explicit props, re-exported types, naming conventions, and practical file-size targets for maintainable components."
-version: 1.2.1
+description: "Use when writing, reviewing, refactoring, or splitting React components, hooks, or their props and types — a new component, a component that has grown too large, state that leaks between components, unclear props, or a question about how to structure React code. Opinionated component architecture: single-responsibility splits, colocation, state isolation, explicit props, re-exported types, naming conventions, and practical file-size targets."
+version: 1.2.2
 ---
 
 # React Best Practices Skill

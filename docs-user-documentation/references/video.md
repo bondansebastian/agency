@@ -17,6 +17,10 @@ A captioned screen recording of one feature of a web app (Playwright + Chromium,
      [--brand <counterpart folder>/brand.json] [--music <file>]
    ```
 
+   - Without the flag, the recorder reads the same path from the `DOCS_BRAND` environment variable. Use it when the recorder is started through a package script.
+   - For an app that needs a login, save a logged-in browser state once (Playwright `storageState`) and pass its path in `DOCS_STORAGE_STATE`. Keep that file out of git.
+   - With an extension counterpart installed, a video recorded without `--brand` or `DOCS_BRAND` is unbranded; that is a mistake, not a default.
+
    A 4-minute video takes about 4 minutes of real time; run it in the background and wait.
 7. **Look at the result.** Make a contact sheet (`ffmpeg -i <mp4> -vf "fps=1/10,scale=480:-1,tile=3x4" -frames:v 2 sheet_%d.png`) and view it. Check:
    - the cover shows the title, and the extension's credit when it has one;
