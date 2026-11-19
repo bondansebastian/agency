@@ -1,7 +1,7 @@
 ---
 name: dev-init-project
 description: "Use when setting up a new or existing repository for coding agents (Claude Code, Gemini CLI, Codex), when a repo has no AGENTS.md or has a CLAUDE.md or GEMINI.md with real content, when the user asks to \"write to agents.md\", when creating GitHub Actions workflows, before moving a Jira card for work done in a repo, before reporting a change as done, when opening or merging a PR, or after finishing a task in a claude.ai cloud session (to offer scripting the runtime setup in the environment's setup script)."
-version: 1.5.0
+version: 1.6.0
 ---
 
 # Project initiation
@@ -68,9 +68,26 @@ Every change (feature, bug fix, refactor, dependency or config change) is browse
 **"Browser-verify" means: run the app's `test:e2e` script and see it pass.** This is the `token-saver` skill's rule and it wins here: do not open a browser, click through pages or read screenshots to verify, because that is one of the most expensive ways to check a change.
 
 1. Add or update the spec in the app's `e2e/` folder for the flow the change touches, including the case it must leave alone (for example a row that must not appear).
-2. Run `test:e2e` with its output filtered to the failures. A failing spec is a failed check.
+2. Run only the specs related to the change, not the whole suite (for example `npm run test:e2e -- e2e/invoices.spec.ts`), with the output filtered to the failures. A failing spec is a failed check.
 3. Commit the spec with the change.
-4. In the report and the PR description, name `test:e2e` as the command and say which spec covers the change.
+4. In the report and the PR description, name `test:e2e` as the command and say which specs you ran.
+
+**Leave the full suite to the PR tests.** The `e2e` job in `Tests` (section 7) runs the whole `test:e2e` suite on every pull request, so don't run it locally as well. Run it yourself only when:
+
+- the repo has no `e2e` CI job yet, or
+- the change touches code every page depends on (layout, routing, auth, the API client, global config or styles), or
+- you can't tell which specs cover the change.
+
+If the full suite then fails in the PR on a spec you didn't run, that spec is related: fix the failure and add the link to the note below.
+
+**Record which specs cover which code.** Find the related specs from the `AGENTS.md` next to the changed file (or the nearest one above it), then from spec names and the routes or components they visit. When the link isn't obvious from the names, add a short note to the `AGENTS.md` in the changed code's folder (create it with its two symlinks if needed, section 1), for example:
+
+```markdown
+## E2E specs
+- `InvoiceForm.tsx`, `invoice-api.ts` → `e2e/invoices.spec.ts`, `e2e/billing-smoke.spec.ts`
+```
+
+Keep it to file → spec lines. Update it in the same piece of work when you add, rename or delete a spec.
 
 **The `e2e` name is reserved for browser tests.** `e2e/`, `test:e2e` and the `e2e` CI job mean Playwright specs that drive a real browser, nothing else. Before you rely on them, check what they actually run. If they hold API, HTTP or other non-browser tests (supertest, a REST client, `fetch` calls with no page), that suite is not a browser check, however green it is:
 

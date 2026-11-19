@@ -14,7 +14,7 @@
       "name": "agency",
       "source": "./",
       "description": "All agency skills in one plugin, invoked as /agency:<skill>: Atlassian (Jira, Confluence, Rovo MCP setup), sales (estimates, quotations), legal (contracts and legal documents under Indonesian law by default, using Anthropic's legal plugin and the Pasal.id connector), docs (user guides and manual videos, agent instructions), dev (project initiation, including cloud environment setup scripts, React, UI/UX), DevOps (Coolify, OCI), token-saver, and context-management (per-project memory, credentials, and extensions installed as agency-<ext_name> plugins).",
-      "version": "2.6.0",
+      "version": "2.7.0",
       "category": "productivity",
       "strict": false,
       "skills": [
