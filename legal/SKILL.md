@@ -1,7 +1,7 @@
 ---
 name: legal
 description: "Use when the user asks to draft, write, prepare or redraft a contract, agreement, MoU, NDA, addendum, terms and conditions, power of attorney, notice, demand letter or any other legal document (perjanjian, kontrak, surat kuasa, somasi, addendum), including when the request does not mention law or a lawyer. Indonesian law is the default; another jurisdiction only when the user says so."
-version: 1.0.0
+version: 1.0.1
 ---
 
 # Legal Drafting Skill
@@ -77,7 +77,7 @@ Never store party names, addresses, amounts or dates. They belong to one documen
    - The corpus is partial. An empty result does not mean the law does not exist: try other Indonesian terms, then the official sources (`peraturan.go.id`, `peraturan.bpk.go.id`) and mark the point "not from Pasal.id".
 4. **Draft in the default language and structure** below.
 5. **Check the draft** against the Anthropic skill's review, the validity checklist and the form checks below. Fix what they find.
-6. **Save and report** (see Output).
+6. **Deliver and report** (see Output).
 
 ## Drafting rules
 
@@ -101,7 +101,7 @@ Never store party names, addresses, amounts or dates. They belong to one documen
 
 ## Output
 
-- Save the draft as Markdown at `docs/legal/<YYYY-MM-DD>-<document-type>-<slug>.md` unless the user names another place. Produce a `.docx` only on explicit request.
+- Deliver the draft as a Claude artifact when the Artifact tool is available; otherwise show it in the chat. Write a file (for example a `.docx`) only when the user asks for one, in the place they name.
 - Report, in the user's language and short: the file path; a table of the articles relied on (citation, Pasal.id link, verified or not); the findings of the Anthropic `legal:*` skill and what was changed because of them; the placeholders still to fill; the points that need a lawyer.
 - Close with one line: the draft assists with legal work and is not legal advice; an advokat or notaris should review it before signing. Do not put that line inside the contract.
 
