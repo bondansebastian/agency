@@ -1,7 +1,7 @@
 ---
 name: token-saver
 description: "Invoke at the start of EVERY coding task the user requests (feature, bug fix, refactor, tests, migration, review), before reading code or writing a plan. Keeps token cost down by making the main model an orchestrator: plan once in a file, route each piece of work to the cheapest model that can do it, keep tool output out of the main context, and verify with commands instead of re-reading code."
-version: 1.4.0
+version: 1.4.1
 ---
 
 # Token Saver Skill
@@ -97,6 +97,9 @@ Browser verification:
 - "Browser-verify" means: run `test:e2e` and see it pass. Do not open a browser, click through pages
   or read screenshots to verify. Driving a browser is one of the most expensive ways to verify; one
   command with filtered output is the cheapest.
+- Exception: after building new UI, the `dev-ui-ux` skill's cheap smoke check (one short script
+  loading only the new pages at two widths, one look at the screenshots, bugs fixed at once) is
+  allowed. It spots bugs; it is not the verification, which is still `test:e2e`.
 - Whenever a task tests a new UI or feature, the same task updates the browser test scripts. The
   agent that built the feature writes or updates the spec in the app's `e2e/` folder; the
   orchestrator only runs the command.
