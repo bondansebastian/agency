@@ -1,7 +1,7 @@
 ---
 name: dev-init-project
 description: "Use when setting up a new or existing repository for coding agents (Claude Code, Gemini CLI, Codex), when a repo has no AGENTS.md or has a CLAUDE.md or GEMINI.md with real content, when the user asks to \"write to agents.md\", when creating GitHub Actions workflows, before moving a Jira card for work done in a repo, before reporting a change as done, when opening or merging a PR, or after finishing a task in a claude.ai cloud session (to offer scripting the runtime setup in the environment's setup script)."
-version: 1.7.0
+version: 1.7.1
 ---
 
 # Project initiation
@@ -98,6 +98,8 @@ Keep it to file → spec lines. Update it in the same piece of work when you add
 If the app has a web UI and no browser test script, set one up first (section 8), even though the repo never had one, then verify with it.
 
 **Script every check you drive by hand.** When no spec covers a flow yet, you may drive the browser by hand (Playwright MCP, a browser tool) to find the selectors and the expected result. Once that manual check passes, turn the same check into a spec in `e2e/`, run `test:e2e` and see it pass before the work is done. The manual run doesn't count as the verification; the passing spec does. Never drive the same check by hand a second time: if a spec for it exists, run it; if it doesn't, the previous agent skipped this step, so write it now.
+
+**A cheap UI smoke check is separate.** After building new UI, the `dev-ui-ux` skill has you load the new pages once in a real browser (two widths, console errors, overflow, one screenshot each) and fix any bug you find. That is bug-spotting, not verification: it doesn't replace `test:e2e`, it doesn't need its own spec, and the "never drive the same check by hand twice" rule above doesn't apply to it. For the smoke check, `dev-ui-ux` wins; for verification, this section does.
 
 If a browser check isn't possible (no visible effect, CI-only change, a desktop app on a platform you can't run), say so explicitly and say what you verified instead. Never imply a browser check you didn't run.
 

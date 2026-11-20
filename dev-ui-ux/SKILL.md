@@ -1,7 +1,7 @@
 ---
 name: dev-ui-ux
-description: This skill should be used when the user asks about UI/UX best practices, frontend UI implementation, interactive affordances, micro-interactions, motion/animation guidance, accessibility for interactive elements, or improving interactive feedback (including hover and focus states). Provide practical, implementation-focused guidance for visible feedback, performance, and accessibility.
-version: 1.2.1
+description: This skill should be used before and after building new UI (a new page, screen, component or visibly changed layout) — to show the user a mockup first and to run a cheap browser smoke check afterwards — and when the user asks about UI/UX best practices, frontend UI implementation, interactive affordances, micro-interactions, motion/animation guidance, accessibility for interactive elements, or improving interactive feedback (including hover and focus states). Provide practical, implementation-focused guidance for visible feedback, performance, and accessibility.
+version: 1.3.0
 ---
 
 # UI/UX Best Practices — Hover & Clickable Feedback
@@ -9,6 +9,35 @@ version: 1.2.1
 ## Extension counterpart
 
 Before doing anything else, check the available skills for one named `dev-ui-ux` in a plugin called `agency-<ext_name>` (for example `agency-extension:dev-ui-ux`). If one exists, load it now and follow it together with this skill; where the two differ, the counterpart wins. With several, the last one wins; the `context-management` skill gives the order. If none exists, carry on with this skill's defaults.
+
+## Building new UI
+
+These two steps apply whenever you build new UI: a new page, screen, dialog or component, or a visibly changed layout. They don't apply to a change with no visible effect, or to a fix that leaves the layout as it was (a typo, a colour value).
+
+### Before: show a mockup
+
+Before writing the UI code, show the user a mockup and wait for their go-ahead or changes.
+
+- Make it cheap: one static HTML file (or an Artifact, or an image), with the project's existing styles and real-looking sample data where you can. It shows layout, content and the main states (empty, loading, error) that matter; it is not the implementation.
+- Show it the way this environment allows: an Artifact, a file sent to the user, or a screenshot. If none of these is possible, describe the layout in a short text sketch and say why there is no visual mockup.
+- Skip the mockup only when the user explicitly asks to skip it (for example "no mockup", "just build it"). That skip covers the request it was given for, not later ones.
+
+### After: a cheap smoke check in a real browser
+
+After building the UI, look at it once in a real browser to catch visible bugs. This is not the `test:e2e` suite and not a click-through of every flow; keep it to a few seconds of tool time.
+
+1. Start the app (or its preview with sample data) and run one short Playwright script that, for each new or changed page only:
+   - loads it at a phone width (390 px) and a desktop width (1280 px), with `deviceScaleFactor: 1`;
+   - records console errors and failed requests;
+   - checks for horizontal overflow (`document.documentElement.scrollWidth > innerWidth`);
+   - saves one screenshot per width.
+2. Look at the screenshots once, for broken layout, overlapping or cut-off text, missing styles or images, and unreadable contrast.
+3. If you find a bug, fix it immediately, in the same piece of work, then re-run the script for that page only. Don't report the UI as done while a bug you found is still open.
+4. Keep the screenshots and the script out of the commit.
+
+How this fits the other skills: the smoke check finds bugs, it does not verify the change. Verification is still the `test:e2e` run that `token-saver` and `dev-init-project` (section 5) define, and the spec for the new UI is still written there. Their rule "do not open a browser to verify" is about verification and doesn't forbid this check; for the smoke check itself, this skill wins.
+
+## Hover and clickable feedback
 
 Purpose: Ensure consistent, accessible, and pleasant micro-interactions by requiring visible hover feedback for clickable elements and recommending smooth, respectful animations.
 
