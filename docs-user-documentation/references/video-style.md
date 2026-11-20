@@ -13,5 +13,5 @@ The look `scripts/lib.mjs` gives a video when no extension changes it. An extens
 | Card type scale | eyebrow 20px caps; cover title 64px; card heading 40px (summary 44px); lead 22px; list 23px/1.7; footnote 19px; fine print 16px |
 | Step cards | Row of translucent cards (230px wide) with a small uppercase step label and arrows between |
 | Video | 1280x720, 25 fps, H.264 (libx264, preset slow, crf 28, yuv420p), `+faststart`. The first 0.8 s (blank page while loading) is cut. About 2.5 MB for 4 minutes. |
-| Music | None by default. With a bed: cut or looped to the video length, 2 s fade in, 3 s fade out, about -24 LUFS, AAC 128 kbps; the video stream is copied, not re-encoded. |
+| Music | None by default. With a bed: cut or looped to the video length, 2 s fade in, 3 s fade out, about -18 LUFS (true peak -3 dBTP), AAC 128 kbps; the video stream is copied, not re-encoded. |
 | Locale | `en-US` unless the extension's `brand.json` sets `locale` |

@@ -329,7 +329,7 @@ export function toMp4(webm, mp4, music) {
 
 /**
  * Mixes a music bed under a finished mp4: looped or cut to the video length, 2 s fade in, 3 s fade out,
- * about -24 LUFS (quiet, under the captions). The video stream is copied, not re-encoded.
+ * about -18 LUFS (clearly audible, still a background bed). The video stream is copied, not re-encoded.
  */
 export function addMusic(mp4, music) {
   const probe = spawnSync(
@@ -340,7 +340,7 @@ export function addMusic(mp4, music) {
   const duration = Number.parseFloat(probe.stdout);
   if (!(duration > 5)) throw new Error(`Could not read the duration of ${mp4} (ffprobe missing?).`);
   const tmp = mp4.replace(/\.mp4$/, ".music.mp4");
-  const filter = `afade=t=in:d=2,afade=t=out:st=${(duration - 3).toFixed(2)}:d=3,loudnorm=I=-24:TP=-3:LRA=7`;
+  const filter = `afade=t=in:d=2,afade=t=out:st=${(duration - 3).toFixed(2)}:d=3,loudnorm=I=-18:TP=-3:LRA=7`;
   const run = spawnSync(
     "ffmpeg",
     [
