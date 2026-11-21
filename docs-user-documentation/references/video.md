@@ -22,6 +22,8 @@ A captioned screen recording of one feature of a web app (Playwright + Chromium,
    - With an extension counterpart installed, a video recorded without `--brand` or `DOCS_BRAND` is unbranded; that is a mistake, not a default.
 
    A 4-minute video takes about 4 minutes of real time; run it in the background and wait.
+
+   **Each run deletes its output folder before it starts** (`--out`, default `out/` beside the scenario), including every earlier video and file in it. Recording several videos: move or upload each result before the next run, or give each its own `--out` (`troubleshooting.md`).
 7. **Look at the result.** Make a contact sheet (`ffmpeg -i <mp4> -vf "fps=1/10,scale=480:-1,tile=3x4" -frames:v 2 sheet_%d.png`) and view it. Check:
    - the cover shows the title, and the extension's credit when it has one;
    - with a credit, the watermark is on every other frame and does not cover a button;
