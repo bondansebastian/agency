@@ -50,19 +50,20 @@ Use the name from the catalog below, for example `--skill atlassian-jira`. Skill
 | Skill | Command | Version | What it does |
 |---|---|---|---|
 | 📚 [Confluence Knowledge Base](atlassian-confluence/SKILL.md) | `/agency:atlassian-confluence` | 1.2.1 | Build and maintain a product-focused Confluence knowledge base that design, engineering, sales and support can all read. |
-| 🧭 [Jira](atlassian-jira/SKILL.md) | `/agency:atlassian-jira` | 1.3.5 | View, create and update Jira issues in plain language, through the Atlassian MCP server or the `jira` CLI. Always sets a time estimate on the native Original Estimate field. |
+| 🧭 [Jira](atlassian-jira/SKILL.md) | `/agency:atlassian-jira` | 1.3.6 | View, create and update Jira issues in plain language, through the Atlassian MCP server or the `jira` CLI. Always sets a time estimate on the native Original Estimate field. |
 | 🔌 [Atlassian MCP Setup](atlassian-mcp-setup/SKILL.md) | `/agency:atlassian-mcp-setup` | 1.2.1 | Install and configure the Atlassian Rovo MCP server, per project or for many projects, for the user's OS and client. |
 | 🗂️ [Context Management](context-management/SKILL.md) | `/agency:context-management` | 3.0.1 | The one layout for customized data: project memory, credentials and extensions. Also creates, installs and troubleshoots an extension on request. |
+| 📐 [Dev Guidelines](dev-guidelines/SKILL.md) | `/agency:dev-guidelines` | 1.0.0 | General coding guidelines: ask the user only what the project cannot answer, and stay inside the current flow (design only on what exists today, extras go to a follow-ups list). |
 | 🚀 [Init Project](dev-init-project/SKILL.md) | `/agency:dev-init-project` | 1.7.1 | Set up a repository for coding agents: `AGENTS.md` with `CLAUDE.md` and `GEMINI.md` symlinks, Jira card moves, PRs opened only on explicit confirmation, squash auto-merge, the `Tests` and `Deploy` workflows, a Playwright browser test script, and, in claude.ai cloud sessions, an offer to script the runtime setup in the environment's setup script. |
 | ⚛️ [React](dev-react/SKILL.md) | `/agency:dev-react` | 1.2.2 | React component architecture: single-responsibility splits, colocation, state isolation, explicit props, naming and file-size targets. |
-| 🎨 [UI/UX](dev-ui-ux/SKILL.md) | `/agency:dev-ui-ux` | 1.3.0 | A mockup shown before building new UI (unless the user skips it) and a cheap browser smoke check after it, with any bug found fixed at once; visible feedback on every clickable element, smooth micro-interactions and accessible motion preferences. |
+| 🎨 [UI/UX](dev-ui-ux/SKILL.md) | `/agency:dev-ui-ux` | 1.3.1 | A mockup shown before building new UI (unless the user skips it) and a cheap browser smoke check after it, with any bug found fixed at once; visible feedback on every clickable element, smooth micro-interactions and accessible motion preferences. |
 | ⚙️ [DevOps](devops/SKILL.md) | `/agency:devops` | 1.6.1 | Manage Coolify (MCP server first, `coolify` CLI as fallback) and Oracle Cloud Infrastructure (`oci` CLI, SSH and SCP through a bastion tunnel) in plain language. |
 | 🧠 [Agent Instructions](docs-agent-instructions/SKILL.md) | `/agency:docs-agent-instructions` | 1.2.1 | Write or refine instruction files for AI agents with no loss of constraints, a machine-parsable structure and few tokens. |
 | 📖 [User Documentation](docs-user-documentation/SKILL.md) | `/agency:docs-user-documentation` | 2.4.1 | Write end-user guides in plain language with a screenshot per step, or record a captioned walkthrough video with its manual page, and publish to Notion. |
 | ⚖️ [Legal](legal/SKILL.md) | `/agency:legal` | 1.0.1 | Draft contracts and other legal documents. Requires Anthropic's `legal` plugin, reads Indonesian law from the Pasal.id connector, and applies Indonesian law unless the user names another jurisdiction. |
 | 📄 [Estimate](sales-estimate/SKILL.md) | `/agency:sales-estimate` | 1.7.1 | Create and maintain structured project estimate documents under `docs/estimates/`, with a required AI Estimate and indexed Scope, Assumptions and Breakdown sections. |
 | 💵 [Quotation](sales-quotation/SKILL.md) | `/agency:sales-quotation` | 1.14.3 | Turn an AI Estimate into a client-facing quotation with a pricing formula remembered per project, and manage the matching Zoho Books estimate. |
-| 🪙 [Token Saver](token-saver/SKILL.md) | `/agency:token-saver` | 1.5.0 | Keep coding tasks cheap: ask the user only what the project cannot answer, plan once in a file, route each piece of work to the cheapest capable model, keep tool output out of the main context, verify with commands, run only the e2e specs a change touches. |
+| 🪙 [Token Saver](token-saver/SKILL.md) | `/agency:token-saver` | 1.5.1 | Keep coding tasks cheap: plan once in a file, route each piece of work to the cheapest capable model, keep tool output out of the main context, verify with commands, run only the e2e specs a change touches. |
 
 Skill names are domain-first (`atlassian-*`, `dev-*`, `docs-*`, `sales-*`) so related skills sort together.
 
@@ -70,6 +71,7 @@ Skill names are domain-first (`atlassian-*`, `dev-*`, `docs-*`, `sales-*`) so re
 
 | When | Which skill decides |
 |---|---|
+| A design, plan, ticket, mockup or question is about to be produced | `dev-guidelines`: ask only what the project cannot answer, and stay inside the current flow. `token-saver`, `dev-ui-ux` and `atlassian-jira` point to it. |
 | A Jira card moves because of work in a repository | `dev-init-project`. `atlassian-jira` performs the move with no approval and no in-between status, unless the project's memory records an override. |
 | A PR is about to be opened | `dev-init-project`: ask the user and open it only after an explicit yes, even when `atlassian-jira` says the work ends in a PR. |
 | An instruction file is written or edited | `dev-init-project` decides the file (`AGENTS.md`, never `CLAUDE.md` or `GEMINI.md`). `docs-agent-instructions` decides the wording. |
@@ -151,6 +153,8 @@ agency/
 │   ├── SKILL.md
 │   ├── references/             # extension-setup.md
 │   └── templates/              # SKILL.md, EXTENSION.md, marketplace.json for a new extension
+├── dev-guidelines/
+│   └── SKILL.md
 ├── dev-init-project/
 │   └── SKILL.md
 ├── dev-react/
