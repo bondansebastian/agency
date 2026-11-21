@@ -53,8 +53,8 @@ Use the name from the catalog below, for example `--skill atlassian-jira`. Skill
 | 🧭 [Jira](atlassian-jira/SKILL.md) | `/agency:atlassian-jira` | 1.3.6 | View, create and update Jira issues in plain language, through the Atlassian MCP server or the `jira` CLI. Always sets a time estimate on the native Original Estimate field. |
 | 🔌 [Atlassian MCP Setup](atlassian-mcp-setup/SKILL.md) | `/agency:atlassian-mcp-setup` | 1.2.1 | Install and configure the Atlassian Rovo MCP server, per project or for many projects, for the user's OS and client. |
 | 🗂️ [Context Management](context-management/SKILL.md) | `/agency:context-management` | 3.0.1 | The one layout for customized data: project memory, credentials and extensions. Also creates, installs and troubleshoots an extension on request. |
-| 📐 [Dev Guidelines](dev-guidelines/SKILL.md) | `/agency:dev-guidelines` | 1.0.0 | General coding guidelines: ask the user only what the project cannot answer, and stay inside the current flow (design only on what exists today, extras go to a follow-ups list). |
-| 🚀 [Init Project](dev-init-project/SKILL.md) | `/agency:dev-init-project` | 1.7.2 | Set up a repository for coding agents: `AGENTS.md` with `CLAUDE.md` and `GEMINI.md` symlinks, Jira card moves, PRs opened only on explicit confirmation, squash auto-merge, the `Tests` and `Deploy` workflows, a Playwright browser test script, and, in claude.ai cloud sessions, an offer to script the runtime setup in the environment's setup script. |
+| 📐 [Dev Guidelines](dev-guidelines/SKILL.md) | `/agency:dev-guidelines` | 1.1.0 | General coding guidelines: ask the user only what the project cannot answer, stay inside the current flow (design only on what exists today, extras go to a follow-ups list), and keep MCP tools in sync with the code through `@mcp` tags (see [MCP sync](#mcp-sync)). |
+| 🚀 [Init Project](dev-init-project/SKILL.md) | `/agency:dev-init-project` | 1.8.0 | Set up a repository for coding agents: `AGENTS.md` with `CLAUDE.md` and `GEMINI.md` symlinks (and the MCP sync rule), Jira card moves, PRs opened only on explicit confirmation, squash auto-merge, the `Tests` and `Deploy` workflows, a Playwright browser test script, and, in claude.ai cloud sessions, an offer to script the runtime setup in the environment's setup script. |
 | ⚛️ [React](dev-react/SKILL.md) | `/agency:dev-react` | 1.2.2 | React component architecture: single-responsibility splits, colocation, state isolation, explicit props, naming and file-size targets. |
 | 🎨 [UI/UX](dev-ui-ux/SKILL.md) | `/agency:dev-ui-ux` | 1.3.1 | A mockup shown before building new UI (unless the user skips it) and a cheap browser smoke check after it, with any bug found fixed at once; visible feedback on every clickable element, smooth micro-interactions and accessible motion preferences. |
 | ⚙️ [DevOps](devops/SKILL.md) | `/agency:devops` | 1.6.1 | Manage Coolify (MCP server first, `coolify` CLI as fallback) and Oracle Cloud Infrastructure (`oci` CLI, SSH and SCP through a bastion tunnel) in plain language. |
@@ -72,6 +72,7 @@ Skill names are domain-first (`atlassian-*`, `dev-*`, `docs-*`, `sales-*`) so re
 | When | Which skill decides |
 |---|---|
 | A design, plan, ticket, mockup or question is about to be produced | `dev-guidelines`: ask only what the project cannot answer, and stay inside the current flow. `token-saver`, `dev-ui-ux` and `atlassian-jira` point to it. |
+| Code that an MCP tool exposes is changed | `dev-guidelines` holds the rule (update the tools named by the `@mcp` tag in the same change). `dev-init-project` stamps it into a project's `AGENTS.md`. The plugin's commit hook enforces it in Claude Code; see [MCP sync](#mcp-sync). |
 | A Jira card moves because of work in a repository | `dev-init-project`. `atlassian-jira` performs the move with no approval and no in-between status, unless the project's memory records an override. |
 | A PR is about to be opened | `dev-init-project`: ask the user and open it only after an explicit yes, even when `atlassian-jira` says the work ends in a PR. |
 | An instruction file is written or edited | `dev-init-project` decides the file (`AGENTS.md`, never `CLAUDE.md` or `GEMINI.md`). `docs-agent-instructions` decides the wording. |
@@ -81,6 +82,23 @@ Skill names are domain-first (`atlassian-*`, `dev-*`, `docs-*`, `sales-*`) so re
 | A quotation is needed | `sales-estimate` produces the AI Estimate first; `sales-quotation` prices it. |
 | A contract or other legal document is needed | `legal` drafts it, after invoking Anthropic's `legal:*` skills, with the law read from Pasal.id. `sales-quotation` stops at the quotation. |
 | Any skill needs remembered data, a login or a team's rules | `context-management` says where it lives. |
+
+## MCP sync
+
+In a project with an MCP server, an agent that changes code must update the MCP tools that expose that code in the same change. The mapping lives in the code, as a comment tag, so it moves with the code and can be searched and tested:
+
+````text
+// @mcp create_invoice, update_invoice     tools that map to the code below
+// @mcp none: file download                 deliberately not exposed
+````
+
+- The tag sits directly above the route handler, controller method, resolver, or shared schema or type a tool takes as input. Any comment syntax works (`//`, `#`, `*`, `--`, `<!--`). `AGENTS.md` holds the convention only, never a list of routes and tools.
+- [`dev-guidelines`](dev-guidelines/SKILL.md) states the rule. [`dev-init-project`](dev-init-project/SKILL.md) stamps it into every project's root `AGENTS.md`, and for a project with an MCP server also asks for a CI check that verifies the tags both ways.
+- **The hook** (`hooks/hooks.json`, a `PreToolUse` hook on Bash) runs `hooks/mcp-sync-check.sh` before a `git commit`. It blocks the commit when a changed file carries an `@mcp` tag and none of the files that define that tool changed, or when a tag names a tool that cannot be found. The message names the file and the tools.
+- **Escape hatch:** when no tool change is needed (a pure refactor, say), put this line in the commit message: `MCP: unchanged — <reason>`. It stays visible in the commit log. It does not excuse a tag that names a tool that does not exist.
+- **Projects without MCP are not affected.** With no `@mcp` tag in the changed files the hook exits silently. It also exits silently outside a git repository, without `jq`, or on any unexpected problem: it never blocks except for the case above.
+- The hook runs **only in Claude Code with the `agency` plugin enabled**. Other agents get the `AGENTS.md` rule, and the project's CI is the backstop for everyone. Tags in Markdown files are ignored, so documentation can show the syntax.
+- Limits: the hook cannot judge whether a tool update is correct, and it sees the files changed so far, so a `git add` inside the same command as the commit is not visible yet.
 
 ## Customizing
 
@@ -141,6 +159,10 @@ agency/
 ├── AGENTS.md                   # rules for agents working here; CLAUDE.md and GEMINI.md are symlinks to it
 ├── .claude-plugin/
 │   └── marketplace.json        # one plugin: agency
+├── hooks/
+│   ├── hooks.json              # PreToolUse hook on Bash
+│   ├── mcp-sync-check.sh       # blocks a git commit when @mcp-tagged code changed without its tool
+│   └── test-mcp-sync-check.sh  # script test for the hook
 ├── atlassian-confluence/
 │   └── SKILL.md
 ├── atlassian-jira/

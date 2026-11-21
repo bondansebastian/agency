@@ -1,7 +1,7 @@
 ---
 name: dev-guidelines
-description: "General coding guidelines for any coding task. Invoke before designing a feature, writing a plan or a ticket, showing a mockup, or asking the user a question about how something should work. Today it holds two rules: ask only what the project cannot answer, and stay inside the current flow (no capability the request did not ask for)."
-version: 1.0.0
+description: "General coding guidelines for any coding task. Invoke before designing a feature, writing a plan or a ticket, showing a mockup, or asking the user a question about how something should work. Today it holds three rules: ask only what the project cannot answer, stay inside the current flow (no capability the request did not ask for), and keep MCP tools in sync with the code (`@mcp` tags)."
+version: 1.1.0
 ---
 
 # Dev Guidelines
@@ -33,6 +33,16 @@ A request names what the user wants. A design that adds capabilities the request
 3. **Extras go to a short "possible follow-ups" list**, outside the scope, the acceptance criteria and the mockup. The user adds one by asking.
 4. **Make the smallest change that satisfies the request.** Prefer the existing mechanism over a new one, and one place to configure something over two.
 5. **One pass before showing anything** (a design, a plan, a ticket, a mockup): "what here did the user not ask for, and does the current flow already have it?" Remove it or move it to follow-ups.
+
+## Keep MCP tools in sync with the code
+
+In a project that has an MCP server, the code that a tool exposes carries a comment tag: `@mcp <tool_name>[, <tool_name>]` directly above the route handler, controller method, resolver, or shared schema or type that a tool takes as input. `@mcp none: <reason>` marks code deliberately not exposed (a binary download, an upload). The tag works in any comment syntax.
+
+- **When you change code that carries an `@mcp` tag, update the tools it names in the same change**: path, method, input schema, permissions and description.
+- **A new route in an area that has MCP tools gets a tool, or `@mcp none: <reason>`.**
+- **Never keep the mapping in prose.** `AGENTS.md` holds the convention only, never a list of routes and tools; a list drifts, a tag moves with the code.
+- A pure refactor that needs no tool change says so in the commit message with the line `MCP: unchanged — <reason>`.
+- In Claude Code with the `agency` plugin, a hook blocks `git commit` when tagged code changed and the tool did not. A project without `@mcp` tags is never affected. Elsewhere the project's CI is the backstop.
 
 ## Adding a guideline
 

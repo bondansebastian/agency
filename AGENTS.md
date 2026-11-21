@@ -31,7 +31,7 @@ Before any coding task (feature, bug fix, refactor, tests, migration, review), i
 |---|---|
 | Check | `claude plugin validate .` |
 | Load test | Install the plugin from this folder into a throwaway config and list the skills (below) |
-| Tests | None. There is no test suite. |
+| Tests | `bash hooks/test-mcp-sync-check.sh` (the commit hook; throwaway git repos, no network). There is no other test suite. |
 | Build | None. Skills are Markdown and scripts, published as they are. |
 
 Load test:
@@ -48,6 +48,7 @@ Every skill listed in `.claude-plugin/marketplace.json` must appear in that outp
 ## Verification
 
 - "Browser-verify" means: run `test:e2e` and see it pass. This repository has no web UI and no `test:e2e` script, so a browser check is not possible here. Say so in the report, and say what you verified instead.
+- A change to `hooks/` also runs `bash hooks/test-mcp-sync-check.sh`, and the load test must show `hooks/hooks.json` in the installed plugin.
 - Verify every change with the check and the load test above before reporting it as done or opening a PR.
 - A change to a script inside a skill (for example `docs-user-documentation/scripts/`) is also run once for real, and its output looked at, before it is reported as done.
 - Never imply a check you didn't run.
