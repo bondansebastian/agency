@@ -1,7 +1,7 @@
 ---
 name: dev-init-project
 description: "Use when setting up a new or existing repository for coding agents (Claude Code, Gemini CLI, Codex), when a repo has no AGENTS.md or has a CLAUDE.md or GEMINI.md with real content, when the user asks to \"write to agents.md\", when creating GitHub Actions workflows, before moving a Jira card for work done in a repo, before reporting a change as done, when opening or merging a PR, or after finishing a task in a claude.ai cloud session (to offer scripting the runtime setup in the environment's setup script)."
-version: 1.7.1
+version: 1.7.2
 ---
 
 # Project initiation
@@ -113,6 +113,7 @@ If a browser check isn't possible (no visible effect, CI-only change, a desktop 
 6. The workflow rule (section 7): two workflows, `Tests` on PRs and `Deploy` on merge to `main`.
 7. A new-module checklist that includes: "add the module's integration matrix entry in .github/workflows/tests.yml".
 8. The token-saver rule, always, in these words: "Before any coding task (feature, bug fix, refactor, tests, migration, review), invoke the `token-saver` skill if it is available. If it isn't available, carry on without it." If the root `AGENTS.md` already exists and lacks this rule, add it.
+9. The dev-guidelines rule, always, in these words: "Before designing a feature, writing a plan or a ticket, showing a mockup, or asking the user how something should work, invoke the `dev-guidelines` skill if it is available. If it isn't available, carry on without it." If the root `AGENTS.md` already exists and lacks this rule, add it.
 
 Without these, the next agent on this repo falls back to its own defaults.
 
@@ -283,6 +284,7 @@ Script rules:
 | Install steps copied into every job | Use the `.github/actions/setup` composite action |
 | New backend module added without touching CI | Add its integration matrix entry in `.github/workflows/tests.yml` |
 | Root `AGENTS.md` written or updated without the token-saver rule | Add item 8 of section 6: use the `token-saver` skill for coding if it is available |
+| Root `AGENTS.md` written or updated without the dev-guidelines rule | Add item 9 of section 6: use the `dev-guidelines` skill before a design, plan, ticket, mockup or question if it is available |
 | A web UI app set up with no browser test script | Do section 8 during setup: Playwright, `test:e2e`, the smoke spec, the `e2e` job |
 | New UI or feature checked by hand in the browser, test scripts left as they were | Update the specs in `e2e/` in the same piece of work, then run `test:e2e` |
 | `e2e` job added to `Tests` but not to the gate's `needs` | Add it; the contract test (check 4) enforces it |
