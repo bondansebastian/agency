@@ -1,7 +1,7 @@
 ---
 name: dev-init-project
 description: "Use when setting up a new or existing repository for coding agents (Claude Code, Gemini CLI, Codex), when a repo has no AGENTS.md or has a CLAUDE.md or GEMINI.md with real content, when the user asks to \"write to agents.md\", when creating GitHub Actions workflows, before moving a Jira card for work done in a repo, before reporting a change as done, when opening or merging a PR, or after finishing a task in a claude.ai cloud session (to offer scripting the runtime setup in the environment's setup script)."
-version: 1.7.2
+version: 1.8.0
 ---
 
 # Project initiation
@@ -114,6 +114,9 @@ If a browser check isn't possible (no visible effect, CI-only change, a desktop 
 7. A new-module checklist that includes: "add the module's integration matrix entry in .github/workflows/tests.yml".
 8. The token-saver rule, always, in these words: "Before any coding task (feature, bug fix, refactor, tests, migration, review), invoke the `token-saver` skill if it is available. If it isn't available, carry on without it." If the root `AGENTS.md` already exists and lacks this rule, add it.
 9. The dev-guidelines rule, always, in these words: "Before designing a feature, writing a plan or a ticket, showing a mockup, or asking the user how something should work, invoke the `dev-guidelines` skill if it is available. If it isn't available, carry on without it." If the root `AGENTS.md` already exists and lacks this rule, add it.
+10. The MCP sync rule, always, in these words: "When you change code that carries an `@mcp <tool_name>` comment tag, update the MCP tools it names in the same change. A new route in an area that has MCP tools gets a tool or an `@mcp none: <reason>` tag. Never keep the code-to-tool mapping in prose; the tags are the mapping. A change that needs no tool update says `MCP: unchanged — <reason>` in its commit message. The `dev-guidelines` skill has the details if it is available." If the root `AGENTS.md` already exists and lacks this rule, add it.
+
+If the project has an MCP server, also record where its tools live, and add a check to the project's own CI (in the `Tests` workflow's lint or test job, per section 7) that fails when an `@mcp` tag names a tool that does not exist, and when a tool has no `@mcp` tag on the code behind it. A project with no MCP server gets only item 10, no CI check, and no tags.
 
 Without these, the next agent on this repo falls back to its own defaults.
 
@@ -285,6 +288,8 @@ Script rules:
 | New backend module added without touching CI | Add its integration matrix entry in `.github/workflows/tests.yml` |
 | Root `AGENTS.md` written or updated without the token-saver rule | Add item 8 of section 6: use the `token-saver` skill for coding if it is available |
 | Root `AGENTS.md` written or updated without the dev-guidelines rule | Add item 9 of section 6: use the `dev-guidelines` skill before a design, plan, ticket, mockup or question if it is available |
+| Root `AGENTS.md` written or updated without the MCP sync rule | Add item 10 of section 6; for a project with an MCP server, also record where the tools live and add the CI check that verifies the `@mcp` tags both ways |
+| A project with an MCP server keeps the route-to-tool list in `AGENTS.md` | Replace the list with `@mcp` tags on the code; keep only the convention in the file |
 | A web UI app set up with no browser test script | Do section 8 during setup: Playwright, `test:e2e`, the smoke spec, the `e2e` job |
 | New UI or feature checked by hand in the browser, test scripts left as they were | Update the specs in `e2e/` in the same piece of work, then run `test:e2e` |
 | `e2e` job added to `Tests` but not to the gate's `needs` | Add it; the contract test (check 4) enforces it |
