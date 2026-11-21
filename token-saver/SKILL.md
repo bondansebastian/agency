@@ -1,7 +1,7 @@
 ---
 name: token-saver
 description: "Invoke at the start of EVERY coding task the user requests (feature, bug fix, refactor, tests, migration, review), before reading code or writing a plan. Keeps token cost down by making the main model an orchestrator: plan once in a file, route each piece of work to the cheapest model that can do it, keep tool output out of the main context, and verify with commands instead of re-reading code."
-version: 1.5.0
+version: 1.5.1
 ---
 
 # Token Saver Skill
@@ -24,30 +24,14 @@ Size the process to the task first:
 | Medium (one module, clear steps) | Short plan in your head or a few lines, one or two delegated tasks. |
 | Large (several modules, new feature) | Full flow below: plan file, routed tasks, parallel groups. |
 
-## Ask only what you cannot find
+## Before the plan
 
-A question costs the user a round trip and shows the agent did not look. Before asking anything, try to
-answer it from the project: the code, the existing behaviour, the project's instructions, the docs, the
-tickets, and the user's earlier messages.
-
-- **Follow the existing mechanism.** When the project already does the same kind of thing (how a date
-  is set, how a default is chosen, what a derived record is called, where a setting lives, how a similar
-  step is validated), do it the same way and say so in one line. Never offer the user a choice between
-  "what the project does today" and an invented alternative.
-- **Decide small things, report them.** A detail with a clear conventional default, or one the user can
-  undo cheaply, is decided by the agent and listed under "decisions an agent made" in the report.
-- **Ask only a real decision**: product behaviour, scope, a trade-off with a cost the user owns, or
-  something destructive or irreversible, where the project gives no answer and two sensible answers
-  lead to different results. State the options, recommend one, and give the consequence of each.
-- **Never ask the user to explain the project to the agent**, and never ask a question whose answer is
-  already in the conversation. Re-read the messages first.
-- **A question the user answers with "follow the current behaviour" was not needed.** Treat that as a
-  correction: next time, look for the current behaviour first.
+Follow the `dev-guidelines` skill (ask only what the project cannot answer, stay inside the current flow) before any design, plan or question.
 
 ## The flow for a large task
 
-1. **Settle the requirements before any code.** Ask only the questions that pass the test in "Ask
-   only what you cannot find" below, in one batch. Rework is the most expensive token cost there is.
+1. **Settle the requirements before any code.** Ask only the questions that pass the test in the
+   `dev-guidelines` skill, in one batch. Rework is the most expensive token cost there is.
 2. **Plan once, in a file.** Have the strongest model write one plan file in the repo (e.g.
    `docs/plans/<date>-<topic>.md`): the decisions (names, columns, endpoints, keys, no "TBD"), then
    numbered tasks in dependency order. Each task names the exact files it creates or changes, its
@@ -154,7 +138,7 @@ Browser verification:
 ## Pitfalls
 
 - Asking the user a question the project already answers (an existing mechanism, a convention, an
-  earlier message). Look first; ask only what "Ask only what you cannot find" allows.
+  earlier message). Look first; ask only what `dev-guidelines` allows.
 - Delegating a five-minute edit: the brief and the reply cost more than the edit.
 - A vague plan: every agent then re-explores the codebase at full cost. Spend the tokens on the plan.
 - Uncapped agent replies and unfiltered test output: the two largest avoidable costs.

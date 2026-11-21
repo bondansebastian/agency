@@ -1,7 +1,7 @@
 ---
 name: dev-ui-ux
 description: This skill should be used before and after building new UI (a new page, screen, component or visibly changed layout) — to show the user a mockup first and to run a cheap browser smoke check afterwards — and when the user asks about UI/UX best practices, frontend UI implementation, interactive affordances, micro-interactions, motion/animation guidance, accessibility for interactive elements, or improving interactive feedback (including hover and focus states). Provide practical, implementation-focused guidance for visible feedback, performance, and accessibility.
-version: 1.3.0
+version: 1.3.1
 ---
 
 # UI/UX Best Practices — Hover & Clickable Feedback
@@ -20,6 +20,7 @@ Before writing the UI code, show the user a mockup and wait for their go-ahead o
 
 - Make it cheap: one static HTML file (or an Artifact, or an image), with the project's existing styles and real-looking sample data where you can. It shows layout, content and the main states (empty, loading, error) that matter; it is not the implementation.
 - Show it the way this environment allows: an Artifact, a file sent to the user, or a screenshot. If none of these is possible, describe the layout in a short text sketch and say why there is no visual mockup.
+- Show only the controls and states the request needs, and only edit paths that exist today (see `dev-guidelines`, "Stay inside the current flow"). Never add a control for something the product cannot do yet.
 - Skip the mockup only when the user explicitly asks to skip it (for example "no mockup", "just build it"). That skip covers the request it was given for, not later ones.
 
 ### After: a cheap smoke check in a real browser
