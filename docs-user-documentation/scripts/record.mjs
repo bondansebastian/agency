@@ -2,6 +2,8 @@
 // and writes an mp4.
 //   node record.mjs --scenario <file.mjs> --url <http://localhost:5173/> [--serve "<command>"]
 //                   [--out <dir>] [--ready "<css selector>"] [--brand <brand.json>] [--music <file>]
+// Output goes to <scenario folder>/out/<meta.output>/ (one folder per video, emptied on each run of that
+// scenario only). --out <dir> chooses the folder instead; it is emptied before every run.
 // --serve starts the app (for example "pnpm exec vite preview") and stops it afterwards.
 // --brand applies a brand: credit and watermark, cover look, locale, music bed. The DOCS_BRAND environment
 //   variable does the same when the flag is not given (for a package script that cannot know the path).
@@ -24,7 +26,13 @@ if (!args.scenario || !args.url) {
 
 const scenarioFile = resolve(args.scenario);
 const { meta, default: play } = await import(pathToFileURL(scenarioFile).href);
-const outDir = resolve(args.out ?? join(dirname(scenarioFile), "out"));
+// meta.output names the video and, by default, its own output folder, so recording another scenario never
+// empties this one's files. It must be a plain file name: it becomes a folder name.
+if (!/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(meta.output ?? "") || meta.output.includes("..")) {
+  console.error(`meta.output must be a plain file name (letters, digits, ".", "_", "-"), got: ${JSON.stringify(meta.output)}`);
+  process.exit(1);
+}
+const outDir = resolve(args.out ?? join(dirname(scenarioFile), "out", meta.output));
 const brand = loadBrand(args.brand ?? process.env.DOCS_BRAND);
 const music = args.music ? resolve(args.music) : brand.music;
 
@@ -44,7 +52,7 @@ const stopServer = () => {
 };
 
 try {
-  console.log(`Recording ${scenarioFile} at ${args.url} ...`);
+  console.log(`Recording ${scenarioFile} at ${args.url} into ${outDir} ...`);
   const { rec, finish } = await startRecording({
     url: args.url,
     outDir,

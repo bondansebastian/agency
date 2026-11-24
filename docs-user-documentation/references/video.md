@@ -23,7 +23,7 @@ A captioned screen recording of one feature of a web app (Playwright + Chromium,
 
    A 4-minute video takes about 4 minutes of real time; run it in the background and wait.
 
-   **Each run deletes its output folder before it starts** (`--out`, default `out/` beside the scenario), including every earlier video and file in it. Recording several videos: move or upload each result before the next run, or give each its own `--out` (`troubleshooting.md`).
+   **Each video has its own output folder**: `out/<output>/` beside the scenario (`<output>` is the scenario's `meta.output`), so recording another scenario never touches it. Running the same scenario again empties only its own folder first, including the upload copy and contact sheets in it, so keep what you want from an earlier take elsewhere. An explicit `--out <dir>` is used as given and emptied before every run (`troubleshooting.md`).
 7. **Look at the result.** Make a contact sheet (`ffmpeg -i <mp4> -vf "fps=1/10,scale=480:-1,tile=3x4" -frames:v 2 sheet_%d.png`) and view it. Check:
    - the cover shows the title, and the extension's credit when it has one;
    - with a credit, the watermark is on every other frame and does not cover a button;
