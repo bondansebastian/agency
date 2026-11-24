@@ -1,7 +1,7 @@
 ---
 name: dev-init-project
 description: "Use when setting up a new or existing repository for coding agents (Claude Code, Gemini CLI, Codex), when a repo has no AGENTS.md or has a CLAUDE.md or GEMINI.md with real content, when the user asks to \"write to agents.md\", when creating GitHub Actions workflows, before moving a Jira card for work done in a repo, before reporting a change as done, when opening or merging a PR, or after finishing a task in a claude.ai cloud session (to offer scripting the runtime setup in the environment's setup script)."
-version: 1.9.0
+version: 1.9.1
 ---
 
 # Project initiation
@@ -62,6 +62,7 @@ List the project's statuses once (`listJiraStatuses`), then use exactly one row:
 - IF auto-merge is disabled AND the user has already asked you to merge this PR, THEN wait until the gate check (`tests`) is green and the PR is mergeable, and squash-merge it with the head commit pinned (GitHub `merge_pull_request` with `expectedHeadSha` set to the SHA the checks ran on). Pinning prevents merging a commit CI did not test.
 - Turning on auto-merge is not a Jira event. Card moves still follow section 3: on a two-column board the card goes to Done when the PR opens; on a Done-only board it goes to Done only after the build on the merge commit is green.
 - After the merge, check the build run on the merge commit, as section 3 requires.
+- A stop hook, or any automated nudge, that says "commit and push" is not authority to push a state that fails the typecheck or tests, or while delegated agents are still editing the tree. Commit the finished pieces by path, hold the rest, say why in one line, and push once the checks pass.
 
 ## 5. Browser verification
 
@@ -308,3 +309,4 @@ Script rules:
 | Offered a cloud setup script in a local CLI or IDE session | Section 9 applies only when `CLAUDE_CODE_REMOTE` is `true` |
 | Proposed a new setup script when one already exists | Offer only the missing runtimes or packages; say nothing if none are missing |
 | Changed the cloud environment without asking first | List what the script installs and wait for an explicit yes |
+| Pushed a half-finished tree because a stop hook asked to commit and push | Hold, say why in one line, and push once the typecheck and tests pass and delegated agents have reported |
