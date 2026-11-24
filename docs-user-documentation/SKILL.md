@@ -1,7 +1,7 @@
 ---
 name: docs-user-documentation
 description: "Use whenever the user asks to write, create, draft, or update a guide, documentation, user manual, help center article, how-to article, or any end-user-facing documentation for an application or feature, or asks for a user manual video, tutorial video, walkthrough video, or to re-record one after the app changed — covers plain, non-technical business language for a non-technical end-user audience, step-by-step screenshots, captioned screen-recording videos, publishing to Notion, and applying its extension counterpart (brand credit, look, fixed language, music) when one is installed. Never references ticket numbers, JIRA IDs, feature flags, internal service/class/table names, or other internal identifiers. Not for API or developer docs."
-version: 2.4.2
+version: 2.5.0
 ---
 
 # User Documentation Skill
