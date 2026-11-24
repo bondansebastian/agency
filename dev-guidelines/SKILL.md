@@ -1,7 +1,7 @@
 ---
 name: dev-guidelines
-description: "General coding guidelines for any coding task. Invoke before designing a feature, writing a plan or a ticket, showing a mockup, or asking the user a question about how something should work. Today it holds three rules: ask only what the project cannot answer, stay inside the current flow (no capability the request did not ask for), and keep MCP tools in sync with the code (`@mcp` tags)."
-version: 1.3.0
+description: "General coding guidelines for any coding task. Invoke before designing a feature, writing a plan or a ticket, showing a mockup, or asking the user a question about how something should work. Today it holds four rules: ask only what the project cannot answer, stay inside the current flow (no capability the request did not ask for), keep MCP tools in sync with the code (`@mcp` tags), and, when a call to an external service is rejected although everything looks right, compare a working request with the failing one on the wire instead of guessing."
+version: 1.4.0
 ---
 
 # Dev Guidelines
@@ -53,6 +53,18 @@ In a project that has an MCP server, the code that a tool exposes carries a comm
 - **Never keep the mapping in prose.** `AGENTS.md` holds the convention only, never a list of routes and tools; a list drifts, a tag moves with the code.
 - A pure refactor that needs no tool change says so in the commit message with the line `MCP: unchanged — <reason>`.
 - In Claude Code with the `agency` plugin, a hook blocks `git commit` when tagged code changed and the tool did not. A project without `@mcp` tags is never affected. Elsewhere the project's CI is the backstop.
+
+## Compare a working request with a failing one on the wire
+
+A remote service rejects a request (an error code, a 4xx) although the credentials, the URL and the code look right, or one client works (curl, a console) and another fails. The error text says what the server understood, not what the client sent. Find the difference on the wire before forming a theory.
+
+1. **Get the real error**: endpoint, error class, HTTP status and the vendor's error code. IF the code maps errors to one generic message and drops these, THEN add one diagnostic log line first: endpoint path, error class, status, vendor code, mapped code and credential lengths. Never log credentials, signatures, URLs with a query string or the vendor's message text.
+2. **Get a request known to work**, mirroring the failing one (same endpoint, same signing). The user runs it on their own machine and secrets stay there: read them at a prompt that shows its label, print only lengths and the reply. IF the test differs from the failing request, THEN say what it cannot show before reading its result.
+3. **Capture what the failing client sends**: point its base URL at `scripts/capture-server.mjs` (local, fake credentials of the real length) and compare method, path, query parameter names, header names (is the authentication header present, and how long is its value?), content type and body encoding with the working request.
+4. **A missing or different item is the lead.** Read how the library builds requests (constructor, configuration wrapper, per-call options) and use its documented entry point. A plain object passed to a low-level class often skips the wrapper that sets headers, timeouts and defaults.
+5. **Lock it in** with a failing test first that runs the real library against a local server and asserts the wire facts (header present, parameters present, secret absent). Mocks and fakes cannot see the wire: keep one such test per integration.
+
+The script's options, the pitfalls and the report format are in `references/wire-compare.md`.
 
 ## Adding a guideline
 

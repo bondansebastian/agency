@@ -1,14 +1,14 @@
 # Agency
 
 ![Plugin](https://img.shields.io/badge/Claude_Code_plugin-agency-0ea5e9?style=for-the-badge)
-![Skills](https://img.shields.io/badge/Skills-13-22c55e?style=for-the-badge)
+![Skills](https://img.shields.io/badge/Skills-16-22c55e?style=for-the-badge)
 ![Format](https://img.shields.io/badge/Format-SKILL.md-f59e0b?style=for-the-badge)
 
 > The working skills of a small software agency, packaged as one Claude Code plugin: Jira and Confluence, estimates and quotations, user documentation, project setup, front-end conventions and DevOps.
 
 ## What this is
 
-`agency` is a single [Claude Code plugin](https://code.claude.com/docs/en/plugin-marketplaces) with 14 skills. Each skill is a folder with a `SKILL.md` that tells an agent when to use it and how to do the work. In Claude Code every skill is invoked as `/agency:<skill>`, and typing `/agency` lists them all.
+`agency` is a single [Claude Code plugin](https://code.claude.com/docs/en/plugin-marketplaces) with 16 skills. Each skill is a folder with a `SKILL.md` that tells an agent when to use it and how to do the work. In Claude Code every skill is invoked as `/agency:<skill>`, and typing `/agency` lists them all.
 
 Three ideas hold the collection together:
 
@@ -52,8 +52,9 @@ Use the name from the catalog below, for example `--skill atlassian-jira`. Skill
 | 📚 [Confluence Knowledge Base](atlassian-confluence/SKILL.md) | `/agency:atlassian-confluence` | 1.2.1 | Build and maintain a product-focused Confluence knowledge base that design, engineering, sales and support can all read. |
 | 🧭 [Jira](atlassian-jira/SKILL.md) | `/agency:atlassian-jira` | 1.3.6 | View, create and update Jira issues in plain language, through the Atlassian MCP server or the `jira` CLI. Always sets a time estimate on the native Original Estimate field. |
 | 🔌 [Atlassian MCP Setup](atlassian-mcp-setup/SKILL.md) | `/agency:atlassian-mcp-setup` | 1.2.1 | Install and configure the Atlassian Rovo MCP server, per project or for many projects, for the user's OS and client. |
+| 🪙 [Binance API](binance-api/SKILL.md) | `/agency:binance-api` | 1.0.0 | Binance REST API and official JavaScript SDK knowledge, each fact labeled official, observed or unverified: key types, signing, the read-only key check, what error codes -2014, -2015, -1022 and -1002 meant in practice, the SDK construction that drops the API key header, a signed key check the owner runs on their own machine, and how to read the docs when the site blocks automated fetching. |
 | 🗂️ [Context Management](context-management/SKILL.md) | `/agency:context-management` | 3.0.1 | The one layout for customized data: project memory, credentials and extensions. Also creates, installs and troubleshoots an extension on request. |
-| 📐 [Dev Guidelines](dev-guidelines/SKILL.md) | `/agency:dev-guidelines` | 1.3.0 | General coding guidelines: ask the user only what the project cannot answer (and check the user's sibling repositories before choosing an approach), stay inside the current flow (design only on what exists today, extras go to a follow-ups list),, judge a "does X support Y?" question against the user's goal (check how the product already meets it, name a real gap separately), and keep MCP tools in sync with the code through `@mcp` tags (see [MCP sync](#mcp-sync)). |
+| 📐 [Dev Guidelines](dev-guidelines/SKILL.md) | `/agency:dev-guidelines` | 1.4.0 | General coding guidelines: ask the user only what the project cannot answer (and check the user's sibling repositories before choosing an approach), stay inside the current flow (design only on what exists today, extras go to a follow-ups list),, judge a "does X support Y?" question against the user's goal (check how the product already meets it, name a real gap separately), keep MCP tools in sync with the code through `@mcp` tags (see [MCP sync](#mcp-sync)), and, when a call to an external service is rejected although everything looks right, compare a working request with the failing one on the wire (a local capture server shows what each client sends) instead of guessing. |
 | 🚀 [Init Project](dev-init-project/SKILL.md) | `/agency:dev-init-project` | 1.9.1 | Set up a repository for coding agents: `AGENTS.md` with `CLAUDE.md` and `GEMINI.md` symlinks (and the MCP sync rule), Jira card moves, PRs opened only on explicit confirmation, squash auto-merge, the `Tests` and `Deploy` workflows (images built only for the server's architecture on a native runner), a "commit and push" hook is never authority to push a broken or unfinished tree, a Playwright browser test script, and, in claude.ai cloud sessions, an offer to script the runtime setup in the environment's setup script. |
 | ⚛️ [React](dev-react/SKILL.md) | `/agency:dev-react` | 1.2.3 | React component architecture: single-responsibility splits, colocation, state isolation, explicit props, portals and nested dialogs (their events still bubble to React parents), naming and file-size targets. |
 | 🎨 [UI/UX](dev-ui-ux/SKILL.md) | `/agency:dev-ui-ux` | 1.3.2 | A mockup shown before building new UI (unless the user skips it) and a cheap browser smoke check after it, with any bug found fixed at once; scripts searched for the names of any button or link added or renamed; visible feedback on every clickable element, smooth micro-interactions and accessible motion preferences. |
@@ -65,7 +66,7 @@ Use the name from the catalog below, for example `--skill atlassian-jira`. Skill
 | 💵 [Quotation](sales-quotation/SKILL.md) | `/agency:sales-quotation` | 1.14.3 | Turn an AI Estimate into a client-facing quotation with a pricing formula remembered per project, and manage the matching Zoho Books estimate. |
 | 🪙 [Token Saver](token-saver/SKILL.md) | `/agency:token-saver` | 1.5.2 | Keep coding tasks cheap: plan once in a file, route each piece of work to the cheapest capable model, keep tool output out of the main context, verify with commands, write the shared contract first when tasks run in parallel, run only the e2e specs a change touches. |
 
-Skill names are domain-first (`atlassian-*`, `dev-*`, `docs-*`, `sales-*`) so related skills sort together.
+Skill names are domain-first (`atlassian-*`, `binance-*`, `dev-*`, `docs-*`, `sales-*`) so related skills sort together.
 
 ## How the skills fit together
 
@@ -79,6 +80,7 @@ Skill names are domain-first (`atlassian-*`, `dev-*`, `docs-*`, `sales-*`) so re
 | A change is browser-verified | `token-saver`: run the app's `test:e2e` script, which holds browser tests only (an API suite there is renamed to `test:api`). A check driven by hand once is scripted before the work is done. Only the specs related to the change run locally; the full suite is left to the PR's `e2e` job, and an `AGENTS.md` note next to the code names its specs. `dev-init-project` sets that script up and has the details. |
 | New UI is built | `dev-ui-ux`: show a mockup first unless the user explicitly skips it, and afterwards run a cheap browser smoke check (new pages only, two widths) and fix any bug it finds. That check spots bugs; verification is still `test:e2e` per `token-saver`. |
 | A task finishes in a claude.ai cloud session | `dev-init-project` (section 9): offer to script the runtime setup in the cloud environment, or to add what an existing setup script is missing. Nothing changes without an explicit yes. |
+| A call to an external service is rejected although the credentials and code look right | `dev-guidelines` (the wire rule): capture what the failing client sends and compare it with a request that works. For Binance, `binance-api` holds the facts (error codes, signing, SDK construction) and points back to that rule. |
 | A quotation is needed | `sales-estimate` produces the AI Estimate first; `sales-quotation` prices it. |
 | A contract or other legal document is needed | `legal` drafts it, after invoking Anthropic's `legal:*` skills, with the law read from Pasal.id. `sales-quotation` stops at the quotation. |
 | Any skill needs remembered data, a login or a team's rules | `context-management` says where it lives. |
@@ -171,12 +173,17 @@ agency/
 │   └── references/             # CLI commands, MCP tools
 ├── atlassian-mcp-setup/
 │   └── SKILL.md
+├── binance-api/
+│   ├── SKILL.md
+│   └── scripts/                # check-signed-request.sh (signed key check, run by the key owner)
 ├── context-management/
 │   ├── SKILL.md
 │   ├── references/             # extension-setup.md
 │   └── templates/              # SKILL.md, EXTENSION.md, marketplace.json for a new extension
 ├── dev-guidelines/
-│   └── SKILL.md
+│   ├── SKILL.md
+│   ├── references/             # wire-compare.md
+│   └── scripts/                # capture-server.mjs (shows what a client sends)
 ├── dev-init-project/
 │   └── SKILL.md
 ├── dev-react/
