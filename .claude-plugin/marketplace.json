@@ -13,14 +13,15 @@
     {
       "name": "agency",
       "source": "./",
-      "description": "All agency skills in one plugin, invoked as /agency:<skill>: Atlassian (Jira, Confluence, Rovo MCP setup), sales (estimates, quotations), legal (contracts and legal documents under Indonesian law by default, using Anthropic's legal plugin and the Pasal.id connector), docs (user guides and manual videos, agent instructions), dev (general coding guidelines with an @mcp tag convention and a commit hook that keeps MCP tools in sync with code, project initiation, including cloud environment setup scripts, React, UI/UX with mockups before new UI and a cheap browser smoke check after), DevOps (Coolify, OCI), token-saver, and context-management (per-project memory, credentials, and extensions installed as agency-<ext_name> plugins).",
-      "version": "2.16.0",
+      "description": "All agency skills in one plugin, invoked as /agency:<skill>: Atlassian (Jira, Confluence, Rovo MCP setup), sales (estimates, quotations), legal (contracts and legal documents under Indonesian law by default, using Anthropic's legal plugin and the Pasal.id connector), docs (user guides and manual videos, agent instructions), dev (general coding guidelines with an @mcp tag convention and a commit hook that keeps MCP tools in sync with code, plus a rule for comparing a working request with a failing one on the wire, project initiation, including cloud environment setup scripts, React, UI/UX with mockups before new UI and a cheap browser smoke check after), DevOps (Coolify, OCI), Binance (REST API and official SDK: keys, signing, error codes, a signed key check), token-saver, and context-management (per-project memory, credentials, and extensions installed as agency-<ext_name> plugins).",
+      "version": "2.17.0",
       "category": "productivity",
       "strict": false,
       "skills": [
         "./atlassian-confluence",
         "./atlassian-jira",
         "./atlassian-mcp-setup",
+        "./binance-api",
         "./context-management",
         "./dev-guidelines",
         "./dev-init-project",
