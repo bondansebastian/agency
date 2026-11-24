@@ -1,7 +1,7 @@
 ---
 name: dev-guidelines
 description: "General coding guidelines for any coding task. Invoke before designing a feature, writing a plan or a ticket, showing a mockup, or asking the user a question about how something should work. Today it holds three rules: ask only what the project cannot answer, stay inside the current flow (no capability the request did not ask for), and keep MCP tools in sync with the code (`@mcp` tags)."
-version: 1.2.0
+version: 1.3.0
 ---
 
 # Dev Guidelines
@@ -24,6 +24,15 @@ A question costs the user a round trip and shows the agent did not look. Before 
 - **Ask only a real decision**: product behaviour, scope, a trade-off with a cost the user owns, or something destructive or irreversible, where the project gives no answer and two sensible answers lead to different results. State the options, recommend one, and give the consequence of each.
 - **Never ask the user to explain the project to the agent**, and never ask a question whose answer is already in the conversation. Re-read the messages first.
 - **A question the user answers with "follow the current behaviour" was not needed.** Treat that as a correction: next time, look for the current behaviour first.
+
+## Judge against the goal
+
+A question such as "does X support Y?" asks whether the user can reach Y, not whether X has a feature named Y.
+
+1. Write Y down in the user's words (for example "the user can save the receipt as a PDF").
+2. Find how the product already meets Y: its own convention, a sibling feature, the existing help text. A route the product already uses for the same goal counts (a print dialog with "Save as PDF" is a PDF download in an app that does this everywhere).
+3. Answer yes or no on that basis, with the evidence you checked.
+4. Name any real gap separately and label it as a gap, for example a missing way to reopen an old document. Never blur the answer with "partly" because a different mechanism exists that the user did not ask about.
 
 ## Stay inside the current flow
 

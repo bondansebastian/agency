@@ -1,7 +1,7 @@
 ---
 name: dev-ui-ux
 description: This skill should be used before and after building new UI (a new page, screen, component or visibly changed layout) — to show the user a mockup first and to run a cheap browser smoke check afterwards — and when the user asks about UI/UX best practices, frontend UI implementation, interactive affordances, micro-interactions, motion/animation guidance, accessibility for interactive elements, or improving interactive feedback (including hover and focus states). Provide practical, implementation-focused guidance for visible feedback, performance, and accessibility.
-version: 1.3.1
+version: 1.3.2
 ---
 
 # UI/UX Best Practices — Hover & Clickable Feedback
@@ -35,6 +35,7 @@ After building the UI, look at it once in a real browser to catch visible bugs. 
 2. Look at the screenshots once, for broken layout, overlapping or cut-off text, missing styles or images, and unreadable contrast.
 3. If you find a bug, fix it immediately, in the same piece of work, then re-run the script for that page only. Don't report the UI as done while a bug you found is still open.
 4. Keep the screenshots and the script out of the commit.
+5. Search the scripts. When you add or rename a button, link or label, grep the browser specs and scripted recordings for the same name. Matching by a name substring breaks when a new "Delete photo" button appears next to "Delete", or a second "Settings" link next to the first. Scripts select by exact name or by `href`/role, and are fixed in the same change.
 
 How this fits the other skills: the smoke check finds bugs, it does not verify the change. Verification is still the `test:e2e` run that `token-saver` and `dev-init-project` (section 5) define, and the spec for the new UI is still written there. Their rule "do not open a browser to verify" is about verification and doesn't forbid this check; for the smoke check itself, this skill wins.
 

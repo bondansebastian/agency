@@ -8,7 +8,7 @@ A captioned screen recording of one feature of a web app (Playwright + Chromium,
 2. Look in `<project>/scripts/manual-video/scenarios/` for a scenario that covers the feature. If found, run it again (step 6) and update only what changed in the UI.
 3. If none: copy the scenario template to `<project>/scripts/manual-video/scenarios/<feature>.mjs` (the extension's template when it links one, otherwise `templates/scenario.template.mjs`), and copy `scripts/lib.mjs` and `scripts/record.mjs` to `<project>/scripts/manual-video/` if the project does not have them yet. Plan the story first: 3 to 6 steps, one caption per action, then optional other cases, then the summary card.
 4. Make sure Playwright and ffmpeg are available (`troubleshooting.md`).
-5. Write the scenario with the helpers: `rec.cover`, `rec.caption`, `rec.click`, `rec.type`, `rec.move`, `rec.card`, `rec.hideCaption`, `rec.showCursor`, `rec.page`.
+5. Write the scenario with the helpers: `rec.cover`, `rec.caption`, `rec.click`, `rec.type`, `rec.move`, `rec.card`, `rec.hideCaption`, `rec.showCursor`, `rec.page`. Select buttons and links by exact name or `href`, not by a name substring: a button added later (for example "Delete photo" next to "Delete") would match both and stop the recording (see `dev-ui-ux`).
 6. Record:
 
    ```bash
@@ -29,7 +29,8 @@ A captioned screen recording of one feature of a web app (Playwright + Chromium,
    - with a credit, the watermark is on every other frame and does not cover a button;
    - every caption is readable and matches the screen;
    - no frame is blank or shows an error;
-   - with music, the mp4 has an audio stream (`ffprobe -v error -show_entries stream=codec_type -of csv=p=0 <mp4>` prints `video` and `audio`).
+   - with music, the mp4 has an audio stream (`ffprobe -v error -show_entries stream=codec_type -of csv=p=0 <mp4>` prints `video` and `audio`);
+   - the recording finished: wait for the recorder's final `Done` line before touching its files, and compare the duration of any smaller upload copy with the master (`ffprobe -v error -show_entries format=duration -of csv=p=0 <file>`). A command run in the background with a short timeout can be killed during post-processing and leave a truncated copy, so give the recording command a long timeout.
 
    Fix and re-record until it is right.
 8. Save the scenario in the project (commit it if the project uses git). Publish the mp4 with its manual page (`publishing-to-notion.md`, or wherever the extension or user says). Report the link, the duration and size, and what the sample data covers.

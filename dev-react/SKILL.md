@@ -1,7 +1,7 @@
 ---
 name: dev-react
 description: "Use when writing, reviewing, refactoring, or splitting React components, hooks, or their props and types — a new component, a component that has grown too large, state that leaks between components, unclear props, or a question about how to structure React code. Opinionated component architecture: single-responsibility splits, colocation, state isolation, explicit props, re-exported types, naming conventions, and practical file-size targets."
-version: 1.2.2
+version: 1.2.3
 ---
 
 # React Best Practices Skill
@@ -169,3 +169,12 @@ If a sub-component exceeds 150 lines, consider a further split.
 - Do not create a generic `StatusRouter` abstraction for one-off component splits.
 - Do not extract helpers into a separate `utils.ts` unless they are used in 3+ files.
 - `formatTimestamp` can be a module-level function in each sub-component file — duplication is acceptable at this scale.
+
+---
+
+### 11. Portals and nested dialogs
+
+- A portal moves the DOM, not the React tree: React still bubbles synthetic events (`submit`, `close`, `click`, key events) from a portal's content to its React parents. A dialog rendered in a portal from inside another dialog or form therefore reaches the outer `onSubmit` and `onClose`.
+- Call `event.stopPropagation()` in the inner dialog's own `onSubmit` (after `preventDefault`) and `onClose`, or the outer form saves and the outer dialog closes together with it.
+- A `<form>` must not sit inside another `<form>`. Render the inner dialog in a portal (`createPortal(..., document.body)`), or as a sibling of the outer dialog when the component tree allows it.
+- Test the nested case once, by hand or in a spec: Esc and Enter in the inner dialog close or submit only the inner dialog, and the outer form keeps what was typed.

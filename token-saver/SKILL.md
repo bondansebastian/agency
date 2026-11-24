@@ -1,7 +1,7 @@
 ---
 name: token-saver
 description: "Invoke at the start of EVERY coding task the user requests (feature, bug fix, refactor, tests, migration, review), before reading code or writing a plan. Keeps token cost down by making the main model an orchestrator: plan once in a file, route each piece of work to the cheapest model that can do it, keep tool output out of the main context, and verify with commands instead of re-reading code."
-version: 1.5.1
+version: 1.5.2
 ---
 
 # Token Saver Skill
@@ -71,6 +71,7 @@ The brief is the only context the agent has. Keep it short by pointing, not past
 ## Running tasks in parallel
 
 - Parallel tasks must not share files. Split by folder (API / web / shared) where possible.
+- Shared contract first. When parallel tasks depend on the same types, schemas, constants or API shape, the orchestrator writes and builds that contract before starting them. Each brief says it is done and off limits (an agent that needs a change reports it instead of editing it). Until all tasks land, the repo-wide check can be red outside the contract; that is expected.
 - Agents that share one working tree must not run `git add` or `git commit`: a staged change from
   one agent ends up in another's commit. The orchestrator commits each task by path
   (`git add <paths>`), after that task reports.
