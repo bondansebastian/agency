@@ -1,7 +1,7 @@
 ---
 name: devops-coolify
 description: Use when the user wants to manage Coolify (self-hosted PaaS) — deploying or restarting apps, checking server/project/resource status, viewing app or database logs, managing environment variables, contexts, tags, destinations, cloud-provider tokens, databases, or one-click services. Uses the Coolify MCP server when connected (preferred) and the `coolify` CLI as the fallback. Triggers on "coolify", "self-hosted PaaS", or coolify app/server/database/service/deploy/context commands.
-version: 1.4.0
+version: 1.5.0
 license: MIT
 ---
 
@@ -125,6 +125,25 @@ Common aliases: `app`≈`apps`≈`application`≈`applications`; `service`≈`se
 Global flags on every command: `--context <name>`, `--token <token>`, `--format table|json|pretty`, `--show-sensitive`, `--debug`.
 
 Full quick-start reference: `references/llms.txt`.
+
+## Deploying and Troubleshooting
+
+Lessons from real deployments. They apply to both interfaces.
+
+- **Deploy webhook:** Coolify 4.7+ accepts only `POST` on `/api/v1/deploy?uuid=<uuid>[,<uuid>]` (a `GET` returns 405), with `Authorization: Bearer <token>`. In CI, call it with `curl --fail-with-body -X POST` so an error status fails the step.
+- **Domain behind Cloudflare (or any proxy that terminates TLS):** set the application's domain with `http://`, not `https://`. With `https://`, Coolify's proxy redirects to HTTPS while Cloudflare connects over HTTP, which loops. Keep Cloudflare's SSL mode consistent with that choice.
+- **Container-to-container proxying (nginx):** a hostname written directly in `proxy_pass` is resolved once, at nginx startup. Coolify gives a redeployed container a new IP, so the proxy keeps the old IP and returns 502 until it restarts. Re-resolve per request through Docker's embedded DNS:
+  ```nginx
+  resolver 127.0.0.11 valid=10s ipv6=off;
+  set $upstream http://<service-alias>:<port>;
+  location /api/ { proxy_pass $upstream; }
+  ```
+  With a variable in `proxy_pass`, nginx passes the request URI unchanged; that matches `proxy_pass http://host:port;` with no path. IF the config is an `envsubst` template, THEN `$upstream` stays literal as long as no environment variable of that name exists.
+- **Crash loop (container keeps restarting):** first suspect the app's own startup validation of its environment variables (missing values, wrong secret format, a password policy), not the code. Coolify usually cannot return logs of a container that is restarting. To read the error:
+  1. Ask the user to open the application's **Logs** tab in the dashboard, which often shows the last lines.
+  2. IF that is not enough, THEN propose (as a write, with confirmation) a temporary one-off service from the same image and the same environment that runs the start command once and stays alive (`sleep`), read its logs, and delete it with its volumes afterwards. Print only the error line; never print environment values. Remove any throwaway database or data it created.
+  3. After the fix, reset the application's restart counter if the platform stopped restarting it.
+- **Design the app so this is cheap:** an app that validates its configuration at startup should fail with one clear line naming the variable and the rule it broke, never the value.
 
 ## Safety
 

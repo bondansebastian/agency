@@ -1,7 +1,7 @@
 ---
 name: dev-guidelines
 description: "General coding guidelines for any coding task. Invoke before designing a feature, writing a plan or a ticket, showing a mockup, or asking the user a question about how something should work. Today it holds three rules: ask only what the project cannot answer, stay inside the current flow (no capability the request did not ask for), and keep MCP tools in sync with the code (`@mcp` tags)."
-version: 1.1.0
+version: 1.2.0
 ---
 
 # Dev Guidelines
@@ -19,6 +19,7 @@ Load it at the start of any coding task, before the first design, plan, ticket, 
 A question costs the user a round trip and shows the agent did not look. Before asking anything, try to answer it from the project: the code, the existing behaviour, the project's instructions, the docs, the tickets, and the user's earlier messages.
 
 - **Follow the existing mechanism.** When the project already does the same kind of thing (how a date is set, how a default is chosen, what a derived record is called, where a setting lives, how a similar step is validated), do it the same way and say so in one line. Never offer the user a choice between "what the project does today" and an invented alternative.
+- **Look at the user's sibling projects before choosing an approach.** IF the user has another repository that already solves the same problem (a deploy workflow, a runner type, a webhook call, a config pattern), THEN read how it does it and follow that. It shows what already works on the user's account and plan, which beats a guess about cost or availability. IF the user points to a sibling repository, THEN read it before answering.
 - **Decide small things, report them.** A detail with a clear conventional default, or one the user can undo cheaply, is decided by the agent and listed under "decisions an agent made" in the report.
 - **Ask only a real decision**: product behaviour, scope, a trade-off with a cost the user owns, or something destructive or irreversible, where the project gives no answer and two sensible answers lead to different results. State the options, recommend one, and give the consequence of each.
 - **Never ask the user to explain the project to the agent**, and never ask a question whose answer is already in the conversation. Re-read the messages first.

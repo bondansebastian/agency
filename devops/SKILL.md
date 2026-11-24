@@ -1,7 +1,7 @@
 ---
 name: devops
 description: Use when the user wants to interact with, manage, deploy to, or query a supported DevOps/hosting platform — currently Coolify (self-hosted PaaS for apps, databases, and services; via the Coolify MCP server when connected, otherwise the `coolify` CLI) and OCI (Oracle Cloud Infrastructure, including bastion-tunneled SSH/SCP to private compute instances). Triggers on platform names (Coolify, OCI/Oracle Cloud, and later Vercel, Cloudflare), or requests to deploy, check server/app status, view logs, manage environment variables, databases, or services on those platforms.
-version: 1.6.1
+version: 1.7.0
 license: MIT
 ---
 
@@ -42,6 +42,14 @@ This rule binds every platform directory — do not weaken it in a platform's ow
 - This policy applies equally to CLI commands and MCP tool calls. A permission prompt from the host application (for example Claude Code's per-tool approval) does NOT replace this confirmation.
 - Confirm each write operation individually. Do not bundle several writes under one confirmation unless the user has explicitly pre-approved that exact batch.
 - If unsure whether a command or tool call is a read or a write, treat it as a write and confirm.
+
+## Deploy Verification Policy (applies to every platform)
+
+A deployment is done when the running app is checked, not when the platform says "finished".
+
+- After every deploy, confirm the new deployment finished on the platform AND the app responds: request its health endpoint or the changed page and check the status code.
+- IF the deploy fixes a production failure, THEN reproduce the scenario that failed and see it pass. Example: when redeploying one service used to break another, redeploy only that service and poll the health endpoint every few seconds until the new container is up; report how many checks ran and their status codes.
+- DO NOT report a fix as verified from a green CI run or a finished deployment alone.
 
 ## Installation Cleanup Policy (applies to every platform)
 
