@@ -1,7 +1,7 @@
 ---
 name: dev-init-project
 description: "Use when setting up a new or existing repository for coding agents (Claude Code, Gemini CLI, Codex), when a repo has no AGENTS.md or has a CLAUDE.md or GEMINI.md with real content, when the user asks to \"write to agents.md\", when creating GitHub Actions workflows, before moving a Jira card for work done in a repo, before reporting a change as done, when opening or merging a PR, or after finishing a task in a claude.ai cloud session (to offer scripting the runtime setup in the environment's setup script)."
-version: 1.8.0
+version: 1.9.0
 ---
 
 # Project initiation
@@ -44,7 +44,8 @@ List the project's statuses once (`listJiraStatuses`), then use exactly one row:
 - The card goes **straight** to Done. Skip "Code Review", "QA" and other in-between columns, even if a move to them looks natural.
 - With both columns, Done happens when the PR is **opened**, not when it merges.
 - "Build succeeds" means the `Deploy` workflow run (section 7) on the merge commit of the default branch finished green. A green PR doesn't count, so check that run after the merge.
-- If that run fails, leave the card where it is and tell the user.
+- A green run is not enough on its own. Before moving the card to the build-succeeded column, confirm the deployed app took the new version and responds: the platform shows the new deployment finished, and a health endpoint or the changed page returns the expected status. IF the change fixed a production failure, THEN reproduce the scenario that failed (for example, redeploy the one service whose redeploy used to break the app while polling its health endpoint) and see it pass.
+- If that run fails, or the deployed app does not respond, leave the card where it is and tell the user.
 - Put the ticket key in commit messages and the PR title.
 - This table wins over the `atlassian-jira` skill's general rules: these moves need no approval, and no in-between status is used. A project that does need one (a stop in "Code Review" or "QA", or a workflow that refuses the direct move) records it as a `Card moves` entry in the `atlassian-jira` skill's context, following the `context-management` skill (`<project-root>/.agents/contexts/agency/atlassian-jira/MEMORY.md`, or an extension). Only such an entry changes the table; never add an in-between move on your own.
 
@@ -57,7 +58,8 @@ List the project's statuses once (`listJiraStatuses`), then use exactly one row:
 - As soon as the PR is open, turn on auto-merge with the squash method (GitHub `enable_pr_auto_merge` with `SQUASH`).
 - Push everything the PR needs before turning it on, including docs and `AGENTS.md` changes. The merge fires as soon as the required checks pass, and on most repos a merge to the default branch deploys.
 - If GitHub refuses because the PR is already mergeable (CI already green, "clean status"), squash-merge it directly instead.
-- If the repo has auto-merge disabled, tell the user and leave the PR open. Don't merge by hand without asking.
+- Check whether auto-merge is enabled before relying on it. If the repo has auto-merge disabled, tell the user and leave the PR open. Don't merge by hand without asking.
+- IF auto-merge is disabled AND the user has already asked you to merge this PR, THEN wait until the gate check (`tests`) is green and the PR is mergeable, and squash-merge it with the head commit pinned (GitHub `merge_pull_request` with `expectedHeadSha` set to the SHA the checks ran on). Pinning prevents merging a commit CI did not test.
 - Turning on auto-merge is not a Jira event. Card moves still follow section 3: on a two-column board the card goes to Done when the PR opens; on a Done-only board it goes to Done only after the build on the merge commit is green.
 - After the merge, check the build run on the merge commit, as section 3 requires.
 
@@ -158,6 +160,10 @@ When you create GitHub Actions workflows, create exactly these two in `.github/w
 ### `Deploy` (`.github/workflows/deploy.yml`)
 
 - Build, publish and deploy happen here and only here, in that order.
+- **Build for the deploy target's CPU architecture only.** Find the target server's architecture first (for example `arm64` or `amd64`) and set `platforms:` of every image build to that one platform. An image with no manifest for the server's architecture fails to pull at deploy time.
+- **Build on a native runner of that architecture.** For `arm64`, use the GitHub-hosted `ubuntu-24.04-arm` runner instead of an x86 runner with QEMU emulation; emulation is several times slower, worst for native modules. IF you are unsure whether the account can use that runner (private repositories, plan limits), THEN check a sibling repository of the user that already uses it (the `dev-guidelines` skill) before falling back to QEMU.
+- **Read deploy settings from a secret or a variable.** People save values in GitHub's Variables instead of Secrets (and the reverse). For a value that is not sensitive, such as a deploy webhook URL, read both: `${{ secrets.NAME || vars.NAME }}`. A token stays a secret only.
+- **Make the deploy call fail loudly.** Call the platform's deploy webhook with the HTTP method its API documents (several, such as Coolify 4.7+, accept only `POST`) and with `curl --fail-with-body`, so a 4xx or 5xx fails the step instead of passing silently. When the settings are missing, skip the deploy step with a notice rather than failing.
 
 ### Shared setup
 
@@ -278,6 +284,11 @@ Script rules:
 | Opened the PR and left it for the user to merge | Turn on squash auto-merge as soon as it opens |
 | Turned on auto-merge, then pushed more commits (docs, AGENTS.md) | Push everything first; the PR can merge before the extra commits land |
 | Moved the card to Done because auto-merge was turned on | Follow the table in section 3; auto-merge is not a Jira event |
+| Moved the card because the `Deploy` run was green, without checking the deployed app | Confirm the new deployment finished and the app responds (section 3) |
+| Assumed auto-merge would fire, on a repository where it is disabled | Check first; tell the user, or, when they already asked to merge, merge with `expectedHeadSha` pinned (section 4) |
+| Multi-arch images (`linux/amd64,linux/arm64`) built under QEMU for a single-architecture server | Build only the server's architecture, on a native runner of that architecture (section 7) |
+| Deploy step reads only `secrets.X`, and the value was saved as a variable | `${{ secrets.X \|\| vars.X }}` for values that are not sensitive (section 7) |
+| Deploy webhook called with `GET`, or without `--fail-with-body` | Use the method the platform documents and fail the step on an error status (section 7) |
 | One `ci.yml` that lints, tests, builds and deploys | Split into `Tests` (PR only) and `Deploy` (push to `main` only) |
 | `Tests` also triggers on push to `main`, or `Deploy` also runs on PRs | `Tests`: `pull_request` only. `Deploy`: `push` to `main` only |
 | Lint or tests repeated inside `Deploy`, or a Docker build inside `Tests` | Lint and tests live only in `Tests`; Docker build, publish and deploy only in `Deploy` |
