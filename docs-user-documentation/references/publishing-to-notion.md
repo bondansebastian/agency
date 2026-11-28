@@ -2,6 +2,10 @@
 
 Reference for publishing or updating a user guide or a video manual page in Notion instead of (or in addition to) a local file.
 
+## No Confirmation Before Writing
+
+Creating, updating or deleting a Notion page needs no confirmation from the user once the target page is known. Do the write and report it. The only exception is a user who says so at the beginning of the request (for example "ask me first"), and then only for that request. Asking which page to write to, when no target is recorded, is a missing fact, not a confirmation, and stays.
+
 ## One Notion Integration Per Task
 
 Every Notion operation in one task — reading an existing page, creating a new one, updating content, listing pages to find a target — goes through a single integration. Mixing integrations against the same Notion workspace risks inconsistent page IDs, formatting quirks, or a narrower auth scope on one path than the other producing a broken or partial write.

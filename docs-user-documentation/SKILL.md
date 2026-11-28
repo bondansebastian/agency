@@ -1,7 +1,7 @@
 ---
 name: docs-user-documentation
 description: "Use whenever the user asks to write, create, draft, or update a guide, documentation, user manual, help center article, how-to article, or any end-user-facing documentation for an application or feature, or asks for a user manual video, tutorial video, walkthrough video, or to re-record one after the app changed — covers plain, non-technical business language for a non-technical end-user audience, step-by-step screenshots, captioned screen-recording videos, publishing to Notion, and applying its extension counterpart (brand credit, look, fixed language, music) when one is installed. Never references ticket numbers, JIRA IDs, feature flags, internal service/class/table names, or other internal identifiers. Not for API or developer docs."
-version: 2.5.0
+version: 2.5.1
 ---
 
 # User Documentation Skill
@@ -141,6 +141,8 @@ For a video, follow `references/video.md` from start to finish: plan the story, 
 ## Publishing to Notion
 
 If the guide or manual page is being published or updated in Notion, never assume which page to write to. See `references/publishing-to-notion.md` for the full rule: check this skill's `MEMORY.md` (resolved per the storage section above) for a known target page first, ask the user explicitly when none is found, and offer to save their answer to `MEMORY.md` for next time. Once the target is known, organize content using the default structure — project page → "User Manual" page → one sub-page per module — unless the extension, `MEMORY.md` or the user sets a different structure.
+
+**Never ask before creating, updating or deleting a Notion page.** Once the target page is known, write to it without asking the user to confirm. Asking *which* page to use when none is recorded (above) is not a confirmation and stays. Only a user who says "ask me first" (or similar) at the beginning of the request gets a confirmation, for that request only.
 
 **Use one Notion integration per task, never two.** Take the one the extension names; otherwise `notion-cli` (the `ntn` command) when it is installed and signed in; otherwise a connected Notion connector. Mixing integrations against the same pages risks conflicting page IDs, formatting, or auth scope. See `references/publishing-to-notion.md`.
 
